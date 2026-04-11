@@ -48,7 +48,7 @@ export default function DealsPage() {
     page:       searchParams.get("page")       ?? undefined,
   };
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  const CHEAPSHARK = "https://www.cheapshark.com/api/1.0";
 
   const fetchDeals = useCallback(async () => {
     setLoading(true);
@@ -56,7 +56,9 @@ export default function DealsPage() {
     try {
       const params = new URLSearchParams();
       Object.entries(currentParams).forEach(([k, v]) => { if (v) params.set(k, v); });
-      const res = await fetch(`${baseUrl}/api/deals?${params}`);
+      // pageSize default
+      if (!params.has("pageSize")) params.set("pageSize", "24");
+      const res = await fetch(`${CHEAPSHARK}/deals?${params}`);
       if (!res.ok) throw new Error("fetch_failed");
       const data = await res.json();
       setDeals(Array.isArray(data) ? data : []);
@@ -70,9 +72,9 @@ export default function DealsPage() {
 
   // Stores tek seferlik yükle
   useEffect(() => {
-    fetch(`${baseUrl}/api/stores`)
+    fetch(`${CHEAPSHARK}/stores`)
       .then((r) => r.json())
-      .then(setStores)
+      .then((data: Store[]) => setStores(data.filter((s) => s.isActive === 1)))
       .catch(() => {});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

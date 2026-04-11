@@ -1,20 +1,10 @@
 import Link from "next/link";
-import { Zap, Search, Heart, ArrowRight, Sparkles, Gift } from "lucide-react";
-import { getDeals, deduplicateDeals } from "@/lib/cheapshark";
-import DealCard from "@/components/DealCard";
+import { Zap, Search, Heart, Sparkles } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-
-export const revalidate = 300;
+import HomeDeals from "@/components/HomeDeals";
 
 export default async function HomePage() {
   const t = await getTranslations("home");
-
-  const [hotDealsRaw, freeGamesRaw] = await Promise.all([
-    getDeals({ sortBy: "Deal Rating", pageSize: 40, onSale: true }).catch(() => []),
-    getDeals({ upperPrice: 0, pageSize: 20 }).catch(() => []),
-  ]);
-  const hotDeals = deduplicateDeals(hotDealsRaw).slice(0, 8);
-  const freeGames = deduplicateDeals(freeGamesRaw).slice(0, 4);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,9 +46,9 @@ export default async function HomePage() {
       {/* Features */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-20">
         {([
-          { icon: Zap, titleKey: "feature1Title" as const, descKey: "feature1Desc" as const, color: "text-brand-400", bg: "bg-brand-500/10" },
+          { icon: Zap,    titleKey: "feature1Title" as const, descKey: "feature1Desc" as const, color: "text-brand-400",  bg: "bg-brand-500/10"  },
           { icon: Search, titleKey: "feature2Title" as const, descKey: "feature2Desc" as const, color: "text-purple-400", bg: "bg-purple-500/10" },
-          { icon: Heart, titleKey: "feature3Title" as const, descKey: "feature3Desc" as const, color: "text-red-400", bg: "bg-red-500/10" },
+          { icon: Heart,  titleKey: "feature3Title" as const, descKey: "feature3Desc" as const, color: "text-red-400",    bg: "bg-red-500/10"    },
         ]).map(({ icon: Icon, titleKey, descKey, color, bg }) => (
           <div key={titleKey} className="card p-5 flex gap-4 group hover:bg-white/[0.05] transition-all duration-200">
             <div className={`w-9 h-9 ${bg} rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5`}>
@@ -72,43 +62,8 @@ export default async function HomePage() {
         ))}
       </section>
 
-      {/* Hot Deals */}
-      <section className="mb-16">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="section-title flex items-center gap-2">
-            <Zap className="w-5 h-5 text-brand-400" />
-            {t("hotDeals")}
-          </h2>
-          <Link href="/deals" className="flex items-center gap-1 text-sm text-slate-500 hover:text-brand-400 transition-colors font-medium">
-            {t("viewAll")} <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {hotDeals.map((deal) => (
-            <DealCard key={deal.dealID} deal={deal} />
-          ))}
-        </div>
-      </section>
-
-      {/* Free Games */}
-      {freeGames.length > 0 && (
-        <section className="mb-16">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="section-title flex items-center gap-2">
-              <Gift className="w-5 h-5 text-amber-400" />
-              {t("freeNow")}
-            </h2>
-            <Link href="/free" className="flex items-center gap-1 text-sm text-slate-500 hover:text-amber-400 transition-colors font-medium">
-              {t("viewAll")} <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {freeGames.map((deal) => (
-              <DealCard key={deal.dealID} deal={deal} />
-            ))}
-          </div>
-        </section>
-      )}
+      {/* Hot Deals + Free Games — client-side fetch */}
+      <HomeDeals />
     </div>
   );
 }
