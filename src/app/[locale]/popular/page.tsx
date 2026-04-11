@@ -1,4 +1,4 @@
-import { findGameBySteamAppIdOrTitle } from "@/lib/cheapshark";
+import { findGameBySteamAppIdOrTitle, getGameInfo, getStores } from "@/lib/cheapshark";
 import { getTopSteamGames } from "@/lib/steam";
 import SteamGameCard from "@/components/SteamGameCard";
 import { getTranslations } from "next-intl/server";
@@ -14,9 +14,13 @@ function getMonthLabel(locale: string): string {
   return new Date().toLocaleString(formatMap[locale] ?? "en-US", { month: "long", year: "numeric" });
 }
 
-function isValveGame(developer: string, publisher: string): boolean {
-  const text = `${developer} ${publisher}`.toLowerCase();
-  return text.includes("valve");
+const VALVE_TITLES = ["counter-strike", "dota", "team fortress", "half-life", "portal", "left 4 dead", "artifact", "underlords", "steamvr"];
+
+function isValveGame(developer: string, publisher: string, name: string): boolean {
+  const devpub = `${developer} ${publisher}`.toLowerCase();
+  if (devpub.includes("valve")) return true;
+  const nameLower = name.toLowerCase();
+  return VALVE_TITLES.some((v) => nameLower.includes(v));
 }
 
 export default async function PopularPage({
@@ -27,24 +31,42 @@ export default async function PopularPage({
   const { locale } = await params;
   const t = await getTranslations("popular");
   const monthLabel = getMonthLabel(locale);
-  const steamGames = await getTopSteamGames().catch(() => []);
+  const [steamGames, stores] = await Promise.all([
+    getTopSteamGames().catch(() => []),
+    getStores().catch(() => []),
+  ]);
+
+  const storeMap = Object.fromEntries(stores.map((s) => [s.storeID, s.storeName]));
+
   const nonValveGames = steamGames
-    .filter((game) => !isValveGame(game.developer, game.publisher))
+    .filter((game) => !isValveGame(game.developer, game.publisher, game.name))
     .slice(0, 12);
 
-  // CheapShark eşleşmesi opsiyonel — bulunamazsa oyunu gizleme, sadece link olmaz
-  const cheapSharkIds = await Promise.all(
-    nonValveGames.map((game) =>
-      findGameBySteamAppIdOrTitle({ title: game.name, steamAppID: game.appid })
-        .then((match) => match?.gameID ?? null)
-        .catch(() => null)
-    )
-  );
+  const monthlyPopularGames = await Promise.all(
+    nonValveGames.map(async (game) => {
+      try {
+        const match = await findGameBySteamAppIdOrTitle({ title: game.name, steamAppID: game.appid });
+        if (!match) return { ...game, cheapSharkGameID: undefined, storeDeals: [] };
 
-  const monthlyPopularGames = nonValveGames.map((game, i) => ({
-    ...game,
-    cheapSharkGameID: cheapSharkIds[i] ?? undefined,
-  }));
+        const info = await getGameInfo(match.gameID).catch(() => null);
+        const storeDeals = (info?.deals ?? [])
+          .map((d) => ({
+            storeID: d.storeID,
+            storeName: storeMap[d.storeID] ?? `Store ${d.storeID}`,
+            price: d.price,
+            retailPrice: d.retailPrice,
+            savings: d.savings,
+            dealID: d.dealID,
+          }))
+          .sort((a, b) => parseFloat(a.price) - parseFloat(b.price))
+          .slice(0, 4);
+
+        return { ...game, cheapSharkGameID: match.gameID, storeDeals };
+      } catch {
+        return { ...game, cheapSharkGameID: undefined, storeDeals: [] };
+      }
+    })
+  );
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -83,10 +105,10 @@ export default async function PopularPage({
         {monthlyPopularGames.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
             <div className="lg:col-span-2 lg:row-span-2">
-              <SteamGameCard game={monthlyPopularGames[0]} rank={1} featured gameID={monthlyPopularGames[0].cheapSharkGameID} />
+              <SteamGameCard game={monthlyPopularGames[0]} rank={1} featured gameID={monthlyPopularGames[0].cheapSharkGameID} storeDeals={monthlyPopularGames[0].storeDeals} />
             </div>
             {monthlyPopularGames.slice(1).map((game, i) => (
-              <SteamGameCard key={game.appid} game={game} rank={i + 2} gameID={game.cheapSharkGameID} />
+              <SteamGameCard key={game.appid} game={game} rank={i + 2} gameID={game.cheapSharkGameID} storeDeals={game.storeDeals} />
             ))}
           </div>
         ) : (

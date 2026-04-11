@@ -9,15 +9,26 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
+import { getStoreLogoUrl } from "@/lib/cheapshark";
+
+interface StoreDeal {
+  storeID: string;
+  storeName: string;
+  price: string;
+  retailPrice: string;
+  savings: string;
+  dealID: string;
+}
 
 interface Props {
   game: SteamGameWithImage;
   rank: number;
   featured?: boolean;
   gameID?: string;
+  storeDeals?: StoreDeal[];
 }
 
-export default function SteamGameCard({ game, rank, featured = false, gameID }: Props) {
+export default function SteamGameCard({ game, rank, featured = false, gameID, storeDeals = [] }: Props) {
   const [inWishlist, setInWishlist] = useState(false);
   const [loading, setLoading] = useState(false);
   const price = formatSteamPrice(game.price, game.initialprice, game.discount);
@@ -144,6 +155,28 @@ export default function SteamGameCard({ game, rank, featured = false, gameID }: 
           </div>
         </div>
 
+        {/* Store deals */}
+        {storeDeals.length > 0 && (
+          <div className="px-4 py-2.5 bg-slate-900/60 border-t border-white/5 flex flex-wrap gap-2">
+            {storeDeals.map((deal) => (
+              <a
+                key={deal.dealID}
+                href={`https://www.cheapshark.com/redirect?dealID=${deal.dealID}`}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-700/80 border border-white/5 rounded-lg px-2.5 py-1.5 transition-colors"
+              >
+                <Image src={getStoreLogoUrl(deal.storeID)} alt={deal.storeName} width={14} height={14} className="w-3.5 h-3.5 object-contain" unoptimized />
+                <span className="text-white text-xs font-semibold">${parseFloat(deal.price).toFixed(2)}</span>
+                {parseFloat(deal.savings) >= 1 && (
+                  <span className="text-green-400 text-[10px] font-bold">-{Math.round(parseFloat(deal.savings))}%</span>
+                )}
+              </a>
+            ))}
+          </div>
+        )}
+
         {/* Notify bar */}
         <div className="px-4 py-2.5 bg-purple-500/5 border-t border-purple-500/10 flex items-center justify-between">
           <p className="text-xs text-purple-400/60 flex items-center gap-1.5">
@@ -225,6 +258,27 @@ export default function SteamGameCard({ game, rank, featured = false, gameID }: 
             )}
           </div>
         </div>
+
+        {storeDeals.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 pt-1 border-t border-white/5 mt-1">
+            {storeDeals.map((deal) => (
+              <a
+                key={deal.dealID}
+                href={`https://www.cheapshark.com/redirect?dealID=${deal.dealID}`}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1 bg-slate-800/70 hover:bg-slate-700/70 border border-white/5 rounded-md px-1.5 py-1 transition-colors"
+              >
+                <Image src={getStoreLogoUrl(deal.storeID)} alt={deal.storeName} width={12} height={12} className="w-3 h-3 object-contain" unoptimized />
+                <span className="text-white text-[11px] font-semibold">${parseFloat(deal.price).toFixed(2)}</span>
+                {parseFloat(deal.savings) >= 1 && (
+                  <span className="text-green-400 text-[10px] font-bold">-{Math.round(parseFloat(deal.savings))}%</span>
+                )}
+              </a>
+            ))}
+          </div>
+        )}
       </div>
     </>
   );
