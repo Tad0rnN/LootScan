@@ -157,9 +157,11 @@
     "notifyAdded": "打折时会通知你",
     "notifyHint": "加入列表以接收折扣提醒",
     "steam": "Steam",
+    "loadingPrices": "正在加载价格...",
     "featuredBadge": "本月 #{rank}",
     "playersCount": "{count} 名玩家",
-    "averagePlaytime": "平均 {time}"
+    "averagePlaytime": "平均 {time}",
+    "bestDeal": "最低价"
   },
   "browse": {
     "badge": "游戏库",

@@ -157,9 +157,11 @@
     "notifyAdded": "Je krijgt bericht zodra het in de aanbieding is",
     "notifyHint": "Voeg toe aan je lijst voor dealmeldingen",
     "steam": "Steam",
+    "loadingPrices": "Prijzen worden geladen...",
     "featuredBadge": "Maand #{rank}",
     "playersCount": "{count} spelers",
-    "averagePlaytime": "{time} gem."
+    "averagePlaytime": "{time} gem.",
+    "bestDeal": "Beste Prijs"
   },
   "browse": {
     "badge": "Spellenbibliotheek",

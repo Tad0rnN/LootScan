@@ -215,9 +215,11 @@
     "notifyAdded": "You will be notified when it goes on sale",
     "notifyHint": "Add it to your list and get sale alerts",
     "steam": "Steam",
+    "loadingPrices": "Loading prices...",
     "featuredBadge": "Month #{rank}",
     "playersCount": "{count} players",
-    "averagePlaytime": "{time} avg."
+    "averagePlaytime": "{time} avg.",
+    "bestDeal": "Best Price"
   },
   "browse": {
     "badge": "Game Library",

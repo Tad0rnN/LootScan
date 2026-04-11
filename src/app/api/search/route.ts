@@ -56,7 +56,7 @@ async function fetchGameInfoByTitles(titles: string[]): Promise<Deal[]> {
   return deals;
 }
 
-function fallbackParse(query: string) {
+function fallbackParse(query: string, locale?: string) {
   const q = query.toLowerCase();
   const maxPriceMatch = q.match(/(?:under|below|max|less than|at most|alti|altinda)\s*\$?(\d+(?:\.\d+)?)/);
   const maxPrice = maxPriceMatch ? parseFloat(maxPriceMatch[1]) : undefined;
@@ -66,8 +66,17 @@ function fallbackParse(query: string) {
   for (const [name, id] of Object.entries(storeMap)) {
     if (q.includes(name)) { storeID = id; break; }
   }
+  const fallbackInterpretationByLocale: Record<string, string> = {
+    tr: `"${query}" için arama yapılıyor`,
+    en: `Searching for "${query}"`,
+    de: `Suche nach "${query}"`,
+    nl: `Zoeken naar "${query}"`,
+    ja: `「${query}」を検索しています`,
+    zh: `正在搜索“${query}”`,
+  };
+
   return {
-    interpretation: `"${query}" için arama yapılıyor`,
+    interpretation: fallbackInterpretationByLocale[locale ?? ""] ?? fallbackInterpretationByLocale.en,
     searchMode: "deals" as const,
     gameTitles: [],
     filters: { maxPrice: isFree ? 0 : maxPrice, storeID, sortBy: "Deal Rating", onSale: true },
@@ -75,14 +84,14 @@ function fallbackParse(query: string) {
 }
 
 export async function POST(req: NextRequest) {
-  const { query } = await req.json();
+  const { query, locale } = await req.json();
   if (!query?.trim()) return NextResponse.json({ error: "Query required" }, { status: 400 });
 
   let parsed;
   try {
     parsed = await parseNaturalLanguageSearch(query);
   } catch {
-    parsed = fallbackParse(query);
+    parsed = fallbackParse(query, locale);
   }
 
   try {

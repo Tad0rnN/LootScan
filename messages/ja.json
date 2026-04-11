@@ -157,9 +157,11 @@
     "notifyAdded": "セールになったら通知します",
     "notifyHint": "リストに追加してセール通知を受け取る",
     "steam": "Steam",
+    "loadingPrices": "価格を読み込み中...",
     "featuredBadge": "今月 #{rank}",
     "playersCount": "{count} 人プレイ中",
-    "averagePlaytime": "平均 {time}"
+    "averagePlaytime": "平均 {time}",
+    "bestDeal": "最安値"
   },
   "browse": {
     "badge": "ゲームライブラリ",

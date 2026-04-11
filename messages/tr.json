@@ -215,9 +215,11 @@
     "notifyAdded": "Indirime girince bildirim alacaksin",
     "notifyHint": "Listeye ekle, indirimde haber al",
     "steam": "Steam",
+    "loadingPrices": "Fiyatlar yukleniyor...",
     "featuredBadge": "Ayin #{rank}",
     "playersCount": "{count} oyuncu",
-    "averagePlaytime": "{time} ort."
+    "averagePlaytime": "{time} ort.",
+    "bestDeal": "En Ucuz"
   },
   "browse": {
     "badge": "Oyun Kütüphanesi",

@@ -157,9 +157,11 @@
     "notifyAdded": "Du wirst bei einem Angebot benachrichtigt",
     "notifyHint": "Zur Liste hinzufügen und Angebotsalarm erhalten",
     "steam": "Steam",
+    "loadingPrices": "Preise werden geladen...",
     "featuredBadge": "Monat #{rank}",
     "playersCount": "{count} Spieler",
-    "averagePlaytime": "{time} im Schnitt"
+    "averagePlaytime": "{time} im Schnitt",
+    "bestDeal": "Bestes Angebot"
   },
   "browse": {
     "badge": "Spielbibliothek",
