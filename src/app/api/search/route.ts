@@ -3,11 +3,28 @@ import { parseNaturalLanguageSearch } from "@/lib/ai-search";
 import { getDeals, searchGames, deduplicateDeals } from "@/lib/cheapshark";
 import type { Deal } from "@/types";
 
+type SearchFilters = {
+  title?: string;
+  maxPrice?: number | null;
+  minMetacritic?: number | null;
+  storeID?: string | null;
+  sortBy?: string;
+  onSale?: boolean;
+};
+
 // "similar" modunda: AI'ın önerdiği her oyun başlığı için CheapShark'ta fırsat ara
-async function fetchDealsByTitles(titles: string[]): Promise<Deal[]> {
+async function fetchDealsByTitles(titles: string[], filters: SearchFilters): Promise<Deal[]> {
   const results = await Promise.all(
     titles.map((title) =>
-      getDeals({ title, pageSize: 5, sortBy: "Deal Rating" }).catch(() => [] as Deal[])
+      getDeals({
+        title,
+        upperPrice: filters.maxPrice ?? undefined,
+        metacritic: filters.minMetacritic ?? undefined,
+        storeID: filters.storeID ?? undefined,
+        sortBy: filters.sortBy ?? "Deal Rating",
+        onSale: filters.onSale ?? true,
+        pageSize: 5,
+      }).catch(() => [] as Deal[])
     )
   );
 
@@ -20,7 +37,8 @@ async function fetchDealsByTitles(titles: string[]): Promise<Deal[]> {
 }
 
 // "similar" modunda yeterli sonuç yoksa searchGames ile tamamla (indirimde olmasa da)
-async function fetchGameInfoByTitles(titles: string[]): Promise<Deal[]> {
+async function fetchGameInfoByTitles(titles: string[], filters: SearchFilters): Promise<Deal[]> {
+  const maxPrice = filters.maxPrice ?? undefined;
   const results = await Promise.all(
     titles.map((title) => searchGames(title).catch(() => []))
   );
@@ -28,8 +46,14 @@ async function fetchGameInfoByTitles(titles: string[]): Promise<Deal[]> {
   const seen = new Set<string>();
   const deals: Deal[] = [];
   for (const list of results) {
-    const game = list[0];
+    const game = list.find((item) => {
+      if (seen.has(item.gameID)) return false;
+      if (maxPrice !== undefined && parseFloat(item.cheapest) > maxPrice) return false;
+      return true;
+    }) ?? list[0];
+
     if (!game || seen.has(game.gameID)) continue;
+    if (maxPrice !== undefined && parseFloat(game.cheapest) > maxPrice) continue;
     seen.add(game.gameID);
     deals.push({
       internalName: game.internalName,
@@ -56,70 +80,44 @@ async function fetchGameInfoByTitles(titles: string[]): Promise<Deal[]> {
   return deals;
 }
 
-function fallbackParse(query: string, locale?: string) {
-  const q = query.toLowerCase();
-  const maxPriceMatch = q.match(/(?:under|below|max|less than|at most|alti|altinda)\s*\$?(\d+(?:\.\d+)?)/);
-  const maxPrice = maxPriceMatch ? parseFloat(maxPriceMatch[1]) : undefined;
-  const isFree = /\bfree\b|\bbedava\b/.test(q);
-  const storeMap: Record<string, string> = { steam: "1", gog: "7", epic: "27", humble: "11" };
-  let storeID: string | undefined;
-  for (const [name, id] of Object.entries(storeMap)) {
-    if (q.includes(name)) { storeID = id; break; }
-  }
-  const fallbackInterpretationByLocale: Record<string, string> = {
-    tr: `"${query}" için arama yapılıyor`,
-    en: `Searching for "${query}"`,
-    de: `Suche nach "${query}"`,
-    nl: `Zoeken naar "${query}"`,
-    ja: `「${query}」を検索しています`,
-    zh: `正在搜索“${query}”`,
-  };
-
-  return {
-    interpretation: fallbackInterpretationByLocale[locale ?? ""] ?? fallbackInterpretationByLocale.en,
-    searchMode: "deals" as const,
-    gameTitles: [],
-    filters: { maxPrice: isFree ? 0 : maxPrice, storeID, sortBy: "Deal Rating", onSale: true },
-  };
-}
-
 export async function POST(req: NextRequest) {
   const { query, locale } = await req.json();
   if (!query?.trim()) return NextResponse.json({ error: "Query required" }, { status: 400 });
 
   let parsed;
   try {
-    parsed = await parseNaturalLanguageSearch(query);
+    parsed = await parseNaturalLanguageSearch(query, locale);
   } catch (error) {
-    console.warn("AI search provider unavailable, using fallback parser:", error);
-    parsed = fallbackParse(query, locale);
+    console.warn("AI search parser failed:", error);
+    return NextResponse.json({ error: "Search failed" }, { status: 500 });
   }
 
   try {
     let deals: Deal[] = [];
+    const filters = (parsed.filters ?? {}) as SearchFilters;
 
     if (parsed.searchMode === "similar" && parsed.gameTitles?.length > 0) {
       // Önce indirimli olanları getir
-      deals = await fetchDealsByTitles(parsed.gameTitles);
+      deals = await fetchDealsByTitles(parsed.gameTitles, filters);
 
       // Az sonuç varsa indirimde olmayanlarla da tamamla
       if (deals.length < 6) {
         const extras = await fetchGameInfoByTitles(
-          parsed.gameTitles.filter((t) => !deals.some((d) => d.title.toLowerCase().includes(t.toLowerCase())))
+          parsed.gameTitles.filter((t) => !deals.some((d) => d.title.toLowerCase().includes(t.toLowerCase()))),
+          filters
         );
         const combined = deduplicateDeals([...deals, ...extras]);
-        deals = combined;
+        deals = combined.slice(0, 24);
       }
     } else {
       // deals modu: normal filtre araması
-      const f = (parsed.filters ?? {}) as { title?: string; maxPrice?: number | null; minMetacritic?: number | null; storeID?: string | null; sortBy?: string; onSale?: boolean };
       const raw = await getDeals({
-        title: f.title,
-        upperPrice: f.maxPrice ?? undefined,
-        metacritic: f.minMetacritic ?? undefined,
-        storeID: f.storeID ?? undefined,
-        sortBy: f.sortBy ?? "Deal Rating",
-        onSale: f.onSale ?? true,
+        title: filters.title,
+        upperPrice: filters.maxPrice ?? undefined,
+        metacritic: filters.minMetacritic ?? undefined,
+        storeID: filters.storeID ?? undefined,
+        sortBy: filters.sortBy ?? "Deal Rating",
+        onSale: filters.onSale ?? true,
         pageSize: 60,
       });
       deals = deduplicateDeals(raw).slice(0, 24);
