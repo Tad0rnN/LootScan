@@ -28,22 +28,23 @@ export default async function PopularPage({
   const t = await getTranslations("popular");
   const monthLabel = getMonthLabel(locale);
   const steamGames = await getTopSteamGames().catch(() => []);
-  const nonValveGames = steamGames.filter((game) => !isValveGame(game.developer, game.publisher));
-  const monthlyPopularGamesRaw = await Promise.all(
-    nonValveGames.map(async (game) => {
-      try {
-        const matchedGame = await findGameBySteamAppIdOrTitle({
-          title: game.name,
-          steamAppID: game.appid,
-        });
-        if (!matchedGame) return null;
-        return { ...game, cheapSharkGameID: matchedGame.gameID };
-      } catch {
-        return null;
-      }
-    })
+  const nonValveGames = steamGames
+    .filter((game) => !isValveGame(game.developer, game.publisher))
+    .slice(0, 12);
+
+  // CheapShark eşleşmesi opsiyonel — bulunamazsa oyunu gizleme, sadece link olmaz
+  const cheapSharkIds = await Promise.all(
+    nonValveGames.map((game) =>
+      findGameBySteamAppIdOrTitle({ title: game.name, steamAppID: game.appid })
+        .then((match) => match?.gameID ?? null)
+        .catch(() => null)
+    )
   );
-  const monthlyPopularGames = monthlyPopularGamesRaw.filter((game) => game !== null).slice(0, 12);
+
+  const monthlyPopularGames = nonValveGames.map((game, i) => ({
+    ...game,
+    cheapSharkGameID: cheapSharkIds[i] ?? undefined,
+  }));
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
