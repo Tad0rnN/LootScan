@@ -87,6 +87,7 @@
     "noDeals": "No deals found for this search.",
     "noDealsDesc": "Try a different query or broaden your criteria.",
     "rateLimitedHint": "Price data is temporarily rate-limited, but the AI recommendations are below.",
+    "suggestionsOnlyHint": "Live prices were not found, but the AI recommendations are below.",
     "aiSuggestionLabel": "AI recommendation",
     "example1": "cheap RPGs under $5",
     "example2": "highly rated strategy games on sale",

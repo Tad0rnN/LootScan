@@ -87,6 +87,7 @@
     "noDeals": "Bu arama için fırsat bulunamadı.",
     "noDealsDesc": "Farklı bir sorgu deneyin veya kriterlerinizi genişletin.",
     "rateLimitedHint": "Fiyat verileri geçici olarak limite takıldı, ama AI önerileri aşağıda.",
+    "suggestionsOnlyHint": "Canlı fiyat bulunamadı, ama AI önerileri aşağıda.",
     "aiSuggestionLabel": "AI önerisi",
     "example1": "5 dolar altı ucuz RPG",
     "example2": "indirimli yüksek puanlı strateji oyunları",

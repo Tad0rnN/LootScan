@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getFallbackGameInfo } from "@/lib/fallback-data";
 
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id") ?? "";
@@ -13,6 +14,10 @@ export async function GET(req: NextRequest) {
     );
 
     if (!res.ok) {
+      const fallback = getFallbackGameInfo(id);
+      if (fallback) {
+        return NextResponse.json(fallback, { headers: { "x-lootscan-fallback": "1" } });
+      }
       return NextResponse.json({ error: "Upstream error" }, { status: 502 });
     }
 
@@ -20,6 +25,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(data);
   } catch (error) {
     console.error("CheapShark game info error:", error);
+    const fallback = getFallbackGameInfo(id);
+    if (fallback) {
+      return NextResponse.json(fallback, { headers: { "x-lootscan-fallback": "1" } });
+    }
     return NextResponse.json({ error: "Failed to fetch game info" }, { status: 502 });
   }
 }

@@ -10,8 +10,6 @@ import { formatPrice, getStoreLogoUrl } from "@/lib/cheapshark";
 import { useTranslations, useLocale } from "next-intl";
 import type { GameInfo, Store } from "@/types";
 
-const CHEAPSHARK = "https://www.cheapshark.com/api/1.0";
-
 export default function GamePage() {
   const { id } = useParams<{ id: string }>();
   const t = useTranslations("game");
@@ -28,8 +26,8 @@ export default function GamePage() {
     setError(false);
 
     Promise.all([
-      fetch(`${CHEAPSHARK}/games?id=${id}`).then((r) => r.json()),
-      fetch(`${CHEAPSHARK}/stores`).then((r) => r.json()),
+      fetch(`/api/game?id=${id}`).then((r) => r.json()),
+      fetch("/api/stores").then((r) => r.json()),
     ])
       .then(([info, stores]: [GameInfo, Store[]]) => {
         setGameInfo(info);

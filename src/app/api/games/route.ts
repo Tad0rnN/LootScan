@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { searchFallbackGames } from "@/lib/fallback-data";
 
 export async function GET(req: NextRequest) {
   const title = req.nextUrl.searchParams.get("title") ?? "";
@@ -9,11 +10,13 @@ export async function GET(req: NextRequest) {
       `https://www.cheapshark.com/api/1.0/games?title=${encodeURIComponent(title)}&limit=30`,
       { next: { revalidate: 60 }, signal: AbortSignal.timeout(15000) }
     );
-    if (!res.ok) return NextResponse.json([], { status: 502 });
+    if (!res.ok) {
+      return NextResponse.json(searchFallbackGames(title), { headers: { "x-lootscan-fallback": "1" } });
+    }
     const data = await res.json();
     return NextResponse.json(data);
   } catch (error) {
     console.error("CheapShark game search error:", error);
-    return NextResponse.json([], { status: 502 });
+    return NextResponse.json(searchFallbackGames(title), { headers: { "x-lootscan-fallback": "1" } });
   }
 }

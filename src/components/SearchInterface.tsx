@@ -16,7 +16,6 @@ interface SearchState {
   rateLimited?: boolean;
 }
 
-const CHEAPSHARK = "https://www.cheapshark.com/api/1.0";
 const MAX_SIMILAR_RESULTS = 8;
 const EXCLUDED_TITLE_TERMS = [
   "soundtrack",
@@ -86,7 +85,7 @@ async function fetchDealsMode(filters: AISearchResponse["filters"] | undefined):
   if (filters?.onSale ?? true) params.set("onSale", "1");
   params.set("pageSize", "24");
 
-  const res = await fetch(`${CHEAPSHARK}/deals?${params}`);
+  const res = await fetch(`/api/deals?${params}`);
   if (res.status === 429) throw new Error("rate_limited");
   if (!res.ok) return [];
   const data = await res.json();
@@ -116,7 +115,7 @@ async function fetchSimilarMode(gameTitles: string[], filters: AISearchResponse[
   const deals: Deal[] = [];
 
   for (const title of gameTitles.slice(0, MAX_SIMILAR_RESULTS)) {
-    const res = await fetch(`${CHEAPSHARK}/games?title=${encodeURIComponent(title)}&limit=10`);
+    const res = await fetch(`/api/games?title=${encodeURIComponent(title)}`);
     if (res.status === 429) throw new Error("rate_limited");
     if (!res.ok) continue;
     const data = await res.json();
@@ -270,12 +269,12 @@ export default function SearchInterface() {
               <Search className="w-10 h-10 mx-auto mb-3 opacity-50" />
               <p>{t("noDeals")}</p>
               <p className="text-sm mt-1">
-                {result.rateLimited && result.gameTitles && result.gameTitles.length > 0
-                  ? t("rateLimitedHint")
+                {result.gameTitles && result.gameTitles.length > 0
+                  ? (result.rateLimited ? t("rateLimitedHint") : t("suggestionsOnlyHint"))
                   : t("noDealsDesc")}
               </p>
 
-              {result.rateLimited && result.gameTitles && result.gameTitles.length > 0 && (
+              {result.gameTitles && result.gameTitles.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 text-left">
                   {result.gameTitles.slice(0, MAX_SIMILAR_RESULTS).map((title) => (
                     <div key={title} className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">

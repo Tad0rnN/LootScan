@@ -87,6 +87,7 @@
     "noDeals": "Keine Angebote für diese Suche gefunden.",
     "noDealsDesc": "Versuche eine andere Anfrage oder erweitere deine Kriterien.",
     "rateLimitedHint": "Die Preisdaten sind vorübergehend rate-limitiert, aber die KI-Empfehlungen stehen unten.",
+    "suggestionsOnlyHint": "Es wurden keine Live-Preise gefunden, aber die KI-Empfehlungen stehen unten.",
     "aiSuggestionLabel": "KI-Empfehlung",
     "example1": "günstige RPGs unter 5€",
     "example2": "hoch bewertete Strategiespiele im Angebot",

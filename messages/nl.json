@@ -87,6 +87,7 @@
     "noDeals": "Geen aanbiedingen gevonden voor deze zoekopdracht.",
     "noDealsDesc": "Probeer een andere zoekopdracht of verbreed uw criteria.",
     "rateLimitedHint": "Prijsgegevens zijn tijdelijk rate-limited, maar de AI-aanbevelingen staan hieronder.",
+    "suggestionsOnlyHint": "Er zijn geen live prijzen gevonden, maar de AI-aanbevelingen staan hieronder.",
     "aiSuggestionLabel": "AI-aanbeveling",
     "example1": "goedkope RPG's onder €5",
     "example2": "hoog gewaardeerde strategiespellen in aanbieding",
