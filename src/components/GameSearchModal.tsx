@@ -155,7 +155,7 @@ export default function GameSearchModal({ onClose }: { onClose: () => void }) {
     if (!debouncedQuery.trim()) { setResults([]); setSearched(false); return; }
     let cancelled = false;
     setLoading(true);
-    fetch(`https://www.cheapshark.com/api/1.0/games?title=${encodeURIComponent(debouncedQuery)}&limit=30`)
+    fetch(`/api/games?title=${encodeURIComponent(debouncedQuery)}`)
       .then((r) => r.json())
       .then((data) => { if (!cancelled) { setResults(Array.isArray(data) ? data : []); setSearched(true); setLoading(false); } })
       .catch(() => { if (!cancelled) setLoading(false); });

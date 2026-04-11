@@ -133,6 +133,12 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     console.error("Search error:", err);
-    return NextResponse.json({ error: "Search failed" }, { status: 500 });
+    return NextResponse.json({
+      interpretation: parsed.interpretation,
+      query,
+      searchMode: parsed.searchMode,
+      deals: [],
+      error: "Search failed",
+    }, { status: 200 });
   }
 }

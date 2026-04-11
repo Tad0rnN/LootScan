@@ -2,6 +2,32 @@ import type { Deal, Store, GameInfo, SearchResult } from "@/types";
 
 const BASE_URL = "https://www.cheapshark.com/api/1.0";
 
+async function fetchCheapShark<T>(path: string, revalidate: number): Promise<T> {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const res = await fetch(`${BASE_URL}${path}`, {
+        next: { revalidate },
+        signal: AbortSignal.timeout(15000),
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error(`CheapShark request failed with ${res.status}`);
+      }
+
+      return res.json();
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error("CheapShark request failed");
+}
+
 export async function getDeals(params: {
   storeID?: string;
   pageNumber?: number;
@@ -28,30 +54,19 @@ export async function getDeals(params: {
   if (params.onSale) query.set("onSale", "1");
   if (params.steamRating) query.set("steamRating", String(params.steamRating));
 
-  const res = await fetch(`${BASE_URL}/deals?${query}`, { next: { revalidate: 300 }, signal: AbortSignal.timeout(10000) });
-  if (!res.ok) throw new Error("Failed to fetch deals");
-  return res.json();
+  return fetchCheapShark<Deal[]>(`/deals?${query}`, 300);
 }
 
 export async function getStores(): Promise<Store[]> {
-  const res = await fetch(`${BASE_URL}/stores`, { next: { revalidate: 3600 }, signal: AbortSignal.timeout(10000) });
-  if (!res.ok) throw new Error("Failed to fetch stores");
-  return res.json();
+  return fetchCheapShark<Store[]>("/stores", 3600);
 }
 
 export async function getGameInfo(gameID: string): Promise<GameInfo> {
-  const res = await fetch(`${BASE_URL}/games?id=${gameID}`, { next: { revalidate: 300 }, signal: AbortSignal.timeout(10000) });
-  if (!res.ok) throw new Error("Failed to fetch game info");
-  return res.json();
+  return fetchCheapShark<GameInfo>(`/games?id=${gameID}`, 300);
 }
 
 export async function searchGames(title: string): Promise<SearchResult[]> {
-  const res = await fetch(`${BASE_URL}/games?title=${encodeURIComponent(title)}&limit=20`, {
-    next: { revalidate: 60 },
-    signal: AbortSignal.timeout(10000),
-  });
-  if (!res.ok) throw new Error("Failed to search games");
-  return res.json();
+  return fetchCheapShark<SearchResult[]>(`/games?title=${encodeURIComponent(title)}&limit=20`, 60);
 }
 
 function normalizeGameName(value: string): string {
