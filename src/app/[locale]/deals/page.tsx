@@ -48,16 +48,18 @@ export default function DealsPage() {
     page:       searchParams.get("page")       ?? undefined,
   };
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+
   const fetchDeals = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const params = new URLSearchParams();
       Object.entries(currentParams).forEach(([k, v]) => { if (v) params.set(k, v); });
-      const res = await fetch(`/api/deals?${params}`);
+      const res = await fetch(`${baseUrl}/api/deals?${params}`);
       if (!res.ok) throw new Error("fetch_failed");
       const data = await res.json();
-      setDeals(data.deals ?? []);
+      setDeals(Array.isArray(data) ? data : []);
     } catch {
       setError("error");
     } finally {
@@ -68,10 +70,11 @@ export default function DealsPage() {
 
   // Stores tek seferlik yükle
   useEffect(() => {
-    fetch("/api/stores")
+    fetch(`${baseUrl}/api/stores`)
       .then((r) => r.json())
       .then(setStores)
       .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
