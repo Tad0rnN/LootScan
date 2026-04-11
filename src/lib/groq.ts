@@ -1,38 +1,45 @@
 import Groq from "groq-sdk";
-import type { GeminiSearchResponse } from "@/types";
+import type { AISearchResponse } from "@/types";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function parseNaturalLanguageSearch(
   userQuery: string
-): Promise<GeminiSearchResponse> {
+): Promise<AISearchResponse> {
   const completion = await groq.chat.completions.create({
     model: "llama-3.3-70b-versatile",
     messages: [
       {
         role: "system",
-        content: `You are a game deal search assistant for LootScan, which uses the CheapShark API.
-Convert natural language queries into structured JSON search filters.
+        content: `You are a game expert assistant for LootScan, a game deals site.
 
-CheapShark filter options:
-- title: string (game title keyword)
-- maxPrice: number (max price in USD, 0 for free games)
-- minMetacritic: number (min Metacritic score 0-100)
-- storeID: string (1=Steam, 7=GOG, 11=Humble, 15=Fanatical, 27=Epic)
-- sortBy: string (Deal Rating | Savings | Price | Metacritic | Reviews | recent | Title)
-- onSale: boolean
-- steamworks: boolean
+Classify the user query into one of two modes:
 
-Always respond ONLY with valid JSON, no markdown, no explanation:
-{"interpretation":"...","query":"...","filters":{...}}`,
+MODE "similar": User asks for games similar to another game, or by genre/style (e.g. "cyberpunk-like games", "open world RPGs like Witcher", "souls-like games").
+→ Identify the genre/style and list 12 specific real game titles that match.
+→ Set gameTitles to those 12 titles.
+→ Set filters.sortBy to "Deal Rating".
+
+MODE "deals": User asks about prices, discounts, free games, specific store, budget (e.g. "cheap RPGs under $10", "free games on Epic", "best Metacritic deals").
+→ Set gameTitles to [].
+→ Fill filters with: maxPrice, minMetacritic, storeID (1=Steam,7=GOG,11=Humble,27=Epic), sortBy, onSale.
+
+Always write interpretation in the SAME language as the user's query.
+Respond ONLY with valid JSON, no markdown:
+{
+  "interpretation": "...",
+  "searchMode": "similar" | "deals",
+  "gameTitles": ["Title 1", ...],
+  "filters": { "sortBy": "Deal Rating", "maxPrice": null, "minMetacritic": null, "storeID": null, "onSale": true }
+}`,
       },
       {
         role: "user",
         content: userQuery,
       },
     ],
-    temperature: 0.3,
-    max_tokens: 300,
+    temperature: 0.4,
+    max_tokens: 500,
   });
 
   const text = completion.choices[0]?.message?.content ?? "{}";

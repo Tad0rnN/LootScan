@@ -6,7 +6,9 @@
     "wishlist": "Verlanglijst",
     "signIn": "Inloggen",
     "signOut": "Uitloggen",
-    "popular": "Populair"
+    "popular": "Populair",
+    "browse": "Spellen zoeken",
+    "searchGames": "Spellen zoeken"
   },
   "home": {
     "badge": "Beste speldeals, elke 5 minuten bijgewerkt",
@@ -131,7 +133,11 @@
     "backToHome": "← Terug naar home"
   },
   "footer": {
-    "poweredBy": "Mogelijk gemaakt door"
+    "poweredBy": "Mogelijk gemaakt door",
+    "about": "Over ons",
+    "contact": "Contact",
+    "privacy": "Privacybeleid",
+    "terms": "Gebruiksvoorwaarden"
   },
   "popular": {
     "badge": "Topbeoordeelde spellen",
@@ -150,5 +156,80 @@
     "featuredBadge": "Maand #{rank}",
     "playersCount": "{count} spelers",
     "averagePlaytime": "{time} gem."
+  },
+  "browse": {
+    "badge": "Spellenbibliotheek",
+    "title": "Spellen zoeken",
+    "subtitle": "Zoek naar elk spel – in aanbieding of niet. Voeg het toe aan je verlanglijst en we laten je weten wanneer het in de aanbieding is.",
+    "placeholder": "Spelnaam typen... (bijv. God of War, Cyberpunk)",
+    "emptyTitle": "Begin met zoeken",
+    "emptyDesc": "Typ hierboven een spelnaam voor directe resultaten.",
+    "noResults": "Geen resultaten",
+    "noResultsDesc": "Probeer een andere naam.",
+    "resultsCount": "{count} spellen gevonden voor \"{query}\"",
+    "addWishlist": "Aan verlanglijst toevoegen",
+    "removeWishlist": "Van verlanglijst verwijderen",
+    "comparePrices": "Prijzen vergelijken",
+    "notifyHint": "Je wordt genotificeerd wanneer het in aanbieding is",
+    "free": "Gratis",
+    "lowestEver": "Laagste: {price}"
+  },
+  "about": {
+    "title": "Over LootScan",
+    "subtitle": "Een gratis spelenprijsvergelijkingsplatform voor gamers.",
+    "feature1Title": "Realtime aanbiedingen",
+    "feature1Desc": "Voortdurend bijgewerkte prijzen van Steam, GOG, Humble Store, Epic Games en 30+ winkels.",
+    "feature2Title": "AI-gestuurde zoekfunctie",
+    "feature2Desc": "Natuurlijke taalzoekopdrachten met Groq AI. Typ gewoon \"cyberpunk-achtige spellen\".",
+    "feature3Title": "Persoonlijke verlanglijst",
+    "feature3Desc": "Sla spellen op en ontvang e-mailmeldingen wanneer ze in de aanbieding zijn.",
+    "missionText": "LootScan is gebouwd zodat gamers de beste prijzen gemakkelijk kunnen vinden."
+  },
+  "contact": {
+    "badge": "Contact",
+    "title": "Neem contact op",
+    "subtitle": "Neem contact op met vragen, suggesties of feedback.",
+    "emailTitle": "E-mail",
+    "emailDesc": "Voor algemene vragen en ondersteuning.",
+    "feedbackTitle": "Feedback",
+    "feedbackDesc": "We horen graag functievoorstellen en bugrapporten.",
+    "formTitle": "Stuur een bericht",
+    "formName": "Naam",
+    "formNamePlaceholder": "Jouw naam",
+    "formEmail": "E-mail",
+    "formEmailPlaceholder": "jij@voorbeeld.nl",
+    "formMessage": "Bericht",
+    "formMessagePlaceholder": "Schrijf je bericht...",
+    "formSubmit": "Versturen"
+  },
+  "privacy": {
+    "badge": "Privacy",
+    "title": "Privacybeleid",
+    "lastUpdated": "Laatst bijgewerkt: april 2025",
+    "s1Title": "Verzamelde informatie",
+    "s1Content": "LootScan verzamelt alleen het noodzakelijke: e-mailadres en verlanglijstinhoud.",
+    "s2Title": "Gebruik van informatie",
+    "s2Content": "Gegevens worden gebruikt voor accountbeheer, meldingen en serviceverbetering. Geen dataverkoop.",
+    "s3Title": "Diensten van derden",
+    "s3Content": "CheapShark (prijzen), Supabase (auth/opslag), Groq (AI), Resend (e-mail).",
+    "s4Title": "Cookies",
+    "s4Content": "Alleen essentiële sessiecookies. Geen advertentie- of trackingcookies.",
+    "s5Title": "Contact",
+    "s5Content": "Privacyvragen: contact@lootscan.app"
+  },
+  "terms": {
+    "badge": "Voorwaarden",
+    "title": "Gebruiksvoorwaarden",
+    "lastUpdated": "Laatst bijgewerkt: april 2025",
+    "s1Title": "Gebruik van de dienst",
+    "s1Content": "Door LootScan te gebruiken ga je akkoord met deze voorwaarden. Alleen voor persoonlijk, niet-commercieel gebruik.",
+    "s2Title": "Accountverantwoordelijkheid",
+    "s2Content": "Je bent verantwoordelijk voor de beveiliging van je account.",
+    "s3Title": "Nauwkeurigheid van prijsinformatie",
+    "s3Content": "Prijsgegevens zijn afkomstig van de CheapShark API. Verifieer voor aankoop in de betreffende winkel.",
+    "s4Title": "Intellectueel eigendom",
+    "s4Content": "Het LootScan-platform is auteursrechtelijk beschermd. Spelafbeeldingen en handelsmerken zijn eigendom van hun respectievelijke eigenaars.",
+    "s5Title": "Wijzigingen",
+    "s5Content": "We behouden ons het recht voor om deze voorwaarden te wijzigen."
   }
 }

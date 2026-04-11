@@ -6,7 +6,9 @@
     "wishlist": "Wunschliste",
     "signIn": "Anmelden",
     "signOut": "Abmelden",
-    "popular": "Beliebt"
+    "popular": "Beliebt",
+    "browse": "Spiele suchen",
+    "searchGames": "Spiele suchen"
   },
   "home": {
     "badge": "Beste Spielangebote, alle 5 Minuten aktualisiert",
@@ -131,7 +133,11 @@
     "backToHome": "← Zurück zur Startseite"
   },
   "footer": {
-    "poweredBy": "Unterstützt von"
+    "poweredBy": "Unterstützt von",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen"
   },
   "popular": {
     "badge": "Top-bewertete Spiele",
@@ -150,5 +156,80 @@
     "featuredBadge": "Monat #{rank}",
     "playersCount": "{count} Spieler",
     "averagePlaytime": "{time} im Schnitt"
+  },
+  "browse": {
+    "badge": "Spielbibliothek",
+    "title": "Spiele durchsuchen",
+    "subtitle": "Suche nach jedem Spiel – im Angebot oder nicht. Füge es deiner Wunschliste hinzu und wir benachrichtigen dich bei einem Angebot.",
+    "placeholder": "Spielname eingeben... (z.B. God of War, Cyberpunk)",
+    "emptyTitle": "Suche starten",
+    "emptyDesc": "Gib oben einen Spielnamen ein, um sofortige Ergebnisse zu sehen.",
+    "noResults": "Keine Ergebnisse",
+    "noResultsDesc": "Versuche einen anderen Namen.",
+    "resultsCount": "{count} Spiele für \"{query}\" gefunden",
+    "addWishlist": "Zur Wunschliste hinzufügen",
+    "removeWishlist": "Von Wunschliste entfernen",
+    "comparePrices": "Preise vergleichen",
+    "notifyHint": "Du wirst benachrichtigt, wenn es im Angebot ist",
+    "free": "Kostenlos",
+    "lowestEver": "Tiefstpreis: {price}"
+  },
+  "about": {
+    "title": "Über LootScan",
+    "subtitle": "Eine kostenlose Spielepreisvergleichsplattform für Gamer.",
+    "feature1Title": "Echtzeit-Angebote",
+    "feature1Desc": "Ständig aktualisierte Preise von Steam, GOG, Humble Store, Epic Games und mehr als 30 weiteren Shops.",
+    "feature2Title": "KI-gestützte Suche",
+    "feature2Desc": "Natürlichsprachige Suche mit Groq AI. Tippe einfach Anfragen wie \"Cyberpunk-ähnliche Spiele\" ein.",
+    "feature3Title": "Persönliche Wunschliste",
+    "feature3Desc": "Speichere Spiele, die du verfolgen möchtest. Erhalte E-Mail-Benachrichtigungen bei Angeboten.",
+    "missionText": "LootScan wurde entwickelt, damit Gamer die besten Preise leicht finden können."
+  },
+  "contact": {
+    "badge": "Kontakt",
+    "title": "Kontakt aufnehmen",
+    "subtitle": "Bei Fragen, Anregungen oder Feedback kannst du dich gerne melden.",
+    "emailTitle": "E-Mail",
+    "emailDesc": "Für allgemeine Anfragen und Support.",
+    "feedbackTitle": "Feedback",
+    "feedbackDesc": "Wir freuen uns über Funktionsvorschläge und Fehlerberichte.",
+    "formTitle": "Nachricht senden",
+    "formName": "Name",
+    "formNamePlaceholder": "Dein Name",
+    "formEmail": "E-Mail",
+    "formEmailPlaceholder": "du@beispiel.de",
+    "formMessage": "Nachricht",
+    "formMessagePlaceholder": "Deine Nachricht...",
+    "formSubmit": "Senden"
+  },
+  "privacy": {
+    "badge": "Datenschutz",
+    "title": "Datenschutzerklärung",
+    "lastUpdated": "Zuletzt aktualisiert: April 2025",
+    "s1Title": "Gesammelte Daten",
+    "s1Content": "LootScan erfasst nur das Notwendige: E-Mail-Adresse und Wunschlisteninhalt. Keine sensiblen Daten.",
+    "s2Title": "Verwendung der Daten",
+    "s2Content": "Daten werden genutzt für Kontoführung, Benachrichtigungen und Serviceverbesserung. Kein Datenverkauf.",
+    "s3Title": "Drittanbieter",
+    "s3Content": "CheapShark (Preise), Supabase (Auth/Speicher), Groq (AI), Resend (E-Mail).",
+    "s4Title": "Cookies",
+    "s4Content": "Nur notwendige Session-Cookies. Keine Werbe- oder Tracking-Cookies.",
+    "s5Title": "Kontakt",
+    "s5Content": "Datenschutzfragen: contact@lootscan.app"
+  },
+  "terms": {
+    "badge": "Nutzungsbedingungen",
+    "title": "Nutzungsbedingungen",
+    "lastUpdated": "Zuletzt aktualisiert: April 2025",
+    "s1Title": "Nutzung des Dienstes",
+    "s1Content": "Mit der Nutzung von LootScan stimmst du diesen Bedingungen zu. Nur für persönliche, nicht kommerzielle Nutzung.",
+    "s2Title": "Kontosicherheit",
+    "s2Content": "Du bist für die Sicherheit deines Kontos verantwortlich.",
+    "s3Title": "Preisgenauigkeit",
+    "s3Content": "Preisdaten stammen von der CheapShark API. Bitte vor dem Kauf im jeweiligen Shop prüfen.",
+    "s4Title": "Geistiges Eigentum",
+    "s4Content": "Die LootScan-Plattform ist urheberrechtlich geschützt. Spielbilder und Marken gehören den jeweiligen Eigentümern.",
+    "s5Title": "Änderungen",
+    "s5Content": "Wir behalten uns vor, diese Bedingungen jederzeit zu ändern."
   }
 }

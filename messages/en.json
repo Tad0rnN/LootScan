@@ -6,7 +6,9 @@
     "wishlist": "Wishlist",
     "signIn": "Sign in",
     "signOut": "Sign out",
-    "popular": "Popular"
+    "popular": "Popular",
+    "browse": "Browse",
+    "searchGames": "Search Games"
   },
   "home": {
     "badge": "Best game deals, updated every 5 minutes",
@@ -131,7 +133,69 @@
     "backToHome": "← Back to home"
   },
   "footer": {
-    "poweredBy": "Powered by"
+    "poweredBy": "Powered by",
+    "about": "About",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "about": {
+    "title": "About LootScan",
+    "subtitle": "A free game price comparison platform built for gamers.",
+    "feature1Title": "Real-time Deals",
+    "feature1Desc": "Constantly updated prices from Steam, GOG, Humble Store, Epic Games and 30+ more stores. Never miss a sale.",
+    "feature2Title": "AI-Powered Search",
+    "feature2Desc": "Natural language search powered by Groq AI. Just type queries like \"cyberpunk-like games\" or \"RPGs under $10\".",
+    "feature3Title": "Personal Wishlist",
+    "feature3Desc": "Save games you want to track. Get email notifications when they go on sale.",
+    "missionText": "LootScan was built so gamers can easily find the best prices. Our goal is to make game shopping smarter through powerful search tools, real-time price tracking, and intelligent notifications."
+  },
+  "contact": {
+    "badge": "Contact",
+    "title": "Get in Touch",
+    "subtitle": "Reach out with questions, suggestions, or feedback.",
+    "emailTitle": "Email",
+    "emailDesc": "For general inquiries and support requests.",
+    "feedbackTitle": "Feedback",
+    "feedbackDesc": "We love hearing feature suggestions and bug reports.",
+    "formTitle": "Send a Message",
+    "formName": "Name",
+    "formNamePlaceholder": "Your name",
+    "formEmail": "Email",
+    "formEmailPlaceholder": "you@example.com",
+    "formMessage": "Message",
+    "formMessagePlaceholder": "Write your message...",
+    "formSubmit": "Send"
+  },
+  "privacy": {
+    "badge": "Privacy",
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: April 2025",
+    "s1Title": "Information We Collect",
+    "s1Content": "LootScan collects only what is necessary to provide our service: your email address (for account creation and notifications) and wishlist contents. We do not collect sensitive personal information.",
+    "s2Title": "How We Use Your Information",
+    "s2Content": "Collected data is used to manage your account, send notifications when wishlist games go on sale, and improve service quality. We do not sell your data to third parties.",
+    "s3Title": "Third-Party Services",
+    "s3Content": "We use CheapShark API for price data, Supabase for authentication and storage, Groq for AI search, and Resend for email notifications. Each has their own privacy policy.",
+    "s4Title": "Cookies",
+    "s4Content": "We use essential cookies for session management only. No advertising or tracking cookies are used.",
+    "s5Title": "Contact",
+    "s5Content": "For privacy-related questions, email us at contact@lootscan.app."
+  },
+  "terms": {
+    "badge": "Terms",
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated: April 2025",
+    "s1Title": "Use of Service",
+    "s1Content": "By using LootScan you agree to these terms. The service is intended for personal, non-commercial use only. Automated scraping, abuse of the platform, or illegal use is prohibited.",
+    "s2Title": "Account Responsibility",
+    "s2Content": "You are responsible for the security of your account. Keep your password confidential and notify us of any suspicious activity.",
+    "s3Title": "Accuracy of Price Information",
+    "s3Content": "Price data is sourced from the CheapShark API. Prices may change at any time; verify with the relevant store before purchasing. LootScan is not liable for price discrepancies.",
+    "s4Title": "Intellectual Property",
+    "s4Content": "The LootScan platform and its content are copyright protected. Game images and trademarks belong to their respective owners.",
+    "s5Title": "Changes",
+    "s5Content": "We reserve the right to modify these terms without prior notice. We recommend checking this page periodically to stay up to date."
   },
   "popular": {
     "badge": "Top Rated Games",
@@ -150,5 +214,22 @@
     "featuredBadge": "Month #{rank}",
     "playersCount": "{count} players",
     "averagePlaytime": "{time} avg."
+  },
+  "browse": {
+    "badge": "Game Library",
+    "title": "Browse Games",
+    "subtitle": "Search any game — on sale or not. Add it to your wishlist and we'll notify you when it goes on sale.",
+    "placeholder": "Type a game name... (e.g. God of War, Cyberpunk)",
+    "emptyTitle": "Start searching",
+    "emptyDesc": "Type a game name above to see instant results.",
+    "noResults": "No results found",
+    "noResultsDesc": "Try a different name.",
+    "resultsCount": "{count} games found for \"{query}\"",
+    "addWishlist": "Add to wishlist",
+    "removeWishlist": "Remove from wishlist",
+    "comparePrices": "Compare prices",
+    "notifyHint": "You'll be notified when it goes on sale",
+    "free": "Free",
+    "lowestEver": "Lowest: {price}"
   }
 }

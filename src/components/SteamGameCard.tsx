@@ -20,7 +20,7 @@ interface Props {
 export default function SteamGameCard({ game, rank, featured = false, gameID }: Props) {
   const [inWishlist, setInWishlist] = useState(false);
   const [loading, setLoading] = useState(false);
-  const price = formatSteamPrice(game.price, game.discount);
+  const price = formatSteamPrice(game.price, game.initialprice, game.discount);
   const playtime = formatPlaytime(game.average_2weeks);
   const locale = useLocale();
   const t = useTranslations("popular");
@@ -109,7 +109,7 @@ export default function SteamGameCard({ game, rank, featured = false, gameID }: 
                   {game.ccu > 0 && (
                     <span className="flex items-center gap-1">
                       <Users className="w-3 h-3" />
-                      {t("playersCount", { count: game.ccu.toLocaleString() })}
+                      {t("playersCount", { count: game.ccu.toLocaleString("en-US") })}
                     </span>
                   )}
                   {playtime && (

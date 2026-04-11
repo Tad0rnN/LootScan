@@ -3,7 +3,8 @@ import DealCard from "@/components/DealCard";
 import DealsFilters from "@/components/DealsFilters";
 import { getTranslations } from "next-intl/server";
 
-export const revalidate = 300;
+// Her istekte taze veri — sayfa yenilendikçe oyunlar değişsin
+export const dynamic = "force-dynamic";
 
 interface Props {
   searchParams: Promise<{
@@ -18,17 +19,33 @@ interface Props {
   }>;
 }
 
+function shuffleArray<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 export default async function DealsPage({ searchParams }: Props) {
   const params = await searchParams;
   const t = await getTranslations("deals");
   const page = parseInt(params.page ?? "0");
 
-  // Belirli bir mağaza seçilmişse dedup gerekmez, yoksa fazla çek dedup yap
-  const hasStoreFilter = !!params.storeID;
-  const fetchSize = hasStoreFilter ? 24 : 60;
+  const hasFilters = !!(
+    params.storeID || params.sortBy || params.title ||
+    params.metacritic || params.upperPrice || params.lowerPrice ||
+    params.onSale
+  );
 
-  const [rawDeals, stores] = await Promise.all([
-    getDeals({
+  let deals;
+
+  if (hasFilters || page > 0) {
+    // Filtre veya sayfalama varsa normal davran
+    const hasStoreFilter = !!params.storeID;
+    const fetchSize = hasStoreFilter ? 24 : 60;
+    const raw = await getDeals({
       storeID: params.storeID,
       sortBy: params.sortBy,
       upperPrice: params.upperPrice !== undefined ? parseFloat(params.upperPrice) : undefined,
@@ -38,11 +55,20 @@ export default async function DealsPage({ searchParams }: Props) {
       onSale: params.onSale === "1",
       pageNumber: page,
       pageSize: fetchSize,
-    }),
-    getStores(),
-  ]);
+    });
+    deals = hasStoreFilter ? raw : deduplicateDeals(raw).slice(0, 24);
+  } else {
+    // Varsayılan görünüm: iyi puanlı oyunlardan büyük havuz çek, karıştır
+    const startPage = Math.floor(Math.random() * 6); // 0-5 arası rastgele başlangıç
+    const [batch1, batch2] = await Promise.all([
+      getDeals({ steamRating: 70, sortBy: "DealRating", pageSize: 60, pageNumber: startPage }),
+      getDeals({ steamRating: 70, sortBy: "DealRating", pageSize: 60, pageNumber: startPage + 1 }),
+    ]);
+    const pool = deduplicateDeals([...batch1, ...batch2]);
+    deals = shuffleArray(pool).slice(0, 24);
+  }
 
-  const deals = hasStoreFilter ? rawDeals : deduplicateDeals(rawDeals).slice(0, 24);
+  const stores = await getStores();
   const activeStores = stores.filter((s) => s.isActive === 1);
 
   return (

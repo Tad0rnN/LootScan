@@ -6,7 +6,9 @@
     "wishlist": "İstek Listesi",
     "signIn": "Giriş Yap",
     "signOut": "Çıkış Yap",
-    "popular": "Popüler"
+    "popular": "Popüler",
+    "browse": "Oyun Ara",
+    "searchGames": "Oyun Ara"
   },
   "home": {
     "badge": "En iyi oyun fırsatları, her 5 dakikada güncellenir",
@@ -131,7 +133,69 @@
     "backToHome": "← Ana sayfaya dön"
   },
   "footer": {
-    "poweredBy": "Destekleyen"
+    "poweredBy": "Destekleyen",
+    "about": "Hakkımızda",
+    "contact": "İletişim",
+    "privacy": "Gizlilik Politikası",
+    "terms": "Kullanım Şartları"
+  },
+  "about": {
+    "title": "LootScan Hakkında",
+    "subtitle": "Oyuncular için geliştirilmiş ücretsiz bir oyun fiyat karşılaştırma platformu.",
+    "feature1Title": "Gerçek Zamanlı Fırsatlar",
+    "feature1Desc": "Steam, GOG, Humble Store, Epic Games ve 30'dan fazla mağazadan sürekli güncellenen fiyatlar. Hiçbir indirimi kaçırma.",
+    "feature2Title": "AI Destekli Arama",
+    "feature2Desc": "Groq AI ile desteklenen doğal dil araması. \"Cyberpunk benzeri oyunlar\" veya \"10 dolar altı RPG\" gibi sorgular yazman yeterli.",
+    "feature3Title": "Kişisel İstek Listesi",
+    "feature3Desc": "Takip etmek istediğin oyunları kaydet. İndirime girince e-posta bildirimi al.",
+    "missionText": "LootScan, oyuncuların en iyi fiyatları kolayca bulabilmesi için tasarlandı. Amacımız; güçlü arama araçları, gerçek zamanlı fiyat takibi ve akıllı bildirimlerle oyun alışverişini daha akıllıca hale getirmek."
+  },
+  "contact": {
+    "badge": "İletişim",
+    "title": "Bizimle İletişime Geç",
+    "subtitle": "Soru, öneri veya geri bildirimleriniz için bize ulaşabilirsiniz.",
+    "emailTitle": "E-posta",
+    "emailDesc": "Genel sorularınız ve destek talepleriniz için.",
+    "feedbackTitle": "Geri Bildirim",
+    "feedbackDesc": "Yeni özellik önerilerinizi ve hata raporlarınızı duymaktan memnuniyet duyarız.",
+    "formTitle": "Mesaj Gönder",
+    "formName": "İsim",
+    "formNamePlaceholder": "Adınız",
+    "formEmail": "E-posta",
+    "formEmailPlaceholder": "ornek@mail.com",
+    "formMessage": "Mesaj",
+    "formMessagePlaceholder": "Mesajınızı yazın...",
+    "formSubmit": "Gönder"
+  },
+  "privacy": {
+    "badge": "Gizlilik",
+    "title": "Gizlilik Politikası",
+    "lastUpdated": "Son güncelleme: Nisan 2025",
+    "s1Title": "Topladığımız Bilgiler",
+    "s1Content": "LootScan, yalnızca hizmetimizi sunmak için gerekli olan verileri toplar: e-posta adresi (hesap oluşturma ve bildirimler için) ve istek listesi içeriği. Hassas kişisel bilgi toplamıyoruz.",
+    "s2Title": "Bilgilerin Kullanımı",
+    "s2Content": "Topladığımız veriler; hesabınızı yönetmek, istek listenizdeki oyunlar indirime girdiğinde bildirim göndermek ve hizmet kalitesini artırmak amacıyla kullanılır. Verilerinizi üçüncü taraflarla satmıyoruz.",
+    "s3Title": "Üçüncü Taraf Hizmetler",
+    "s3Content": "Fiyat verileri için CheapShark API, kimlik doğrulama ve veri depolama için Supabase, AI arama için Groq, e-posta bildirimleri için Resend kullanılmaktadır. Bu hizmetlerin kendi gizlilik politikaları mevcuttur.",
+    "s4Title": "Çerezler",
+    "s4Content": "Oturum yönetimi için zorunlu çerezler kullanılmaktadır. Reklamcılık veya izleme amaçlı çerez kullanılmamaktadır.",
+    "s5Title": "İletişim",
+    "s5Content": "Gizlilik politikamızla ilgili sorularınız için contact@lootscan.app adresine e-posta gönderebilirsiniz."
+  },
+  "terms": {
+    "badge": "Kullanım Şartları",
+    "title": "Kullanım Şartları",
+    "lastUpdated": "Son güncelleme: Nisan 2025",
+    "s1Title": "Hizmetin Kullanımı",
+    "s1Content": "LootScan'i kullanarak bu şartları kabul etmiş olursunuz. Hizmetimiz yalnızca kişisel, ticari olmayan kullanım için tasarlanmıştır. Platformumuzu kötüye kullanmak, otomatik scraping yapmak veya yasadışı amaçlarla kullanmak yasaktır.",
+    "s2Title": "Hesap Sorumluluğu",
+    "s2Content": "Hesabınızın güvenliğinden siz sorumlusunuz. Şifrenizi gizli tutun ve şüpheli bir etkinlik fark ettiğinizde bize bildirin.",
+    "s3Title": "Fiyat Bilgilerinin Doğruluğu",
+    "s3Content": "Fiyat verileri CheapShark API üzerinden sağlanmaktadır. Fiyatlar anlık değişkenlik gösterebilir; satın almadan önce ilgili mağazada doğrulamanızı öneririz. LootScan, fiyat farklılıklarından sorumlu tutulamaz.",
+    "s4Title": "Fikri Mülkiyet",
+    "s4Content": "LootScan platformu ve içeriği telif hakkıyla korunmaktadır. Oyun görselleri ve ticari markalar ilgili sahiplerine aittir.",
+    "s5Title": "Değişiklikler",
+    "s5Content": "Bu şartları önceden bildirim yapmaksızın değiştirme hakkımızı saklı tutarız. Güncel şartları takip etmek için bu sayfayı periyodik olarak ziyaret etmenizi öneririz."
   },
   "popular": {
     "badge": "En Çok Sevilen Oyunlar",
@@ -150,5 +214,22 @@
     "featuredBadge": "Ayin #{rank}",
     "playersCount": "{count} oyuncu",
     "averagePlaytime": "{time} ort."
+  },
+  "browse": {
+    "badge": "Oyun Kütüphanesi",
+    "title": "Oyun Ara",
+    "subtitle": "İndirimde olsun ya da olmasın istediğin oyunu ara, istek listene ekle. İndirime girince seni haberdar edelim.",
+    "placeholder": "Oyun adı yaz... (örn. God of War, Cyberpunk)",
+    "emptyTitle": "Oyun aramaya başla",
+    "emptyDesc": "Yukarıdaki kutuya oyun adı yaz, sonuçlar anında gelsin.",
+    "noResults": "Sonuç bulunamadı",
+    "noResultsDesc": "Farklı bir isimle tekrar dene.",
+    "resultsCount": "\"{query}\" için {count} oyun bulundu",
+    "addWishlist": "İstek listesine ekle",
+    "removeWishlist": "İstek listesinden çıkar",
+    "comparePrices": "Fiyatları gör",
+    "notifyHint": "İndirime girince bildirim alacaksın",
+    "free": "Bedava",
+    "lowestEver": "En düşük: {price}"
   }
 }

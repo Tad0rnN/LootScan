@@ -1,103 +1,127 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseNaturalLanguageSearch } from "@/lib/groq";
-import { getDeals, deduplicateDeals } from "@/lib/cheapshark";
+import { getDeals, searchGames, deduplicateDeals } from "@/lib/cheapshark";
+import type { Deal } from "@/types";
 
-function extractFallbackFilters(query: string) {
+// "similar" modunda: AI'ın önerdiği her oyun başlığı için CheapShark'ta fırsat ara
+async function fetchDealsByTitles(titles: string[]): Promise<Deal[]> {
+  const results = await Promise.all(
+    titles.map((title) =>
+      getDeals({ title, pageSize: 5, sortBy: "Deal Rating" }).catch(() => [] as Deal[])
+    )
+  );
+
+  // Her oyundan en iyi 1 deal al, sonra dedup yap
+  const candidates: Deal[] = [];
+  for (const dealList of results) {
+    if (dealList.length > 0) candidates.push(dealList[0]);
+  }
+  return deduplicateDeals(candidates);
+}
+
+// "similar" modunda yeterli sonuç yoksa searchGames ile tamamla (indirimde olmasa da)
+async function fetchGameInfoByTitles(titles: string[]): Promise<Deal[]> {
+  const results = await Promise.all(
+    titles.map((title) => searchGames(title).catch(() => []))
+  );
+
+  const seen = new Set<string>();
+  const deals: Deal[] = [];
+  for (const list of results) {
+    const game = list[0];
+    if (!game || seen.has(game.gameID)) continue;
+    seen.add(game.gameID);
+    deals.push({
+      internalName: game.internalName,
+      title: game.external,
+      metacriticLink: null,
+      dealID: game.cheapestDealID ?? "",
+      storeID: "1",
+      gameID: game.gameID,
+      salePrice: game.cheapest,
+      normalPrice: game.cheapest,
+      isOnSale: "0",
+      savings: "0",
+      metacriticScore: "0",
+      steamRatingText: null,
+      steamRatingPercent: "0",
+      steamRatingCount: "0",
+      steamAppID: game.steamAppID ?? null,
+      releaseDate: 0,
+      lastChange: 0,
+      dealRating: "0",
+      thumb: game.thumb,
+    });
+  }
+  return deals;
+}
+
+function fallbackParse(query: string) {
   const q = query.toLowerCase();
-
-  const maxPriceMatch = q.match(/(?:under|below|max|less than|at most)\s*\$?(\d+(?:\.\d+)?)/);
+  const maxPriceMatch = q.match(/(?:under|below|max|less than|at most|alti|altinda)\s*\$?(\d+(?:\.\d+)?)/);
   const maxPrice = maxPriceMatch ? parseFloat(maxPriceMatch[1]) : undefined;
-
-  const metacriticMatch = q.match(/(\d{2,3})\+?\s*(?:metacritic|meta|score|rating)/);
-  const minMetacritic = metacriticMatch ? parseInt(metacriticMatch[1]) : undefined;
-
-  const isFree = /\bfree\b/.test(q);
-
-  const storeMap: Record<string, string> = {
-    steam: "1", gog: "7", epic: "27", humble: "11",
-    fanatical: "15", origin: "8", ea: "8",
-  };
+  const isFree = /\bfree\b|\bbedava\b/.test(q);
+  const storeMap: Record<string, string> = { steam: "1", gog: "7", epic: "27", humble: "11" };
   let storeID: string | undefined;
   for (const [name, id] of Object.entries(storeMap)) {
     if (q.includes(name)) { storeID = id; break; }
   }
-
-  const sortMap: Array<[RegExp, string]> = [
-    [/cheapest|lowest price|price/, "Price"],
-    [/biggest.*discount|most.*off|saving/, "Savings"],
-    [/top rated|best rated|highest.*rating|metacritic/, "Metacritic"],
-    [/new|recent|latest/, "recent"],
-    [/review/, "Reviews"],
-  ];
-  let sortBy = "Deal Rating";
-  for (const [re, sort] of sortMap) {
-    if (re.test(q)) { sortBy = sort; break; }
-  }
-
-  // Extract title keywords (remove filter words)
-  const stopWords = /\b(cheap|free|best|good|great|top|new|recent|latest|under|below|above|game|games|deals?|discount|sale|on sale|steam|gog|epic|humble|fanatical|rated|rating|metacritic|score|\$\d+|\d+\$|\d+\s*dollars?)\b/gi;
-  const title = query.replace(stopWords, " ").replace(/\s+/g, " ").trim() || undefined;
-
   return {
-    interpretation: `Searching for games matching "${query}"`,
-    query,
-    filters: {
-      title: title && title.length > 2 ? title : undefined,
-      maxPrice: isFree ? 0 : maxPrice,
-      minMetacritic,
-      storeID,
-      sortBy,
-      onSale: !isFree,
-    },
+    interpretation: `"${query}" için arama yapılıyor`,
+    searchMode: "deals" as const,
+    gameTitles: [],
+    filters: { maxPrice: isFree ? 0 : maxPrice, storeID, sortBy: "Deal Rating", onSale: true },
   };
 }
 
 export async function POST(req: NextRequest) {
-  const { query, locale } = await req.json();
-  if (!query?.trim()) {
-    return NextResponse.json({ error: "Query is required" }, { status: 400 });
-  }
+  const { query } = await req.json();
+  if (!query?.trim()) return NextResponse.json({ error: "Query required" }, { status: 400 });
 
   let parsed;
-  let usedAI = false;
-
   try {
     parsed = await parseNaturalLanguageSearch(query);
-    usedAI = true;
-  } catch (error) {
-    console.warn("Gemini unavailable, using fallback parser:", error);
-    parsed = extractFallbackFilters(query);
+  } catch {
+    parsed = fallbackParse(query);
   }
 
   try {
-    const rawDeals = await getDeals({
-      title: parsed.filters.title,
-      upperPrice: parsed.filters.maxPrice,
-      metacritic: parsed.filters.minMetacritic,
-      storeID: parsed.filters.storeID,
-      sortBy: parsed.filters.sortBy ?? "Deal Rating",
-      onSale: parsed.filters.onSale ?? true,
-      steamworks: (parsed.filters as { steamworks?: boolean }).steamworks,
-      pageSize: 60,
-    });
-    const deals = deduplicateDeals(rawDeals).slice(0, 24);
-    const fallbackNoticeByLocale: Record<string, string> = {
-      tr: "AI gecici olarak kullanilamiyor, akilli arama aktif",
-      en: "AI is temporarily unavailable, smart search is active",
-      de: "KI ist voruebergehend nicht verfuegbar, intelligente Suche ist aktiv",
-      nl: "AI is tijdelijk niet beschikbaar, slim zoeken is actief",
-      ja: "AIは一時的に利用できません。スマート検索を使用しています",
-      zh: "AI 当前暂时不可用，已启用智能搜索",
-    };
-    const fallbackNotice = fallbackNoticeByLocale[locale] ?? fallbackNoticeByLocale.en;
+    let deals: Deal[] = [];
+
+    if (parsed.searchMode === "similar" && parsed.gameTitles?.length > 0) {
+      // Önce indirimli olanları getir
+      deals = await fetchDealsByTitles(parsed.gameTitles);
+
+      // Az sonuç varsa indirimde olmayanlarla da tamamla
+      if (deals.length < 6) {
+        const extras = await fetchGameInfoByTitles(
+          parsed.gameTitles.filter((t) => !deals.some((d) => d.title.toLowerCase().includes(t.toLowerCase())))
+        );
+        const combined = deduplicateDeals([...deals, ...extras]);
+        deals = combined;
+      }
+    } else {
+      // deals modu: normal filtre araması
+      const f = (parsed.filters ?? {}) as { title?: string; maxPrice?: number | null; minMetacritic?: number | null; storeID?: string | null; sortBy?: string; onSale?: boolean };
+      const raw = await getDeals({
+        title: f.title,
+        upperPrice: f.maxPrice ?? undefined,
+        metacritic: f.minMetacritic ?? undefined,
+        storeID: f.storeID ?? undefined,
+        sortBy: f.sortBy ?? "Deal Rating",
+        onSale: f.onSale ?? true,
+        pageSize: 60,
+      });
+      deals = deduplicateDeals(raw).slice(0, 24);
+    }
 
     return NextResponse.json({
-      interpretation: parsed.interpretation + (!usedAI ? ` (${fallbackNotice})` : ""),
-      query: parsed.query,
-      deals: deals,
+      interpretation: parsed.interpretation,
+      searchMode: parsed.searchMode,
+      deals,
     });
-  } catch (error) {
-    console.error("Deal fetch error:", error);
-    return NextResponse.json({ error: "Failed to fetch deals" }, { status: 500 });
+  } catch (err) {
+    console.error("Search error:", err);
+    return NextResponse.json({ error: "Search failed" }, { status: 500 });
   }
 }

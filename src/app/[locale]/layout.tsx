@@ -6,6 +6,7 @@ import { routing } from "@/i18n/routing";
 import { Space_Grotesk } from "next/font/google";
 import "../globals.css";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -44,14 +45,7 @@ export default async function LocaleLayout({
           </div>
           <Navbar />
           <main className="flex-1">{children}</main>
-          <footer className="border-t border-white/5 mt-20 py-8 text-center text-slate-600 text-sm">
-            <p>
-              LootScan © {new Date().getFullYear()} ·{" "}
-              <a href="https://www.cheapshark.com" className="hover:text-slate-400 transition-colors" target="_blank" rel="noreferrer">CheapShark</a>
-              {" & "}
-              <a href="https://groq.com" className="hover:text-slate-400 transition-colors" target="_blank" rel="noreferrer">Groq AI</a>
-            </p>
-          </footer>
+          <Footer />
         </NextIntlClientProvider>
       </body>
     </html>

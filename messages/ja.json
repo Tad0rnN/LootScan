@@ -6,7 +6,9 @@
     "wishlist": "ウィッシュリスト",
     "signIn": "ログイン",
     "signOut": "ログアウト",
-    "popular": "人気"
+    "popular": "人気",
+    "browse": "ゲーム検索",
+    "searchGames": "ゲーム検索"
   },
   "home": {
     "badge": "最高のゲームセール、5分ごとに更新",
@@ -131,7 +133,11 @@
     "backToHome": "← ホームに戻る"
   },
   "footer": {
-    "poweredBy": "提供"
+    "poweredBy": "提供",
+    "about": "LootScanについて",
+    "contact": "お問い合わせ",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約"
   },
   "popular": {
     "badge": "高評価ゲーム",
@@ -150,5 +156,80 @@
     "featuredBadge": "今月 #{rank}",
     "playersCount": "{count} 人プレイ中",
     "averagePlaytime": "平均 {time}"
+  },
+  "browse": {
+    "badge": "ゲームライブラリ",
+    "title": "ゲームを検索",
+    "subtitle": "セール中かどうかに関わらず、あらゆるゲームを検索できます。ウィッシュリストに追加して、セール開始時に通知を受け取りましょう。",
+    "placeholder": "ゲーム名を入力... (例: ゴッド・オブ・ウォー, サイバーパンク)",
+    "emptyTitle": "検索を開始",
+    "emptyDesc": "上のボックスにゲーム名を入力してください。",
+    "noResults": "結果が見つかりません",
+    "noResultsDesc": "別の名前で試してください。",
+    "resultsCount": "「{query}」で {count} 件のゲームが見つかりました",
+    "addWishlist": "ウィッシュリストに追加",
+    "removeWishlist": "ウィッシュリストから削除",
+    "comparePrices": "価格を比較",
+    "notifyHint": "セール開始時に通知されます",
+    "free": "無料",
+    "lowestEver": "最安値: {price}"
+  },
+  "about": {
+    "title": "LootScanについて",
+    "subtitle": "ゲーマーのために作られた無料のゲーム価格比較プラットフォーム。",
+    "feature1Title": "リアルタイムセール",
+    "feature1Desc": "Steam、GOG、Humble Store、Epic Gamesなど30以上のストアから常時更新される価格。",
+    "feature2Title": "AI検索",
+    "feature2Desc": "Groq AIによる自然言語検索。「サイバーパンク風ゲーム」などのクエリを入力するだけ。",
+    "feature3Title": "ウィッシュリスト",
+    "feature3Desc": "追跡したいゲームを保存し、セール時にメール通知を受け取れます。",
+    "missionText": "LootScanはゲーマーが最安値を簡単に見つけられるよう設計されました。強力な検索ツールとスマートな通知でゲームショッピングをよりスマートに。"
+  },
+  "contact": {
+    "badge": "お問い合わせ",
+    "title": "お問い合わせ",
+    "subtitle": "質問、提案、フィードバックはこちらからどうぞ。",
+    "emailTitle": "メール",
+    "emailDesc": "一般的なお問い合わせとサポートリクエスト用。",
+    "feedbackTitle": "フィードバック",
+    "feedbackDesc": "機能の提案やバグ報告をお待ちしています。",
+    "formTitle": "メッセージを送る",
+    "formName": "お名前",
+    "formNamePlaceholder": "お名前",
+    "formEmail": "メールアドレス",
+    "formEmailPlaceholder": "you@example.com",
+    "formMessage": "メッセージ",
+    "formMessagePlaceholder": "メッセージを入力...",
+    "formSubmit": "送信"
+  },
+  "privacy": {
+    "badge": "プライバシー",
+    "title": "プライバシーポリシー",
+    "lastUpdated": "最終更新：2025年4月",
+    "s1Title": "収集する情報",
+    "s1Content": "LootScanはサービス提供に必要な情報のみ収集します：メールアドレスとウィッシュリストの内容。",
+    "s2Title": "情報の利用",
+    "s2Content": "収集データはアカウント管理、セール通知、サービス改善に使用します。第三者へのデータ販売は行いません。",
+    "s3Title": "サードパーティサービス",
+    "s3Content": "価格データにCheapShark API、認証・保存にSupabase、AI検索にGroq、メール通知にResendを使用しています。",
+    "s4Title": "クッキー",
+    "s4Content": "セッション管理に必要なクッキーのみ使用。広告・追跡クッキーは使用しません。",
+    "s5Title": "お問い合わせ",
+    "s5Content": "プライバシーに関するご質問はcontact@lootscan.appまで。"
+  },
+  "terms": {
+    "badge": "利用規約",
+    "title": "利用規約",
+    "lastUpdated": "最終更新：2025年4月",
+    "s1Title": "サービスの利用",
+    "s1Content": "LootScanを利用することで、これらの規約に同意したものとみなされます。個人的・非商業的な利用のみを対象としています。",
+    "s2Title": "アカウントの責任",
+    "s2Content": "アカウントのセキュリティはご自身の責任です。パスワードを安全に保管してください。",
+    "s3Title": "価格情報の正確性",
+    "s3Content": "価格データはCheapShark APIから提供されます。購入前に該当ストアで確認することをお勧めします。",
+    "s4Title": "知的財産",
+    "s4Content": "LootScanプラットフォームは著作権で保護されています。ゲーム画像と商標は各所有者に帰属します。",
+    "s5Title": "変更",
+    "s5Content": "予告なくこれらの規約を変更する権利を留保します。定期的にこのページをご確認ください。"
   }
 }

@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Crosshair, Search, Heart, Zap, Menu, X, LogIn, LogOut, Gift, TrendingUp } from "lucide-react";
+import { Crosshair, Search, Heart, Zap, Menu, X, LogIn, LogOut, Gift, TrendingUp, Bot } from "lucide-react";
+import GameSearchModal from "./GameSearchModal";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import clsx from "clsx";
@@ -14,6 +15,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const locale = useLocale();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const t = useTranslations("nav");
@@ -23,7 +25,7 @@ export default function Navbar() {
     { href: `/${locale}/deals`, label: t("deals"), icon: Zap },
     { href: `/${locale}/free`, label: t("free"), icon: Gift },
     { href: `/${locale}/popular`, label: t("popular"), icon: TrendingUp },
-    { href: `/${locale}/search`, label: t("search"), icon: Search },
+    { href: `/${locale}/search`, label: t("search"), icon: Bot },
     { href: `/${locale}/wishlist`, label: t("wishlist"), icon: Heart },
   ];
 
@@ -43,6 +45,7 @@ export default function Navbar() {
   };
 
   return (
+    <>
     <nav className={clsx(
       "sticky top-0 z-50 transition-all duration-300",
       scrolled
@@ -83,6 +86,14 @@ export default function Navbar() {
 
           {/* Right side */}
           <div className="hidden md:flex items-center gap-2">
+            {/* Game search icon */}
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+              title={t("searchGames")}
+            >
+              <Search className="w-4 h-4" />
+            </button>
             <LanguageSwitcher />
             {user ? (
               <div className="flex items-center gap-2">
@@ -100,13 +111,21 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile toggle */}
-          <button
-            className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 text-slate-400 hover:text-white transition-colors"
-            onClick={() => setMobileOpen(!mobileOpen)}
-          >
-            {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-          </button>
+          {/* Mobile: search + menu */}
+          <div className="md:hidden flex items-center gap-1.5">
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 text-slate-400 hover:text-white transition-colors"
+            >
+              <Search className="w-4 h-4" />
+            </button>
+            <button
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 text-slate-400 hover:text-white transition-colors"
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
+              {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile menu */}
@@ -144,5 +163,8 @@ export default function Navbar() {
         )}
       </div>
     </nav>
+
+    {searchOpen && <GameSearchModal onClose={() => setSearchOpen(false)} />}
+    </>
   );
 }

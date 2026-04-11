@@ -64,22 +64,23 @@ export interface WishlistItem {
 export interface SearchResult {
   gameID: string;
   steamAppID: string;
-  cheap: string;
+  cheapest: string;
+  cheapestDealID: string;
   external: string;
   internalName: string;
   thumb: string;
 }
 
-export interface GeminiSearchResponse {
+export interface AISearchResponse {
   interpretation: string;
-  query: string;
+  searchMode: "similar" | "deals";
+  gameTitles: string[];
   filters: {
     title?: string;
-    maxPrice?: number;
-    minMetacritic?: number;
-    storeID?: string;
+    maxPrice?: number | null;
+    minMetacritic?: number | null;
+    storeID?: string | null;
     sortBy?: string;
-    steamworks?: boolean;
     onSale?: boolean;
   };
 }

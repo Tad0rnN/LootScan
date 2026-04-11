@@ -6,7 +6,9 @@
     "wishlist": "愿望单",
     "signIn": "登录",
     "signOut": "退出",
-    "popular": "热门"
+    "popular": "热门",
+    "browse": "搜索游戏",
+    "searchGames": "搜索游戏"
   },
   "home": {
     "badge": "最佳游戏优惠，每5分钟更新",
@@ -131,7 +133,11 @@
     "backToHome": "← 返回首页"
   },
   "footer": {
-    "poweredBy": "技术支持"
+    "poweredBy": "技术支持",
+    "about": "关于我们",
+    "contact": "联系我们",
+    "privacy": "隐私政策",
+    "terms": "服务条款"
   },
   "popular": {
     "badge": "顶级评分游戏",
@@ -150,5 +156,80 @@
     "featuredBadge": "本月 #{rank}",
     "playersCount": "{count} 名玩家",
     "averagePlaytime": "平均 {time}"
+  },
+  "browse": {
+    "badge": "游戏库",
+    "title": "搜索游戏",
+    "subtitle": "搜索任何游戏，无论是否打折。添加到愿望单，打折时我们会通知你。",
+    "placeholder": "输入游戏名称... (例如 战神, 赛博朋克)",
+    "emptyTitle": "开始搜索",
+    "emptyDesc": "在上方输入游戏名称以查看即时结果。",
+    "noResults": "未找到结果",
+    "noResultsDesc": "请尝试不同的名称。",
+    "resultsCount": "找到 {count} 款游戏，关键词：\"{query}\"",
+    "addWishlist": "加入愿望单",
+    "removeWishlist": "从愿望单移除",
+    "comparePrices": "比较价格",
+    "notifyHint": "打折时你将收到通知",
+    "free": "免费",
+    "lowestEver": "最低: {price}"
+  },
+  "about": {
+    "title": "关于 LootScan",
+    "subtitle": "一个为玩家打造的免费游戏价格比较平台。",
+    "feature1Title": "实时优惠",
+    "feature1Desc": "来自 Steam、GOG、Humble Store、Epic Games 及 30 多家商店的持续更新价格。",
+    "feature2Title": "AI 智能搜索",
+    "feature2Desc": "由 Groq AI 驱动的自然语言搜索。只需输入「类似赛博朋克的游戏」等查询即可。",
+    "feature3Title": "个人愿望单",
+    "feature3Desc": "保存想追踪的游戏，打折时获得邮件通知。",
+    "missionText": "LootScan 的目标是让玩家轻松找到最优惠的价格，通过强大的搜索工具和智能通知让游戏购物更聪明。"
+  },
+  "contact": {
+    "badge": "联系我们",
+    "title": "联系我们",
+    "subtitle": "如有问题、建议或反馈，请随时联系我们。",
+    "emailTitle": "电子邮件",
+    "emailDesc": "用于一般咨询和支持请求。",
+    "feedbackTitle": "反馈",
+    "feedbackDesc": "我们欢迎功能建议和错误报告。",
+    "formTitle": "发送消息",
+    "formName": "姓名",
+    "formNamePlaceholder": "您的姓名",
+    "formEmail": "电子邮件",
+    "formEmailPlaceholder": "you@example.com",
+    "formMessage": "消息",
+    "formMessagePlaceholder": "写下您的消息...",
+    "formSubmit": "发送"
+  },
+  "privacy": {
+    "badge": "隐私",
+    "title": "隐私政策",
+    "lastUpdated": "最后更新：2025年4月",
+    "s1Title": "我们收集的信息",
+    "s1Content": "LootScan 仅收集提供服务所需的内容：电子邮件地址和愿望单内容。我们不收集敏感个人信息。",
+    "s2Title": "信息的使用",
+    "s2Content": "收集的数据用于管理账户、发送折扣通知和改善服务质量。我们不出售您的数据。",
+    "s3Title": "第三方服务",
+    "s3Content": "价格数据使用 CheapShark API，身份验证和存储使用 Supabase，AI 搜索使用 Groq，邮件通知使用 Resend。",
+    "s4Title": "Cookie",
+    "s4Content": "仅使用会话管理所需的必要 Cookie，不使用广告或跟踪 Cookie。",
+    "s5Title": "联系方式",
+    "s5Content": "隐私相关问题请发送邮件至 contact@lootscan.app。"
+  },
+  "terms": {
+    "badge": "条款",
+    "title": "服务条款",
+    "lastUpdated": "最后更新：2025年4月",
+    "s1Title": "服务使用",
+    "s1Content": "使用 LootScan 即表示您同意这些条款。本服务仅供个人非商业使用。",
+    "s2Title": "账户责任",
+    "s2Content": "您对账户安全负责，请妥善保管密码并报告可疑活动。",
+    "s3Title": "价格信息准确性",
+    "s3Content": "价格数据来源于 CheapShark API，购买前请在相关商店核实。",
+    "s4Title": "知识产权",
+    "s4Content": "LootScan 平台受版权保护，游戏图像和商标归各自所有者所有。",
+    "s5Title": "变更",
+    "s5Content": "我们保留随时修改这些条款的权利，建议定期查看本页面。"
   }
 }

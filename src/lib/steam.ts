@@ -41,27 +41,32 @@ export async function getTopSteamGames(): Promise<SteamGameWithImage[]> {
     }));
 }
 
-export function formatSteamPrice(price: string, discount: string): {
+export function formatSteamPrice(price: string, initialprice: string, discount: string): {
   current: string;
   original: string;
   isFree: boolean;
   hasDiscount: boolean;
   discountPct: number;
 } {
-  const priceNum = parseInt(price ?? "0");
+  const currentNum = parseInt(price ?? "0");
+  const initialNum = parseInt(initialprice ?? "0");
   const discountNum = parseInt(discount ?? "0");
-  const isFree = priceNum === 0;
-  const hasDiscount = discountNum > 0;
-  const currentPrice = hasDiscount
-    ? Math.round(priceNum * (1 - discountNum / 100))
-    : priceNum;
+
+  const isFree = currentNum === 0 && initialNum === 0;
+  const hasDiscount =
+    discountNum > 0 || (initialNum > 0 && initialNum > currentNum);
+  const effectiveDiscount =
+    discountNum ||
+    (initialNum > currentNum && initialNum > 0
+      ? Math.round((1 - currentNum / initialNum) * 100)
+      : 0);
 
   return {
-    current: isFree ? "FREE" : `$${(currentPrice / 100).toFixed(2)}`,
-    original: `$${(priceNum / 100).toFixed(2)}`,
+    current: isFree ? "FREE" : `$${(currentNum / 100).toFixed(2)}`,
+    original: `$${(initialNum / 100).toFixed(2)}`,
     isFree,
     hasDiscount,
-    discountPct: discountNum,
+    discountPct: effectiveDiscount,
   };
 }
 
