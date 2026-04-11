@@ -6,6 +6,8 @@ import { Gift, RefreshCw, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Deal, Store } from "@/types";
 
+const CHEAPSHARK = "https://www.cheapshark.com/api/1.0";
+
 function deduplicateDeals(deals: Deal[]): Deal[] {
   const map = new Map<string, Deal>();
   for (const deal of deals) {
@@ -40,8 +42,8 @@ export default function FreePage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/deals?upperPrice=0&pageSize=100&sortBy=recent").then(r => r.json()).catch(() => []),
-      fetch("/api/stores").then(r => r.json()).catch(() => []),
+      fetch(`${CHEAPSHARK}/deals?upperPrice=0&pageSize=100&sortBy=recent`).then(r => r.json()).catch(() => []),
+      fetch(`${CHEAPSHARK}/stores`).then(r => r.json()).catch(() => []),
     ]).then(([dealsRaw, storesRaw]: [Deal[], Store[]]) => {
       const freeGames = deduplicateDeals(Array.isArray(dealsRaw) ? dealsRaw : []);
       const stores = Array.isArray(storesRaw) ? storesRaw : [];

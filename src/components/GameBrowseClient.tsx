@@ -9,6 +9,8 @@ import { useLocale, useTranslations } from "next-intl";
 import clsx from "clsx";
 import type { SearchResult } from "@/types";
 
+const CHEAPSHARK = "https://www.cheapshark.com/api/1.0";
+
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
   useEffect(() => {
@@ -163,7 +165,7 @@ export default function GameBrowseClient() {
 
     let cancelled = false;
     setLoading(true);
-    fetch(`/api/games?title=${encodeURIComponent(debouncedQuery)}`)
+    fetch(`${CHEAPSHARK}/games?title=${encodeURIComponent(debouncedQuery)}&limit=30`)
       .then((r) => r.json())
       .then((data) => {
         if (!cancelled) {
