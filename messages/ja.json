@@ -86,6 +86,8 @@
     "dealsFound": "「{query}」の{count}件のディールが見つかりました",
     "noDeals": "この検索のセールが見つかりません。",
     "noDealsDesc": "別のクエリを試すか、条件を広げてみてください。",
+    "rateLimitedHint": "価格データは一時的に制限されていますが、AIのおすすめを下に表示しています。",
+    "aiSuggestionLabel": "AIのおすすめ",
     "example1": "5ドル以下の安いRPG",
     "example2": "高評価ストラテジーゲームのセール",
     "example3": "今すぐ無料のゲーム",

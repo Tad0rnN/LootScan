@@ -86,6 +86,8 @@
     "dealsFound": "为\"{query}\"找到 {count} 个优惠",
     "noDeals": "未找到此搜索的优惠。",
     "noDealsDesc": "请尝试不同的查询或放宽搜索条件。",
+    "rateLimitedHint": "价格数据暂时触发了限流，但下方仍会显示 AI 推荐。",
+    "aiSuggestionLabel": "AI 推荐",
     "example1": "5美元以下的便宜RPG",
     "example2": "高评分策略游戏特卖",
     "example3": "现在免费的游戏",
