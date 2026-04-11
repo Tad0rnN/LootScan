@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseNaturalLanguageSearch } from "@/lib/groq";
+import { parseNaturalLanguageSearch } from "@/lib/ai-search";
 import { getDeals, searchGames, deduplicateDeals } from "@/lib/cheapshark";
 import type { Deal } from "@/types";
 
@@ -90,7 +90,8 @@ export async function POST(req: NextRequest) {
   let parsed;
   try {
     parsed = await parseNaturalLanguageSearch(query);
-  } catch {
+  } catch (error) {
+    console.warn("AI search provider unavailable, using fallback parser:", error);
     parsed = fallbackParse(query, locale);
   }
 
@@ -126,6 +127,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       interpretation: parsed.interpretation,
+      query,
       searchMode: parsed.searchMode,
       deals,
     });

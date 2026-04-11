@@ -75,6 +75,7 @@ export interface AISearchResponse {
   interpretation: string;
   searchMode: "similar" | "deals";
   gameTitles: string[];
+  query?: string;
   filters: {
     title?: string;
     maxPrice?: number | null;
@@ -82,5 +83,6 @@ export interface AISearchResponse {
     storeID?: string | null;
     sortBy?: string;
     onSale?: boolean;
+    steamworks?: boolean;
   };
 }

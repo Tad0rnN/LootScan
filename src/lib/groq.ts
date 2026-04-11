@@ -1,11 +1,14 @@
 import Groq from "groq-sdk";
 import type { AISearchResponse } from "@/types";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
 export async function parseNaturalLanguageSearch(
   userQuery: string
 ): Promise<AISearchResponse> {
+  if (!process.env.GROQ_API_KEY) {
+    throw new Error("GROQ_API_KEY is not configured");
+  }
+
+  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
   const completion = await groq.chat.completions.create({
     model: "llama-3.3-70b-versatile",
     messages: [
