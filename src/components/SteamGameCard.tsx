@@ -2,14 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, Bell, Users, Clock, ExternalLink } from "lucide-react";
+import { Heart, Bell, Users, Clock, ExternalLink, Loader2 } from "lucide-react";
 import { formatSteamPrice, formatPlaytime } from "@/lib/steam";
+import { getStoreLogoUrl } from "@/lib/cheapshark";
 import type { SteamGameWithImage } from "@/lib/steam";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
-import { getStoreLogoUrl } from "@/lib/cheapshark";
+
+const CHEAPSHARK = "https://www.cheapshark.com/api/1.0";
 
 interface StoreDeal {
   storeID: string;
@@ -24,18 +26,154 @@ interface Props {
   game: SteamGameWithImage;
   rank: number;
   featured?: boolean;
-  gameID?: string;
-  storeDeals?: StoreDeal[];
 }
 
-export default function SteamGameCard({ game, rank, featured = false, gameID, storeDeals = [] }: Props) {
+function StoreDealsSection({ appid, name, storeMap }: {
+  appid: number;
+  name: string;
+  storeMap: Record<string, string>;
+}) {
+  const [deals, setDeals] = useState<StoreDeal[]>([]);
+  const [gameID, setGameID] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const locale = useLocale();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        // 1. Oyunu bul
+        const searchRes = await fetch(
+          `${CHEAPSHARK}/games?title=${encodeURIComponent(name)}&limit=10`
+        );
+        const searchData = await searchRes.json();
+        if (cancelled || !Array.isArray(searchData) || searchData.length === 0) {
+          setLoading(false);
+          return;
+        }
+
+        // Steam AppID'ye göre eşleştir, yoksa ilk sonucu al
+        const match =
+          searchData.find((r: { steamAppID: string }) => r.steamAppID === String(appid)) ??
+          searchData[0];
+
+        if (!match?.gameID) { setLoading(false); return; }
+        setGameID(match.gameID);
+
+        // 2. Store fiyatlarını çek
+        const infoRes = await fetch(`${CHEAPSHARK}/games?id=${match.gameID}`);
+        const info = await infoRes.json();
+        if (cancelled) return;
+
+        const sorted = (info?.deals ?? [])
+          .map((d: { storeID: string; price: string; retailPrice: string; savings: string; dealID: string }) => ({
+            storeID: d.storeID,
+            storeName: storeMap[d.storeID] ?? `Store ${d.storeID}`,
+            price: d.price,
+            retailPrice: d.retailPrice,
+            savings: d.savings,
+            dealID: d.dealID,
+          }))
+          .sort((a: StoreDeal, b: StoreDeal) => parseFloat(a.price) - parseFloat(b.price))
+          .slice(0, 5);
+
+        setDeals(sorted);
+      } catch {
+        // sessizce geç
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => { cancelled = true; };
+  }, [appid, name, storeMap]);
+
+  if (loading) {
+    return (
+      <div className="border-t border-white/5 px-3 py-2 flex items-center gap-2 text-slate-600 text-xs">
+        <Loader2 className="w-3 h-3 animate-spin" />
+        <span>Fiyatlar yükleniyor…</span>
+      </div>
+    );
+  }
+
+  if (deals.length === 0) return null;
+
+  return (
+    <div className="border-t border-white/5 flex flex-col">
+      {deals.map((deal, idx) => (
+        <a
+          key={deal.dealID}
+          href={`https://www.cheapshark.com/redirect?dealID=${deal.dealID}`}
+          target="_blank"
+          rel="noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className={clsx(
+            "flex items-center gap-2.5 px-3 py-1.5 hover:bg-slate-700/50 transition-colors group/deal",
+            idx === 0 && "bg-brand-500/5"
+          )}
+        >
+          <Image
+            src={getStoreLogoUrl(deal.storeID)}
+            alt={deal.storeName}
+            width={14}
+            height={14}
+            className="w-3.5 h-3.5 object-contain flex-shrink-0"
+            unoptimized
+          />
+          <span className="text-slate-400 text-[11px] flex-1 truncate group-hover/deal:text-slate-200 transition-colors">
+            {deal.storeName}
+          </span>
+          {parseFloat(deal.savings) >= 1 && (
+            <span className="text-green-400 text-[10px] font-bold">
+              -{Math.round(parseFloat(deal.savings))}%
+            </span>
+          )}
+          <span className={clsx(
+            "text-[11px] font-bold",
+            idx === 0 ? "text-brand-400" : "text-white"
+          )}>
+            ${parseFloat(deal.price).toFixed(2)}
+          </span>
+          {idx === 0 && (
+            <span className="text-[9px] bg-brand-500/20 text-brand-400 px-1 py-0.5 rounded font-bold">EN UCUZ</span>
+          )}
+        </a>
+      ))}
+      {gameID && (
+        <Link
+          href={`/${locale}/game/${gameID}`}
+          onClick={(e) => e.stopPropagation()}
+          className="flex items-center justify-center gap-1.5 py-1.5 text-[11px] text-slate-500 hover:text-brand-400 hover:bg-slate-700/30 transition-colors border-t border-white/5"
+        >
+          <ExternalLink className="w-3 h-3" />
+          Tüm fiyatları karşılaştır
+        </Link>
+      )}
+    </div>
+  );
+}
+
+export default function SteamGameCard({ game, rank, featured = false }: Props) {
   const [inWishlist, setInWishlist] = useState(false);
   const [loading, setLoading] = useState(false);
   const price = formatSteamPrice(game.price, game.initialprice, game.discount);
   const playtime = formatPlaytime(game.average_2weeks);
   const locale = useLocale();
   const t = useTranslations("popular");
-  const internalGameUrl = gameID ? `/${locale}/game/${gameID}` : null;
+
+  // Store isimlerini çek (bir kez)
+  const [storeMap, setStoreMap] = useState<Record<string, string>>({});
+  useEffect(() => {
+    fetch(`${CHEAPSHARK}/stores`)
+      .then((r) => r.json())
+      .then((stores: { storeID: string; storeName: string }[]) => {
+        setStoreMap(Object.fromEntries(stores.map((s) => [s.storeID, s.storeName])));
+      })
+      .catch(() => {});
+  }, []);
 
   const toggleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -46,12 +184,12 @@ export default function SteamGameCard({ game, rank, featured = false, gameID, st
     if (!user) { window.location.href = `/${locale}/auth/login`; setLoading(false); return; }
 
     if (inWishlist) {
-      await supabase.from("wishlist").delete().eq("user_id", user.id).eq("game_id", gameID ?? String(game.appid));
+      await supabase.from("wishlist").delete().eq("user_id", user.id).eq("game_id", String(game.appid));
       setInWishlist(false);
     } else {
       await supabase.from("wishlist").upsert({
         user_id: user.id,
-        game_id: gameID ?? String(game.appid),
+        game_id: String(game.appid),
         game_title: game.name,
         game_thumb: game.headerImage,
         normal_price: String(parseInt(game.price || "0") / 100),
@@ -64,12 +202,10 @@ export default function SteamGameCard({ game, rank, featured = false, gameID, st
   };
 
   const steamUrl = `https://store.steampowered.com/app/${game.appid}`;
-  const actionUrl = internalGameUrl ?? steamUrl;
-  const actionLabel = internalGameUrl ? t("comparePrices") : t("steam");
 
   if (featured) {
     return (
-      <Link href={actionUrl} className="group card card-hover flex flex-col overflow-hidden h-full min-h-[300px] relative">
+      <div className="group card flex flex-col overflow-hidden h-full min-h-[300px] relative">
         {/* Image */}
         <div className="relative flex-1 overflow-hidden bg-slate-900/50 min-h-[220px]">
           <Image
@@ -131,55 +267,25 @@ export default function SteamGameCard({ game, rank, featured = false, gameID, st
                   )}
                 </div>
               </div>
-
-              <div className="flex gap-2">
-                {internalGameUrl ? (
-                  <span className="flex items-center gap-1.5 bg-[#1b2838] hover:bg-[#2a475e] border border-[#2a475e] text-white text-xs font-semibold px-3 py-2 rounded-xl transition-colors">
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    {actionLabel}
-                  </span>
-                ) : (
-                  <a
-                    href={steamUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="flex items-center gap-1.5 bg-[#1b2838] hover:bg-[#2a475e] border border-[#2a475e] text-white text-xs font-semibold px-3 py-2 rounded-xl transition-colors"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    {actionLabel}
-                  </a>
-                )}
-              </div>
+              <a
+                href={steamUrl}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1.5 bg-[#1b2838] hover:bg-[#2a475e] border border-[#2a475e] text-white text-xs font-semibold px-3 py-2 rounded-xl transition-colors flex-shrink-0"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                Steam
+              </a>
             </div>
           </div>
         </div>
 
         {/* Store deals */}
-        {storeDeals.length > 0 && (
-          <div className="px-4 py-2 bg-slate-900/80 border-t border-white/5 flex flex-col gap-0.5">
-            {storeDeals.map((deal) => (
-              <a
-                key={deal.dealID}
-                href={`https://www.cheapshark.com/redirect?dealID=${deal.dealID}`}
-                target="_blank"
-                rel="noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-2.5 px-1 py-1 rounded-md hover:bg-slate-700/50 transition-colors group/deal"
-              >
-                <Image src={getStoreLogoUrl(deal.storeID)} alt={deal.storeName} width={16} height={16} className="w-4 h-4 object-contain flex-shrink-0" unoptimized />
-                <span className="text-slate-400 text-xs flex-1 truncate group-hover/deal:text-slate-200 transition-colors">{deal.storeName}</span>
-                {parseFloat(deal.savings) >= 1 && (
-                  <span className="text-green-400 text-xs font-bold">-{Math.round(parseFloat(deal.savings))}%</span>
-                )}
-                <span className="text-white text-xs font-bold">${parseFloat(deal.price).toFixed(2)}</span>
-              </a>
-            ))}
-          </div>
-        )}
+        <StoreDealsSection appid={game.appid} name={game.name} storeMap={storeMap} />
 
         {/* Notify bar */}
-        <div className="px-4 py-2.5 bg-purple-500/5 border-t border-purple-500/10 flex items-center justify-between">
+        <div className="px-4 py-2 bg-purple-500/5 border-t border-purple-500/10 flex items-center justify-between">
           <p className="text-xs text-purple-400/60 flex items-center gap-1.5">
             <Bell className="w-3 h-3" />
             {inWishlist ? t("notifyAdded") : t("notifyHint")}
@@ -188,13 +294,13 @@ export default function SteamGameCard({ game, rank, featured = false, gameID, st
             <span className="text-xs text-slate-500">👍 {game.reviewScore}%</span>
           )}
         </div>
-      </Link>
+      </div>
     );
   }
 
   // Normal kart
-  const cardBody = (
-    <>
+  return (
+    <div className="group card flex flex-col overflow-hidden">
       <div className="relative overflow-hidden bg-slate-900/50 aspect-[16/7]">
         <Image
           src={game.headerImage}
@@ -232,12 +338,12 @@ export default function SteamGameCard({ game, rank, featured = false, gameID, st
         </button>
       </div>
 
-      <div className="p-3.5 flex flex-col gap-2 flex-1">
+      <div className="p-3.5 flex flex-col gap-2">
         <h3 className="font-semibold text-sm text-slate-200 line-clamp-2 leading-snug group-hover:text-white transition-colors">
           {game.name}
         </h3>
 
-        <div className="flex items-center justify-between mt-auto">
+        <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-1.5">
             <span className={clsx("font-bold text-sm", price.isFree ? "text-amber-400" : price.hasDiscount ? "text-brand-400" : "text-slate-200")}>
               {price.current}
@@ -259,48 +365,10 @@ export default function SteamGameCard({ game, rank, featured = false, gameID, st
             )}
           </div>
         </div>
-
-        {storeDeals.length > 0 && (
-          <div className="border-t border-white/5 mt-1 pt-1 flex flex-col gap-0.5">
-            {storeDeals.map((deal) => (
-              <a
-                key={deal.dealID}
-                href={`https://www.cheapshark.com/redirect?dealID=${deal.dealID}`}
-                target="_blank"
-                rel="noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-2 px-1 py-1 rounded-md hover:bg-slate-700/50 transition-colors group/deal"
-              >
-                <Image src={getStoreLogoUrl(deal.storeID)} alt={deal.storeName} width={14} height={14} className="w-3.5 h-3.5 object-contain flex-shrink-0" unoptimized />
-                <span className="text-slate-400 text-[11px] flex-1 truncate group-hover/deal:text-slate-200 transition-colors">{deal.storeName}</span>
-                {parseFloat(deal.savings) >= 1 && (
-                  <span className="text-green-400 text-[10px] font-bold">-{Math.round(parseFloat(deal.savings))}%</span>
-                )}
-                <span className="text-white text-[11px] font-bold">${parseFloat(deal.price).toFixed(2)}</span>
-              </a>
-            ))}
-          </div>
-        )}
       </div>
-    </>
-  );
 
-  if (internalGameUrl) {
-    return (
-      <Link href={internalGameUrl} className="group card card-hover flex flex-col overflow-hidden">
-        {cardBody}
-      </Link>
-    );
-  }
-
-  return (
-    <a
-      href={steamUrl}
-      target="_blank"
-      rel="noreferrer"
-      className="group card card-hover flex flex-col overflow-hidden"
-    >
-      {cardBody}
-    </a>
+      {/* Store deals */}
+      <StoreDealsSection appid={game.appid} name={game.name} storeMap={storeMap} />
+    </div>
   );
 }

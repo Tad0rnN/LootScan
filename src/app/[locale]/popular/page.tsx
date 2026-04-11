@@ -1,10 +1,18 @@
-import { findGameBySteamAppIdOrTitle, getGameInfo, getStores } from "@/lib/cheapshark";
-import { getTopSteamGames } from "@/lib/steam";
-import SteamGameCard from "@/components/SteamGameCard";
-import { getTranslations } from "next-intl/server";
-import { TrendingUp, Flame, RefreshCw } from "lucide-react";
+"use client";
 
-export const revalidate = 3600;
+import { useEffect, useState } from "react";
+import SteamGameCard from "@/components/SteamGameCard";
+import { useTranslations, useLocale } from "next-intl";
+import { TrendingUp, Flame, RefreshCw, Loader2 } from "lucide-react";
+import type { SteamGameWithImage } from "@/lib/steam";
+
+const VALVE_TITLES = ["counter-strike", "dota", "team fortress", "half-life", "portal", "left 4 dead", "artifact", "underlords", "steamvr"];
+
+function isValveGame(developer: string, publisher: string, name: string): boolean {
+  const devpub = `${developer} ${publisher}`.toLowerCase();
+  if (devpub.includes("valve")) return true;
+  return VALVE_TITLES.some((v) => name.toLowerCase().includes(v));
+}
 
 function getMonthLabel(locale: string): string {
   const formatMap: Record<string, string> = {
@@ -13,67 +21,51 @@ function getMonthLabel(locale: string): string {
   return new Date().toLocaleString(formatMap[locale] ?? "en-US", { month: "long", year: "numeric" });
 }
 
-const VALVE_TITLES = ["counter-strike", "dota", "team fortress", "half-life", "portal", "left 4 dead", "artifact", "underlords", "steamvr"];
-
-function isValveGame(developer: string, publisher: string, name: string): boolean {
-  const devpub = `${developer} ${publisher}`.toLowerCase();
-  if (devpub.includes("valve")) return true;
-  const nameLower = name.toLowerCase();
-  return VALVE_TITLES.some((v) => nameLower.includes(v));
+function SkeletonCard({ featured }: { featured?: boolean }) {
+  if (featured) {
+    return (
+      <div className="card overflow-hidden animate-pulse h-full min-h-[300px]">
+        <div className="bg-slate-800/60 min-h-[220px]" />
+        <div className="p-4 space-y-2">
+          <div className="h-4 bg-slate-800/60 rounded w-3/4" />
+          <div className="h-3 bg-slate-800/60 rounded w-1/2" />
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="card overflow-hidden animate-pulse">
+      <div className="bg-slate-800/60 aspect-[16/7]" />
+      <div className="p-3.5 space-y-2">
+        <div className="h-3 bg-slate-800/60 rounded w-3/4" />
+        <div className="h-3 bg-slate-800/60 rounded w-1/2" />
+        <div className="h-3 bg-slate-800/60 rounded w-2/3" />
+        <div className="h-3 bg-slate-800/60 rounded w-1/2" />
+      </div>
+    </div>
+  );
 }
 
-export default async function PopularPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  const t = await getTranslations("popular");
+export default function PopularPage() {
+  const t = useTranslations("popular");
+  const locale = useLocale();
   const monthLabel = getMonthLabel(locale);
-  const [steamGames, stores] = await Promise.all([
-    getTopSteamGames().catch(() => []),
-    getStores().catch(() => []),
-  ]);
 
-  const storeMap = Object.fromEntries(stores.map((s) => [s.storeID, s.storeName]));
+  const [games, setGames] = useState<SteamGameWithImage[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const nonValveGames = steamGames
-    .filter((game) => !isValveGame(game.developer, game.publisher, game.name))
-    .slice(0, 12);
-
-  // Rate limit'e takilmamak icin 3'erli gruplarda fetch et
-  async function fetchGameDeals(game: typeof nonValveGames[0]) {
-    try {
-      const match = await findGameBySteamAppIdOrTitle({ title: game.name, steamAppID: game.appid });
-      if (!match) return { ...game, cheapSharkGameID: undefined, storeDeals: [] };
-
-      const info = await getGameInfo(match.gameID).catch(() => null);
-      const storeDeals = (info?.deals ?? [])
-        .map((d) => ({
-          storeID: d.storeID,
-          storeName: storeMap[d.storeID] ?? `Store ${d.storeID}`,
-          price: d.price,
-          retailPrice: d.retailPrice,
-          savings: d.savings,
-          dealID: d.dealID,
-        }))
-        .sort((a, b) => parseFloat(a.price) - parseFloat(b.price))
-        .slice(0, 4);
-
-      return { ...game, cheapSharkGameID: match.gameID, storeDeals };
-    } catch {
-      return { ...game, cheapSharkGameID: undefined, storeDeals: [] };
-    }
-  }
-
-  const BATCH = 4;
-  const monthlyPopularGames: Awaited<ReturnType<typeof fetchGameDeals>>[] = [];
-
-  for (let i = 0; i < nonValveGames.length; i += BATCH) {
-    const batch = nonValveGames.slice(i, i + BATCH);
-    const results = await Promise.all(batch.map(fetchGameDeals));
-    monthlyPopularGames.push(...results);
-  }
+  useEffect(() => {
+    fetch("/api/steamspy")
+      .then((r) => r.json())
+      .then((data: SteamGameWithImage[]) => {
+        const filtered = (data ?? [])
+          .filter((g) => !isValveGame(g.developer, g.publisher, g.name))
+          .slice(0, 12);
+        setGames(filtered);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -109,18 +101,25 @@ export default async function PopularPage({
           </div>
         </div>
 
-        {monthlyPopularGames.length > 0 ? (
+        {loading ? (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
             <div className="lg:col-span-2 lg:row-span-2">
-              <SteamGameCard game={monthlyPopularGames[0]} rank={1} featured gameID={monthlyPopularGames[0].cheapSharkGameID} storeDeals={monthlyPopularGames[0].storeDeals} />
+              <SkeletonCard featured />
             </div>
-            {monthlyPopularGames.slice(1).map((game, i) => (
-              <SteamGameCard key={game.appid} game={game} rank={i + 2} gameID={game.cheapSharkGameID} storeDeals={game.storeDeals} />
+            {Array.from({ length: 11 }).map((_, i) => <SkeletonCard key={i} />)}
+          </div>
+        ) : games.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
+            <div className="lg:col-span-2 lg:row-span-2">
+              <SteamGameCard game={games[0]} rank={1} featured />
+            </div>
+            {games.slice(1).map((game, i) => (
+              <SteamGameCard key={game.appid} game={game} rank={i + 2} />
             ))}
           </div>
         ) : (
           <div className="card p-12 text-center text-slate-400">
-            <p className="text-lg text-white mb-2">{t("title")}</p>
+            <Loader2 className="w-8 h-8 mx-auto mb-3 text-slate-600" />
             <p className="text-sm">{t("monthlyPicksDesc")}</p>
           </div>
         )}
