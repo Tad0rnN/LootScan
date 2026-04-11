@@ -3,7 +3,6 @@ import { Zap, Search, Heart, ArrowRight, Sparkles, Gift } from "lucide-react";
 import { getDeals, deduplicateDeals } from "@/lib/cheapshark";
 import DealCard from "@/components/DealCard";
 import { getTranslations } from "next-intl/server";
-import { useLocale } from "next-intl";
 
 export const revalidate = 300;
 
@@ -11,8 +10,8 @@ export default async function HomePage() {
   const t = await getTranslations("home");
 
   const [hotDealsRaw, freeGamesRaw] = await Promise.all([
-    getDeals({ sortBy: "Deal Rating", pageSize: 40, onSale: true }),
-    getDeals({ upperPrice: 0, pageSize: 20 }),
+    getDeals({ sortBy: "Deal Rating", pageSize: 40, onSale: true }).catch(() => []),
+    getDeals({ upperPrice: 0, pageSize: 20 }).catch(() => []),
   ]);
   const hotDeals = deduplicateDeals(hotDealsRaw).slice(0, 8);
   const freeGames = deduplicateDeals(freeGamesRaw).slice(0, 4);
