@@ -4,8 +4,7 @@ import SteamGameCard from "@/components/SteamGameCard";
 import { getTranslations } from "next-intl/server";
 import { TrendingUp, Flame, RefreshCw } from "lucide-react";
 
-// Aylik populer liste gun icinde sabit kalsin
-export const revalidate = 86400;
+export const revalidate = 3600;
 
 function getMonthLabel(locale: string): string {
   const formatMap: Record<string, string> = {
@@ -42,31 +41,39 @@ export default async function PopularPage({
     .filter((game) => !isValveGame(game.developer, game.publisher, game.name))
     .slice(0, 12);
 
-  const monthlyPopularGames = await Promise.all(
-    nonValveGames.map(async (game) => {
-      try {
-        const match = await findGameBySteamAppIdOrTitle({ title: game.name, steamAppID: game.appid });
-        if (!match) return { ...game, cheapSharkGameID: undefined, storeDeals: [] };
+  // Rate limit'e takilmamak icin 3'erli gruplarda fetch et
+  async function fetchGameDeals(game: typeof nonValveGames[0]) {
+    try {
+      const match = await findGameBySteamAppIdOrTitle({ title: game.name, steamAppID: game.appid });
+      if (!match) return { ...game, cheapSharkGameID: undefined, storeDeals: [] };
 
-        const info = await getGameInfo(match.gameID).catch(() => null);
-        const storeDeals = (info?.deals ?? [])
-          .map((d) => ({
-            storeID: d.storeID,
-            storeName: storeMap[d.storeID] ?? `Store ${d.storeID}`,
-            price: d.price,
-            retailPrice: d.retailPrice,
-            savings: d.savings,
-            dealID: d.dealID,
-          }))
-          .sort((a, b) => parseFloat(a.price) - parseFloat(b.price))
-          .slice(0, 4);
+      const info = await getGameInfo(match.gameID).catch(() => null);
+      const storeDeals = (info?.deals ?? [])
+        .map((d) => ({
+          storeID: d.storeID,
+          storeName: storeMap[d.storeID] ?? `Store ${d.storeID}`,
+          price: d.price,
+          retailPrice: d.retailPrice,
+          savings: d.savings,
+          dealID: d.dealID,
+        }))
+        .sort((a, b) => parseFloat(a.price) - parseFloat(b.price))
+        .slice(0, 4);
 
-        return { ...game, cheapSharkGameID: match.gameID, storeDeals };
-      } catch {
-        return { ...game, cheapSharkGameID: undefined, storeDeals: [] };
-      }
-    })
-  );
+      return { ...game, cheapSharkGameID: match.gameID, storeDeals };
+    } catch {
+      return { ...game, cheapSharkGameID: undefined, storeDeals: [] };
+    }
+  }
+
+  const BATCH = 4;
+  const monthlyPopularGames: Awaited<ReturnType<typeof fetchGameDeals>>[] = [];
+
+  for (let i = 0; i < nonValveGames.length; i += BATCH) {
+    const batch = nonValveGames.slice(i, i + BATCH);
+    const results = await Promise.all(batch.map(fetchGameDeals));
+    monthlyPopularGames.push(...results);
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

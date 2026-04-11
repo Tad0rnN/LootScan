@@ -15,12 +15,40 @@ export default async function GamePage({ params }: Props) {
   const { id } = await params;
   const t = await getTranslations("game");
 
-  const [gameInfo, stores] = await Promise.all([
-    getGameInfo(id),
-    getStores(),
-  ]);
+  let gameInfo;
+  let stores;
+  try {
+    [gameInfo, stores] = await Promise.all([
+      getGameInfo(id),
+      getStores(),
+    ]);
+  } catch {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-16 text-center">
+        <p className="text-slate-400 text-lg">Game info could not be loaded. Please try again later.</p>
+        <Link href="/deals" className="inline-flex items-center gap-2 text-brand-400 hover:text-brand-300 mt-6 transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+          {t("backToDeals")}
+        </Link>
+      </div>
+    );
+  }
 
   const storeMap = Object.fromEntries(stores.map((s) => [s.storeID, s]));
+
+  if (!gameInfo.deals || gameInfo.deals.length === 0) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-16 text-center">
+        <h1 className="text-2xl font-bold text-white mb-4">{gameInfo.info.title}</h1>
+        <p className="text-slate-400">No deals currently available for this game.</p>
+        <Link href="/deals" className="inline-flex items-center gap-2 text-brand-400 hover:text-brand-300 mt-6 transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+          {t("backToDeals")}
+        </Link>
+      </div>
+    );
+  }
+
   const cheapestDeal = gameInfo.deals.reduce((a, b) =>
     parseFloat(a.price) < parseFloat(b.price) ? a : b
   );
