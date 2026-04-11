@@ -34,7 +34,11 @@
     "next": "Weiter",
     "page": "Seite {page}",
     "noDeals": "Keine Angebote mit diesen Filtern gefunden.",
-    "tryAdjusting": "Versuchen Sie, die Suchkriterien anzupassen."
+    "tryAdjusting": "Versuchen Sie, die Suchkriterien anzupassen.",
+    "loading": "Angebote werden geladen...",
+    "errorTitle": "Angebote konnten nicht geladen werden",
+    "errorDesc": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "retry": "Erneut versuchen"
   },
   "filters": {
     "title": "Filter",

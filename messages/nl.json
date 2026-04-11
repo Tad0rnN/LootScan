@@ -34,7 +34,11 @@
     "next": "Volgende",
     "page": "Pagina {page}",
     "noDeals": "Geen aanbiedingen gevonden met deze filters.",
-    "tryAdjusting": "Probeer uw zoekcriteria aan te passen."
+    "tryAdjusting": "Probeer uw zoekcriteria aan te passen.",
+    "loading": "Aanbiedingen laden...",
+    "errorTitle": "Aanbiedingen laden mislukt",
+    "errorDesc": "Er is iets misgegaan. Probeer het opnieuw.",
+    "retry": "Opnieuw proberen"
   },
   "filters": {
     "title": "Filters",

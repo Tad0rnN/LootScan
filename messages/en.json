@@ -34,7 +34,11 @@
     "next": "Next",
     "page": "Page {page}",
     "noDeals": "No deals found with these filters.",
-    "tryAdjusting": "Try adjusting your search criteria."
+    "tryAdjusting": "Try adjusting your search criteria.",
+    "loading": "Loading deals...",
+    "errorTitle": "Failed to load deals",
+    "errorDesc": "Something went wrong. Please try again.",
+    "retry": "Try Again"
   },
   "filters": {
     "title": "Filters",

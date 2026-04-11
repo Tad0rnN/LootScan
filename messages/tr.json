@@ -34,7 +34,11 @@
     "next": "Sonraki",
     "page": "Sayfa {page}",
     "noDeals": "Bu filtrelerle fırsat bulunamadı.",
-    "tryAdjusting": "Arama kriterlerinizi ayarlamayı deneyin."
+    "tryAdjusting": "Arama kriterlerinizi ayarlamayı deneyin.",
+    "loading": "Fırsatlar yükleniyor...",
+    "errorTitle": "Fırsatlar yüklenemedi",
+    "errorDesc": "Bir şeyler ters gitti. Lütfen tekrar dene.",
+    "retry": "Tekrar Dene"
   },
   "filters": {
     "title": "Filtreler",
