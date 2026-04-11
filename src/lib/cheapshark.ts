@@ -28,19 +28,19 @@ export async function getDeals(params: {
   if (params.onSale) query.set("onSale", "1");
   if (params.steamRating) query.set("steamRating", String(params.steamRating));
 
-  const res = await fetch(`${BASE_URL}/deals?${query}`, { next: { revalidate: 300 } });
+  const res = await fetch(`${BASE_URL}/deals?${query}`, { next: { revalidate: 300 }, signal: AbortSignal.timeout(10000) });
   if (!res.ok) throw new Error("Failed to fetch deals");
   return res.json();
 }
 
 export async function getStores(): Promise<Store[]> {
-  const res = await fetch(`${BASE_URL}/stores`, { next: { revalidate: 3600 } });
+  const res = await fetch(`${BASE_URL}/stores`, { next: { revalidate: 3600 }, signal: AbortSignal.timeout(10000) });
   if (!res.ok) throw new Error("Failed to fetch stores");
   return res.json();
 }
 
 export async function getGameInfo(gameID: string): Promise<GameInfo> {
-  const res = await fetch(`${BASE_URL}/games?id=${gameID}`, { next: { revalidate: 300 } });
+  const res = await fetch(`${BASE_URL}/games?id=${gameID}`, { next: { revalidate: 300 }, signal: AbortSignal.timeout(10000) });
   if (!res.ok) throw new Error("Failed to fetch game info");
   return res.json();
 }
@@ -48,6 +48,7 @@ export async function getGameInfo(gameID: string): Promise<GameInfo> {
 export async function searchGames(title: string): Promise<SearchResult[]> {
   const res = await fetch(`${BASE_URL}/games?title=${encodeURIComponent(title)}&limit=20`, {
     next: { revalidate: 60 },
+    signal: AbortSignal.timeout(10000),
   });
   if (!res.ok) throw new Error("Failed to search games");
   return res.json();
