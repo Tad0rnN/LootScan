@@ -48,6 +48,16 @@ export default function DealsPage() {
     page:       searchParams.get("page")       ?? undefined,
   };
 
+  // undefined değerleri temizleyerek URL oluştur
+  function buildPageUrl(targetPage: number): string {
+    const p = new URLSearchParams();
+    Object.entries(currentParams).forEach(([k, v]) => {
+      if (v && k !== "page") p.set(k, v);
+    });
+    if (targetPage > 0) p.set("page", String(targetPage));
+    return p.toString();
+  }
+
   const CHEAPSHARK = "https://www.cheapshark.com/api/1.0";
 
   function deduplicateDeals(raw: Deal[]): Deal[] {
@@ -196,7 +206,7 @@ export default function DealsPage() {
               <div className="flex items-center justify-center gap-3 mt-8">
                 {page > 0 && (
                   <Link
-                    href={`/${locale}/deals?${new URLSearchParams({ ...currentParams, page: String(page - 1) })}`}
+                    href={`/${locale}/deals?${buildPageUrl(page - 1)}`}
                     className="btn-secondary"
                   >
                     {t("previous")}
@@ -205,7 +215,7 @@ export default function DealsPage() {
                 <span className="text-slate-400 text-sm">{t("page", { page: page + 1 })}</span>
                 {deals.length === 24 && (
                   <Link
-                    href={`/${locale}/deals?${new URLSearchParams({ ...currentParams, page: String(page + 1) })}`}
+                    href={`/${locale}/deals?${buildPageUrl(page + 1)}`}
                     className="btn-secondary"
                   >
                     {t("next")}
