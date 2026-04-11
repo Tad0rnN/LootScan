@@ -157,7 +157,7 @@ export default function SteamGameCard({ game, rank, featured = false, gameID, st
 
         {/* Store deals */}
         {storeDeals.length > 0 && (
-          <div className="px-4 py-2.5 bg-slate-900/60 border-t border-white/5 flex flex-wrap gap-2">
+          <div className="px-4 py-2 bg-slate-900/80 border-t border-white/5 flex flex-col gap-0.5">
             {storeDeals.map((deal) => (
               <a
                 key={deal.dealID}
@@ -165,13 +165,14 @@ export default function SteamGameCard({ game, rank, featured = false, gameID, st
                 target="_blank"
                 rel="noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-700/80 border border-white/5 rounded-lg px-2.5 py-1.5 transition-colors"
+                className="flex items-center gap-2.5 px-1 py-1 rounded-md hover:bg-slate-700/50 transition-colors group/deal"
               >
-                <Image src={getStoreLogoUrl(deal.storeID)} alt={deal.storeName} width={14} height={14} className="w-3.5 h-3.5 object-contain" unoptimized />
-                <span className="text-white text-xs font-semibold">${parseFloat(deal.price).toFixed(2)}</span>
+                <Image src={getStoreLogoUrl(deal.storeID)} alt={deal.storeName} width={16} height={16} className="w-4 h-4 object-contain flex-shrink-0" unoptimized />
+                <span className="text-slate-400 text-xs flex-1 truncate group-hover/deal:text-slate-200 transition-colors">{deal.storeName}</span>
                 {parseFloat(deal.savings) >= 1 && (
-                  <span className="text-green-400 text-[10px] font-bold">-{Math.round(parseFloat(deal.savings))}%</span>
+                  <span className="text-green-400 text-xs font-bold">-{Math.round(parseFloat(deal.savings))}%</span>
                 )}
+                <span className="text-white text-xs font-bold">${parseFloat(deal.price).toFixed(2)}</span>
               </a>
             ))}
           </div>
@@ -260,7 +261,7 @@ export default function SteamGameCard({ game, rank, featured = false, gameID, st
         </div>
 
         {storeDeals.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 pt-1 border-t border-white/5 mt-1">
+          <div className="border-t border-white/5 mt-1 pt-1 flex flex-col gap-0.5">
             {storeDeals.map((deal) => (
               <a
                 key={deal.dealID}
@@ -268,13 +269,14 @@ export default function SteamGameCard({ game, rank, featured = false, gameID, st
                 target="_blank"
                 rel="noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1 bg-slate-800/70 hover:bg-slate-700/70 border border-white/5 rounded-md px-1.5 py-1 transition-colors"
+                className="flex items-center gap-2 px-1 py-1 rounded-md hover:bg-slate-700/50 transition-colors group/deal"
               >
-                <Image src={getStoreLogoUrl(deal.storeID)} alt={deal.storeName} width={12} height={12} className="w-3 h-3 object-contain" unoptimized />
-                <span className="text-white text-[11px] font-semibold">${parseFloat(deal.price).toFixed(2)}</span>
+                <Image src={getStoreLogoUrl(deal.storeID)} alt={deal.storeName} width={14} height={14} className="w-3.5 h-3.5 object-contain flex-shrink-0" unoptimized />
+                <span className="text-slate-400 text-[11px] flex-1 truncate group-hover/deal:text-slate-200 transition-colors">{deal.storeName}</span>
                 {parseFloat(deal.savings) >= 1 && (
                   <span className="text-green-400 text-[10px] font-bold">-{Math.round(parseFloat(deal.savings))}%</span>
                 )}
+                <span className="text-white text-[11px] font-bold">${parseFloat(deal.price).toFixed(2)}</span>
               </a>
             ))}
           </div>
