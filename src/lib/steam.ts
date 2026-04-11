@@ -21,24 +21,29 @@ export interface SteamGameWithImage extends SteamGame {
 
 // SteamSpy top 100 son 2 haftada en çok oynanan
 export async function getTopSteamGames(): Promise<SteamGameWithImage[]> {
-  const res = await fetch("https://steamspy.com/api.php?request=top100in2weeks", {
-    next: { revalidate: 86400 }, // 24 saatte bir yenile
-  });
+  try {
+    const res = await fetch("https://steamspy.com/api.php?request=top100in2weeks", {
+      next: { revalidate: 86400 },
+      signal: AbortSignal.timeout(10000),
+    });
 
-  if (!res.ok) throw new Error("SteamSpy fetch failed");
+    if (!res.ok) return [];
 
-  const data: Record<string, SteamGame> = await res.json();
+    const data: Record<string, SteamGame> = await res.json();
 
-  return Object.values(data)
-    .filter((g) => g.name && g.appid)
-    .slice(0, 40)
-    .map((g) => ({
-      ...g,
-      headerImage: `https://cdn.cloudflare.steamstatic.com/steam/apps/${g.appid}/header.jpg`,
-      reviewScore: g.positive + g.negative > 0
-        ? Math.round((g.positive / (g.positive + g.negative)) * 100)
-        : 0,
-    }));
+    return Object.values(data)
+      .filter((g) => g.name && g.appid)
+      .slice(0, 40)
+      .map((g) => ({
+        ...g,
+        headerImage: `https://cdn.cloudflare.steamstatic.com/steam/apps/${g.appid}/header.jpg`,
+        reviewScore: g.positive + g.negative > 0
+          ? Math.round((g.positive / (g.positive + g.negative)) * 100)
+          : 0,
+      }));
+  } catch {
+    return [];
+  }
 }
 
 export function formatSteamPrice(price: string, initialprice: string, discount: string): {

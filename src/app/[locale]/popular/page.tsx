@@ -27,21 +27,20 @@ export default async function PopularPage({
   const { locale } = await params;
   const t = await getTranslations("popular");
   const monthLabel = getMonthLabel(locale);
-  const steamGames = await getTopSteamGames();
+  const steamGames = await getTopSteamGames().catch(() => []);
   const nonValveGames = steamGames.filter((game) => !isValveGame(game.developer, game.publisher));
   const monthlyPopularGamesRaw = await Promise.all(
     nonValveGames.map(async (game) => {
-      const matchedGame = await findGameBySteamAppIdOrTitle({
-        title: game.name,
-        steamAppID: game.appid,
-      });
-
-      if (!matchedGame) return null;
-
-      return {
-        ...game,
-        cheapSharkGameID: matchedGame.gameID,
-      };
+      try {
+        const matchedGame = await findGameBySteamAppIdOrTitle({
+          title: game.name,
+          steamAppID: game.appid,
+        });
+        if (!matchedGame) return null;
+        return { ...game, cheapSharkGameID: matchedGame.gameID };
+      } catch {
+        return null;
+      }
     })
   );
   const monthlyPopularGames = monthlyPopularGamesRaw.filter((game) => game !== null).slice(0, 12);

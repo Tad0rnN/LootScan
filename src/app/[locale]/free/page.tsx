@@ -9,8 +9,8 @@ export default async function FreePage() {
   const t = await getTranslations("free");
 
   const [freeGamesRaw, stores] = await Promise.all([
-    getDeals({ upperPrice: 0, pageSize: 100, sortBy: "recent" }),
-    getStores(),
+    getDeals({ upperPrice: 0, pageSize: 100, sortBy: "recent" }).catch(() => []),
+    getStores().catch(() => []),
   ]);
   const freeGames = deduplicateDeals(freeGamesRaw);
 
