@@ -7,6 +7,7 @@ import { formatSteamPrice, formatPlaytime } from "@/lib/steam";
 import { getStoreLogoUrl } from "@/lib/cheapshark";
 import type { SteamGameWithImage } from "@/lib/steam";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
@@ -51,6 +52,7 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
   const steamPrice = formatSteamPrice(game.price, game.initialprice, game.discount);
   const playtime = formatPlaytime(game.average_2weeks);
   const locale = useLocale();
+  const router = useRouter();
   const t = useTranslations("popular");
 
   // Store deals state
@@ -241,9 +243,17 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
 
   const steamUrl = `https://store.steampowered.com/app/${game.appid}`;
 
+  const handleCardClick = () => {
+    if (gameID) {
+      router.push(`/${locale}/game/${gameID}`);
+    } else {
+      window.open(steamUrl, "_blank");
+    }
+  };
+
   if (featured) {
     return (
-      <div className="group card flex flex-col overflow-hidden h-full min-h-[300px] relative">
+      <div onClick={handleCardClick} className="group card card-hover flex flex-col overflow-hidden h-full min-h-[300px] relative cursor-pointer">
         <div className="relative flex-1 overflow-hidden bg-slate-900/50 min-h-[220px]">
           <Image
             src={game.headerImage}
@@ -339,7 +349,7 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
 
   // Normal kart
   return (
-    <div className="group card flex flex-col overflow-hidden">
+    <div onClick={handleCardClick} className="group card card-hover flex flex-col overflow-hidden cursor-pointer">
       <div className="relative overflow-hidden bg-slate-900/50 aspect-[16/7]">
         <Image
           src={game.headerImage}
