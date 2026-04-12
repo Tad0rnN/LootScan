@@ -26,8 +26,8 @@ export default function GamePage() {
     setError(false);
 
     Promise.all([
-      fetch(`/api/game?id=${id}`).then((r) => r.json()),
-      fetch("/api/stores").then((r) => r.json()),
+      fetch(`https://www.cheapshark.com/api/1.0/games?id=${id}`).then((r) => r.json()),
+      fetch("https://www.cheapshark.com/api/1.0/stores").then((r) => r.json()),
     ])
       .then(([info, stores]: [GameInfo, Store[]]) => {
         setGameInfo(info);

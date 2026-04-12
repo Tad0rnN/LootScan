@@ -163,7 +163,7 @@ export default function GameBrowseClient() {
 
     let cancelled = false;
     setLoading(true);
-    fetch(`/api/games?title=${encodeURIComponent(debouncedQuery)}`)
+    fetch(`https://www.cheapshark.com/api/1.0/games?title=${encodeURIComponent(debouncedQuery)}&limit=30`)
       .then((r) => r.json())
       .then((data) => {
         if (!cancelled) {

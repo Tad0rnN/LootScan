@@ -37,7 +37,7 @@ let cachedStoreMap: Record<string, string> | null = null;
 async function getStoreMap(): Promise<Record<string, string>> {
   if (cachedStoreMap) return cachedStoreMap;
   try {
-    const r = await fetch("/api/stores");
+    const r = await fetch("https://www.cheapshark.com/api/1.0/stores");
     const stores: { storeID: string; storeName: string }[] = await r.json();
     cachedStoreMap = Object.fromEntries(stores.map((s) => [s.storeID, s.storeName]));
     return cachedStoreMap;
@@ -78,7 +78,7 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
       try {
         const storeMap = await getStoreMap();
 
-        const searchRes = await fetch(`/api/games?title=${encodeURIComponent(game.name)}`);
+        const searchRes = await fetch(`https://www.cheapshark.com/api/1.0/games?title=${encodeURIComponent(game.name)}&limit=10`);
         const searchData = await searchRes.json();
         if (cancelled || !Array.isArray(searchData) || searchData.length === 0) {
           setDealsLoading(false);
@@ -92,7 +92,7 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
         if (!match?.gameID) { setDealsLoading(false); return; }
         if (!cancelled) setGameID(match.gameID);
 
-        const infoRes = await fetch(`/api/game?id=${match.gameID}`);
+        const infoRes = await fetch(`https://www.cheapshark.com/api/1.0/games?id=${match.gameID}`);
         const info = await infoRes.json();
         if (cancelled) return;
 

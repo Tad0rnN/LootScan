@@ -46,8 +46,8 @@ export default function HomeDeals() {
     const freeParams = new URLSearchParams({ upperPrice: "0", pageSize: "20" });
 
     Promise.all([
-      fetch(`/api/deals?${hotParams}`).then((r) => r.json()).catch(() => []),
-      fetch(`/api/deals?${freeParams}`).then((r) => r.json()).catch(() => []),
+      fetch(`https://www.cheapshark.com/api/1.0/deals?${hotParams}`).then((r) => r.json()).catch(() => []),
+      fetch(`https://www.cheapshark.com/api/1.0/deals?${freeParams}`).then((r) => r.json()).catch(() => []),
     ]).then(([hot, free]) => {
       setHotDeals(deduplicateDeals(Array.isArray(hot) ? hot : []).slice(0, 8));
       setFreeGames(deduplicateDeals(Array.isArray(free) ? free : []).slice(0, 4));

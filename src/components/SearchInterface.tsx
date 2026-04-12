@@ -85,7 +85,7 @@ async function fetchDealsMode(filters: AISearchResponse["filters"] | undefined):
   if (filters?.onSale ?? true) params.set("onSale", "1");
   params.set("pageSize", "24");
 
-  const res = await fetch(`/api/deals?${params}`);
+  const res = await fetch(`https://www.cheapshark.com/api/1.0/deals?${params}`);
   if (res.status === 429) throw new Error("rate_limited");
   if (!res.ok) return [];
   const data = await res.json();
@@ -115,7 +115,7 @@ async function fetchSimilarMode(gameTitles: string[], filters: AISearchResponse[
   const deals: Deal[] = [];
 
   for (const title of gameTitles.slice(0, MAX_SIMILAR_RESULTS)) {
-    const res = await fetch(`/api/games?title=${encodeURIComponent(title)}`);
+    const res = await fetch(`https://www.cheapshark.com/api/1.0/games?title=${encodeURIComponent(title)}`);
     if (res.status === 429) throw new Error("rate_limited");
     if (!res.ok) continue;
     const data = await res.json();
