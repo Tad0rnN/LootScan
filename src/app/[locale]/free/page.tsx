@@ -100,10 +100,12 @@ export default function FreePage() {
 
             for (const game of data) {
               if (seenIds.has(game.gameID)) continue;
-              if (parseFloat(game.cheapest ?? "999") > 0) continue;
-              if (!game.external.toLowerCase().includes(searchTitle.split(" ")[0])) continue;
+              // İlk kelime eşleşmesi yeterli
+              const firstWord = searchTitle.split(" ")[0];
+              if (!game.external.toLowerCase().includes(firstWord)) continue;
 
               seenIds.add(game.gameID);
+              const cheapest = parseFloat(game.cheapest ?? "0");
               f2pResults.push({
                 internalName: game.internalName,
                 title: game.external,
@@ -111,8 +113,8 @@ export default function FreePage() {
                 dealID: game.cheapestDealID ?? `f2p-${game.gameID}`,
                 storeID: "1",
                 gameID: game.gameID,
-                salePrice: "0.00",
-                normalPrice: "0.00",
+                salePrice: cheapest === 0 ? "0.00" : game.cheapest,
+                normalPrice: cheapest === 0 ? "0.00" : game.cheapest,
                 isOnSale: "0",
                 savings: "0",
                 metacriticScore: "0",
