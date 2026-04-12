@@ -8,6 +8,7 @@ import { getStoreLogoUrl } from "@/lib/cheapshark";
 import type { SteamGameWithImage } from "@/lib/steam";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { fetchStores, fetchGameSearch, fetchGameInfo } from "@/lib/fetch-deals";
 import { createClient } from "@/lib/supabase/client";
 import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
@@ -37,8 +38,7 @@ let cachedStoreMap: Record<string, string> | null = null;
 async function getStoreMap(): Promise<Record<string, string>> {
   if (cachedStoreMap) return cachedStoreMap;
   try {
-    const r = await fetch("https://www.cheapshark.com/api/1.0/stores");
-    const stores: { storeID: string; storeName: string }[] = await r.json();
+    const stores = await fetchStores() as { storeID: string; storeName: string }[];
     cachedStoreMap = Object.fromEntries(stores.map((s) => [s.storeID, s.storeName]));
     return cachedStoreMap;
   } catch {
@@ -78,8 +78,7 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
       try {
         const storeMap = await getStoreMap();
 
-        const searchRes = await fetch(`https://www.cheapshark.com/api/1.0/games?title=${encodeURIComponent(game.name)}&limit=10`);
-        const searchData = await searchRes.json();
+        const searchData = await fetchGameSearch(game.name, 10);
         if (cancelled || !Array.isArray(searchData) || searchData.length === 0) {
           setDealsLoading(false);
           return;
@@ -92,8 +91,7 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
         if (!match?.gameID) { setDealsLoading(false); return; }
         if (!cancelled) setGameID(match.gameID);
 
-        const infoRes = await fetch(`https://www.cheapshark.com/api/1.0/games?id=${match.gameID}`);
-        const info = await infoRes.json();
+        const info = await fetchGameInfo(match.gameID) as { deals?: { storeID: string; price: string; retailPrice: string; savings: string; dealID: string }[] } | null;
         if (cancelled) return;
 
         const sorted: StoreDeal[] = (info?.deals ?? [])

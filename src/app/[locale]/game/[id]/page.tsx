@@ -9,6 +9,7 @@ import WishlistButton from "@/components/WishlistButton";
 import { formatPrice, getStoreLogoUrl } from "@/lib/cheapshark";
 import { useTranslations, useLocale } from "next-intl";
 import type { GameInfo, Store } from "@/types";
+import { fetchGameInfo, fetchStores } from "@/lib/fetch-deals";
 
 export default function GamePage() {
   const { id } = useParams<{ id: string }>();
@@ -26,12 +27,12 @@ export default function GamePage() {
     setError(false);
 
     Promise.all([
-      fetch(`https://www.cheapshark.com/api/1.0/games?id=${id}`).then((r) => r.json()),
-      fetch("https://www.cheapshark.com/api/1.0/stores").then((r) => r.json()),
+      fetchGameInfo(id),
+      fetchStores(),
     ])
-      .then(([info, stores]: [GameInfo, Store[]]) => {
-        setGameInfo(info);
-        setStoreMap(Object.fromEntries((stores ?? []).map((s) => [s.storeID, s])));
+      .then(([info, stores]) => {
+        setGameInfo(info as GameInfo);
+        setStoreMap(Object.fromEntries(((stores ?? []) as Store[]).map((s) => [s.storeID, s])));
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));

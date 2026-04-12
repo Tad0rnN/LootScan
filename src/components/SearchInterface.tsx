@@ -5,6 +5,7 @@ import { Search, Sparkles, Loader2 } from "lucide-react";
 import DealCard from "./DealCard";
 import type { AISearchResponse, Deal, SearchResult } from "@/types";
 import { useLocale, useTranslations } from "next-intl";
+import { fetchDeals as fetchDealsApi, fetchGameSearch } from "@/lib/fetch-deals";
 
 interface SearchState {
   interpretation: string;
@@ -86,16 +87,14 @@ async function fetchDealsMode(filters: AISearchResponse["filters"] | undefined):
   params.set("pageSize", "24");
 
   // İndirimli oyunları çek
-  const dealsPromise = fetch(`https://www.cheapshark.com/api/1.0/deals?${params}`)
-    .then((r) => r.ok ? r.json() : [])
+  const dealsPromise = fetchDealsApi(params)
     .then((d) => (Array.isArray(d) ? d as Deal[] : []))
     .catch(() => [] as Deal[]);
 
   // Başlık aramasıysa, indirimde olmayan oyunları da çek
   let gameResults: Deal[] = [];
   if (filters?.title) {
-    const gamesPromise = fetch(`https://www.cheapshark.com/api/1.0/games?title=${encodeURIComponent(filters.title)}&limit=20`)
-      .then((r) => r.ok ? r.json() : [])
+    const gamesPromise = fetchGameSearch(filters.title, 20)
       .then((d) => (Array.isArray(d) ? (d as SearchResult[]).filter(isBaseGameTitle2).map(toDeal) : []))
       .catch(() => [] as Deal[]);
     gameResults = await gamesPromise;
@@ -134,10 +133,12 @@ async function fetchSimilarMode(gameTitles: string[], filters: AISearchResponse[
   const deals: Deal[] = [];
 
   for (const title of gameTitles.slice(0, MAX_SIMILAR_RESULTS)) {
-    const res = await fetch(`https://www.cheapshark.com/api/1.0/games?title=${encodeURIComponent(title)}`);
-    if (res.status === 429) throw new Error("rate_limited");
-    if (!res.ok) continue;
-    const data = await res.json();
+    let data: unknown;
+    try {
+      data = await fetchGameSearch(title);
+    } catch {
+      continue;
+    }
     const results = Array.isArray(data) ? data as SearchResult[] : [];
     const game = pickBestSearchResult(results, title, filters, seen);
     if (!game) continue;

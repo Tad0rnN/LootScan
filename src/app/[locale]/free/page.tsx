@@ -5,8 +5,7 @@ import DealCard from "@/components/DealCard";
 import { Gift, RefreshCw, Loader2, Gamepad2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Deal, Store } from "@/types";
-
-const CHEAPSHARK = "https://www.cheapshark.com/api/1.0";
+import { fetchDeals, fetchStores, fetchGameSearch } from "@/lib/fetch-deals";
 
 // Popüler F2P oyun başlıkları
 const F2P_TITLES = [
@@ -55,10 +54,10 @@ export default function FreePage() {
       try {
         // Birden fazla sayfa çekerek daha fazla bedava oyun bul
         const [page1, page2, page3, storesRaw] = await Promise.all([
-          fetch(`${CHEAPSHARK}/deals?upperPrice=0&pageSize=60&sortBy=recent`).then(r => r.json()).catch(() => []),
-          fetch(`${CHEAPSHARK}/deals?upperPrice=0&pageSize=60&sortBy=Deal%20Rating`).then(r => r.json()).catch(() => []),
-          fetch(`${CHEAPSHARK}/deals?upperPrice=0&pageSize=60&sortBy=Store`).then(r => r.json()).catch(() => []),
-          fetch(`${CHEAPSHARK}/stores`).then(r => r.json()).catch(() => []),
+          fetchDeals(new URLSearchParams({ upperPrice: "0", pageSize: "60", sortBy: "recent" })).catch(() => []),
+          fetchDeals(new URLSearchParams({ upperPrice: "0", pageSize: "60", sortBy: "Deal Rating" })).catch(() => []),
+          fetchDeals(new URLSearchParams({ upperPrice: "0", pageSize: "60", sortBy: "Store" })).catch(() => []),
+          fetchStores().catch(() => []),
         ]);
 
         const allFree = [
@@ -88,14 +87,12 @@ export default function FreePage() {
           const batch = F2P_TITLES.slice(i, i + 5);
           const results = await Promise.all(
             batch.map(title =>
-              fetch(`${CHEAPSHARK}/games?title=${encodeURIComponent(title)}&limit=5`)
-                .then(r => r.json())
-                .catch(() => [])
+              fetchGameSearch(title, 5).catch(() => [])
             )
           );
 
           for (let j = 0; j < results.length; j++) {
-            const data = Array.isArray(results[j]) ? results[j] : [];
+            const data: Record<string, string>[] = Array.isArray(results[j]) ? results[j] as Record<string, string>[] : [];
             const searchTitle = batch[j].toLowerCase();
 
             for (const game of data) {

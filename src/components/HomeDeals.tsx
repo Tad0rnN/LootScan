@@ -6,6 +6,7 @@ import DealCard from "@/components/DealCard";
 import { useTranslations, useLocale } from "next-intl";
 import { Zap, Gift, ArrowRight } from "lucide-react";
 import type { Deal } from "@/types";
+import { fetchDeals } from "@/lib/fetch-deals";
 
 function deduplicateDeals(deals: Deal[]): Deal[] {
   const map = new Map<string, Deal>();
@@ -46,8 +47,8 @@ export default function HomeDeals() {
     const freeParams = new URLSearchParams({ upperPrice: "0", pageSize: "20" });
 
     Promise.all([
-      fetch(`https://www.cheapshark.com/api/1.0/deals?${hotParams}`).then((r) => r.json()).catch(() => []),
-      fetch(`https://www.cheapshark.com/api/1.0/deals?${freeParams}`).then((r) => r.json()).catch(() => []),
+      fetchDeals(hotParams).catch(() => []),
+      fetchDeals(freeParams).catch(() => []),
     ]).then(([hot, free]) => {
       setHotDeals(deduplicateDeals(Array.isArray(hot) ? hot : []).slice(0, 8));
       setFreeGames(deduplicateDeals(Array.isArray(free) ? free : []).slice(0, 4));

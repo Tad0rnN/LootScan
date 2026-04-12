@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useLocale, useTranslations } from "next-intl";
 import clsx from "clsx";
 import type { SearchResult } from "@/types";
+import { fetchGameSearch } from "@/lib/fetch-deals";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -155,9 +156,8 @@ export default function GameSearchModal({ onClose }: { onClose: () => void }) {
     if (!debouncedQuery.trim()) { setResults([]); setSearched(false); return; }
     let cancelled = false;
     setLoading(true);
-    fetch(`https://www.cheapshark.com/api/1.0/games?title=${encodeURIComponent(debouncedQuery)}&limit=30`)
-      .then((r) => r.json())
-      .then((data) => { if (!cancelled) { setResults(Array.isArray(data) ? data : []); setSearched(true); setLoading(false); } })
+    fetchGameSearch(debouncedQuery, 30)
+      .then((data) => { if (!cancelled) { setResults(Array.isArray(data) ? data as SearchResult[] : []); setSearched(true); setLoading(false); } })
       .catch(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [debouncedQuery]);

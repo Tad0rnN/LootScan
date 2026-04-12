@@ -8,6 +8,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Loader2, AlertCircle, RefreshCw } from "lucide-react";
 import type { Deal, Store } from "@/types";
 import Link from "next/link";
+import { fetchDeals as fetchDealsApi, fetchStores as fetchStoresApi } from "@/lib/fetch-deals";
 
 function SkeletonCard() {
   return (
@@ -101,17 +102,17 @@ export default function DealsPage() {
         if (currentParams.onSale)     params.set("onSale",     currentParams.onSale);
         params.set("pageNumber", String(page)); // CheapShark pageNumber kullanır
         params.set("pageSize", currentParams.storeID ? "24" : "60");
-        const res = await fetch(`https://www.cheapshark.com/api/1.0/deals?${params}`);
-        if (!res.ok) throw new Error("fetch_failed");
-        const data = await res.json();
+        const data = await fetchDealsApi(params);
         const raw = Array.isArray(data) ? data : [];
         result = currentParams.storeID ? raw : deduplicateDeals(raw).slice(0, 24);
       } else {
         // Varsayılan: iyi puanlı oyunlardan 2 rastgele sayfa çek, karıştır
         const startPage = Math.floor(Math.random() * 6);
+        const p1 = new URLSearchParams({ steamRating: "70", sortBy: "DealRating", pageSize: "60", pageNumber: String(startPage) });
+        const p2 = new URLSearchParams({ steamRating: "70", sortBy: "DealRating", pageSize: "60", pageNumber: String(startPage + 1) });
         const [r1, r2] = await Promise.all([
-          fetch(`https://www.cheapshark.com/api/1.0/deals?steamRating=70&sortBy=DealRating&pageSize=60&pageNumber=${startPage}`).then(r => r.json()).catch(() => []),
-          fetch(`https://www.cheapshark.com/api/1.0/deals?steamRating=70&sortBy=DealRating&pageSize=60&pageNumber=${startPage + 1}`).then(r => r.json()).catch(() => []),
+          fetchDealsApi(p1).catch(() => []),
+          fetchDealsApi(p2).catch(() => []),
         ]);
         const pool = deduplicateDeals([...(Array.isArray(r1) ? r1 : []), ...(Array.isArray(r2) ? r2 : [])]);
         result = shuffleArray(pool).slice(0, 24);
@@ -128,9 +129,8 @@ export default function DealsPage() {
 
   // Stores tek seferlik yükle
   useEffect(() => {
-    fetch("https://www.cheapshark.com/api/1.0/stores")
-      .then((r) => r.json())
-      .then((data: Store[]) => setStores(data.filter((s) => s.isActive === 1)))
+    fetchStoresApi()
+      .then((data) => setStores((data as Store[]).filter((s) => s.isActive === 1)))
       .catch(() => {});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
