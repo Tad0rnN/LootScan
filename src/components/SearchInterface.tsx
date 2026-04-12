@@ -82,14 +82,33 @@ async function fetchDealsMode(filters: AISearchResponse["filters"] | undefined):
   if (filters?.minMetacritic !== undefined && filters.minMetacritic !== null) params.set("metacritic", String(filters.minMetacritic));
   if (filters?.storeID) params.set("storeID", filters.storeID);
   params.set("sortBy", filters?.sortBy ?? "Deal Rating");
-  if (filters?.onSale ?? true) params.set("onSale", "1");
+  if (filters?.onSale) params.set("onSale", "1");
   params.set("pageSize", "24");
 
-  const res = await fetch(`https://www.cheapshark.com/api/1.0/deals?${params}`);
-  if (res.status === 429) throw new Error("rate_limited");
-  if (!res.ok) return [];
-  const data = await res.json();
-  return deduplicateDeals(Array.isArray(data) ? data : []).slice(0, 24);
+  // İndirimli oyunları çek
+  const dealsPromise = fetch(`https://www.cheapshark.com/api/1.0/deals?${params}`)
+    .then((r) => r.ok ? r.json() : [])
+    .then((d) => (Array.isArray(d) ? d as Deal[] : []))
+    .catch(() => [] as Deal[]);
+
+  // Başlık aramasıysa, indirimde olmayan oyunları da çek
+  let gameResults: Deal[] = [];
+  if (filters?.title) {
+    const gamesPromise = fetch(`https://www.cheapshark.com/api/1.0/games?title=${encodeURIComponent(filters.title)}&limit=20`)
+      .then((r) => r.ok ? r.json() : [])
+      .then((d) => (Array.isArray(d) ? (d as SearchResult[]).filter(isBaseGameTitle2).map(toDeal) : []))
+      .catch(() => [] as Deal[]);
+    gameResults = await gamesPromise;
+  }
+
+  const dealResults = await dealsPromise;
+  // Deal sonuçlarını öncelikli tut (indirimli fiyatı gösterir), sonra game sonuçlarını ekle
+  const merged = [...dealResults, ...gameResults];
+  return deduplicateDeals(merged).slice(0, 24);
+}
+
+function isBaseGameTitle2(game: SearchResult): boolean {
+  return isBaseGameTitle(game.external);
 }
 
 function pickBestSearchResult(results: SearchResult[], title: string, filters: AISearchResponse["filters"] | undefined, seen: Set<string>): SearchResult | null {

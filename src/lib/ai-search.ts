@@ -164,10 +164,11 @@ function buildHeuristicSearch(userQuery: string, locale?: string): AISearchRespo
     searchMode: "deals",
     gameTitles: [],
     filters: {
+      title: userQuery.trim(),
       maxPrice: isFree ? 0 : maxPrice,
       storeID,
       sortBy: "Deal Rating",
-      onSale: true,
+      onSale: false,
     },
   };
 }
