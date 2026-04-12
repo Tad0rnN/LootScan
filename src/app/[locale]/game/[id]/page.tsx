@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, Tag, Trophy, Clock, Loader2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, Tag, Loader2 } from "lucide-react";
 import WishlistButton from "@/components/WishlistButton";
 import { formatPrice, getStoreLogoUrl } from "@/lib/cheapshark";
 import { useTranslations, useLocale } from "next-intl";
@@ -102,16 +102,6 @@ export default function GamePage() {
                   </>
                 )}
               </div>
-            </div>
-            <div className="flex flex-wrap gap-4 text-sm text-slate-400">
-              <span className="flex items-center gap-1.5">
-                <Trophy className="w-4 h-4 text-yellow-400" />
-                {t("cheapestEver")} <strong className="text-white ml-1">{formatPrice(gameInfo.cheapestPriceEver.price)}</strong>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Clock className="w-4 h-4" />
-                {new Date(gameInfo.cheapestPriceEver.date * 1000).toLocaleDateString()}
-              </span>
             </div>
             <div className="mt-4">
               <WishlistButton
