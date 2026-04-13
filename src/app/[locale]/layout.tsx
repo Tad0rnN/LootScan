@@ -7,7 +7,6 @@ import { Space_Grotesk } from "next/font/google";
 import "../globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Script from "next/script";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -39,11 +38,10 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={spaceGrotesk.variable}>
       <head>
-        <Script
+        <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6204567480065033"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
         />
       </head>
       <body className="min-h-screen flex flex-col bg-[#07070f] text-slate-200 antialiased font-sans">
