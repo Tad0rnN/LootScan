@@ -8,7 +8,8 @@
     "signOut": "Çıkış Yap",
     "popular": "Popüler",
     "browse": "Oyun Ara",
-    "searchGames": "Oyun Ara"
+    "searchGames": "Oyun Ara",
+    "gear": "Ekipman"
   },
   "home": {
     "badge": "En iyi oyun fırsatları, her 5 dakikada güncellenir",
@@ -240,5 +241,19 @@
     "notifyHint": "İndirime girince bildirim alacaksın",
     "free": "Bedava",
     "lowestEver": "En düşük: {price}"
+  },
+  "gear": {
+    "title": "Gaming Ekipman",
+    "subtitle": "En iyi oyuncu ekipmanları ve aksesuarları. Kurulumunu yükselt.",
+    "disclosure": "Amazon ortağı olarak, satın alımlardan komisyon kazanabiliriz. Fiyatlar değişkenlik gösterebilir.",
+    "categories": {
+      "all": "Tümü",
+      "headsets": "Kulaklıklar",
+      "mice": "Fareler",
+      "keyboards": "Klavyeler",
+      "monitors": "Monitörler",
+      "chairs": "Koltuklar",
+      "controllers": "Oyun Kolları"
+    }
   }
 }

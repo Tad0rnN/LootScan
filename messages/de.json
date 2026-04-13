@@ -8,7 +8,8 @@
     "signOut": "Abmelden",
     "popular": "Beliebt",
     "browse": "Spiele suchen",
-    "searchGames": "Spiele suchen"
+    "searchGames": "Spiele suchen",
+    "gear": "Gaming-Zubehör"
   },
   "home": {
     "badge": "Beste Spielangebote, alle 5 Minuten aktualisiert",
@@ -240,5 +241,19 @@
     "s4Content": "Die LootScan-Plattform ist urheberrechtlich geschützt. Spielbilder und Marken gehören den jeweiligen Eigentümern.",
     "s5Title": "Änderungen",
     "s5Content": "Wir behalten uns vor, diese Bedingungen jederzeit zu ändern."
+  },
+  "gear": {
+    "title": "Gaming-Zubehör",
+    "subtitle": "Top-bewertete Gaming-Peripherie und Zubehör. Upgrade dein Setup.",
+    "disclosure": "Als Amazon-Partner verdienen wir an qualifizierten Verkäufen. Preise können variieren.",
+    "categories": {
+      "all": "Alle",
+      "headsets": "Headsets",
+      "mice": "Mäuse",
+      "keyboards": "Tastaturen",
+      "monitors": "Monitore",
+      "chairs": "Stühle",
+      "controllers": "Controller"
+    }
   }
 }

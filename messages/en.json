@@ -8,7 +8,8 @@
     "signOut": "Sign out",
     "popular": "Popular",
     "browse": "Browse",
-    "searchGames": "Search Games"
+    "searchGames": "Search Games",
+    "gear": "Gaming Gear"
   },
   "home": {
     "badge": "Best game deals, updated every 5 minutes",
@@ -240,5 +241,19 @@
     "notifyHint": "You'll be notified when it goes on sale",
     "free": "Free",
     "lowestEver": "Lowest: {price}"
+  },
+  "gear": {
+    "title": "Gaming Gear",
+    "subtitle": "Top-rated gaming peripherals and accessories. Upgrade your setup.",
+    "disclosure": "As an Amazon Associate, we may earn from qualifying purchases. Prices may vary.",
+    "categories": {
+      "all": "All",
+      "headsets": "Headsets",
+      "mice": "Mice",
+      "keyboards": "Keyboards",
+      "monitors": "Monitors",
+      "chairs": "Chairs",
+      "controllers": "Controllers"
+    }
   }
 }

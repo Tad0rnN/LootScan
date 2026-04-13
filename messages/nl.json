@@ -8,7 +8,8 @@
     "signOut": "Uitloggen",
     "popular": "Populair",
     "browse": "Spellen zoeken",
-    "searchGames": "Spellen zoeken"
+    "searchGames": "Spellen zoeken",
+    "gear": "Gaming Gear"
   },
   "home": {
     "badge": "Beste speldeals, elke 5 minuten bijgewerkt",
@@ -240,5 +241,19 @@
     "s4Content": "Het LootScan-platform is auteursrechtelijk beschermd. Spelafbeeldingen en handelsmerken zijn eigendom van hun respectievelijke eigenaars.",
     "s5Title": "Wijzigingen",
     "s5Content": "We behouden ons het recht voor om deze voorwaarden te wijzigen."
+  },
+  "gear": {
+    "title": "Gaming Gear",
+    "subtitle": "Topbeoordeelde gaming-randapparatuur en accessoires. Upgrade je setup.",
+    "disclosure": "Als Amazon-partner verdienen wij aan in aanmerking komende aankopen. Prijzen kunnen variëren.",
+    "categories": {
+      "all": "Alles",
+      "headsets": "Headsets",
+      "mice": "Muizen",
+      "keyboards": "Toetsenborden",
+      "monitors": "Monitoren",
+      "chairs": "Stoelen",
+      "controllers": "Controllers"
+    }
   }
 }

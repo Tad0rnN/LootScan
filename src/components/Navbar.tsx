@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Crosshair, Search, Heart, Zap, Menu, X, LogIn, LogOut, Gift, TrendingUp, Bot } from "lucide-react";
+import { Crosshair, Search, Heart, Zap, Menu, X, LogIn, LogOut, Gift, TrendingUp, Bot, Gamepad2 } from "lucide-react";
 import GameSearchModal from "./GameSearchModal";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
@@ -26,6 +26,7 @@ export default function Navbar() {
     { href: `/${locale}/free`, label: t("free"), icon: Gift },
     { href: `/${locale}/popular`, label: t("popular"), icon: TrendingUp },
     { href: `/${locale}/search`, label: t("search"), icon: Bot },
+    { href: `/${locale}/gear`, label: t("gear"), icon: Gamepad2 },
     { href: `/${locale}/wishlist`, label: t("wishlist"), icon: Heart },
   ];
 

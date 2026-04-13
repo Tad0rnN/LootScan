@@ -8,7 +8,8 @@
     "signOut": "退出",
     "popular": "热门",
     "browse": "搜索游戏",
-    "searchGames": "搜索游戏"
+    "searchGames": "搜索游戏",
+    "gear": "游戏装备"
   },
   "home": {
     "badge": "最佳游戏优惠，每5分钟更新",
@@ -240,5 +241,19 @@
     "s4Content": "LootScan 平台受版权保护，游戏图像和商标归各自所有者所有。",
     "s5Title": "变更",
     "s5Content": "我们保留随时修改这些条款的权利，建议定期查看本页面。"
+  },
+  "gear": {
+    "title": "游戏装备",
+    "subtitle": "评分最高的游戏外设和配件。升级你的装备。",
+    "disclosure": "作为亚马逊合作伙伴，我们可能从符合条件的购买中获得佣金。价格可能有所不同。",
+    "categories": {
+      "all": "全部",
+      "headsets": "耳机",
+      "mice": "鼠标",
+      "keyboards": "键盘",
+      "monitors": "显示器",
+      "chairs": "座椅",
+      "controllers": "手柄"
+    }
   }
 }
