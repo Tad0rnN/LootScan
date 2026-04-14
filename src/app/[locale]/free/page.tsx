@@ -102,7 +102,6 @@ export default function FreePage() {
               if (!game.external.toLowerCase().includes(firstWord)) continue;
 
               seenIds.add(game.gameID);
-              const cheapest = parseFloat(game.cheapest ?? "0");
               f2pResults.push({
                 internalName: game.internalName,
                 title: game.external,
@@ -110,10 +109,10 @@ export default function FreePage() {
                 dealID: game.cheapestDealID ?? `f2p-${game.gameID}`,
                 storeID: "1",
                 gameID: game.gameID,
-                salePrice: cheapest === 0 ? "0.00" : game.cheapest,
-                normalPrice: cheapest === 0 ? "0.00" : game.cheapest,
-                isOnSale: "0",
-                savings: "0",
+                salePrice: "0.00",
+                normalPrice: "0.00",
+                isOnSale: "1",
+                savings: "100",
                 metacriticScore: "0",
                 steamRatingText: null,
                 steamRatingPercent: "0",
