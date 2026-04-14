@@ -1,60 +1,81 @@
+import { fallbackDeals, fallbackStores, getFallbackDeals, searchFallbackGames, getFallbackGameInfo } from "./fallback-data";
+
 const CHEAPSHARK = "https://www.cheapshark.com/api/1.0";
 
 /**
- * Fetch from CheapShark directly (browser → API, best for CORS-enabled endpoints).
- * If that fails (timeout, CORS block, API down), fall back to our own API route proxy
- * which has hardcoded fallback data.
+ * Try fetching from a URL with timeout. Returns the Response if ok, otherwise null.
  */
-async function fetchWithFallback(
-  directUrl: string,
-  proxyUrl: string,
-  timeoutMs = 8000,
-): Promise<Response> {
+async function tryFetch(url: string, timeoutMs = 8000): Promise<Response | null> {
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
-    const res = await fetch(directUrl, { signal: controller.signal });
+    const res = await fetch(url, { signal: controller.signal });
     clearTimeout(timer);
     if (res.ok) return res;
   } catch {
-    // direct call failed — try proxy
+    // failed
   }
-
-  return fetch(proxyUrl);
+  return null;
 }
 
+/**
+ * Fetch deals: CheapShark direct → API proxy → client-side fallback data
+ */
 export async function fetchDeals(params?: URLSearchParams): Promise<unknown> {
   const qs = params ? `?${params}` : "";
-  const res = await fetchWithFallback(
-    `${CHEAPSHARK}/deals${qs}`,
-    `/api/deals${qs}`,
-  );
-  return res.json();
+
+  // 1) Direct CheapShark
+  const direct = await tryFetch(`${CHEAPSHARK}/deals${qs}`);
+  if (direct) return direct.json();
+
+  // 2) Own API proxy (has server-side fallback)
+  const proxy = await tryFetch(`/api/deals${qs}`, 10000);
+  if (proxy) return proxy.json();
+
+  // 3) Client-side fallback data
+  const p = params ? Object.fromEntries(params.entries()) : {};
+  return getFallbackDeals(p);
 }
 
+/**
+ * Fetch stores: CheapShark direct → API proxy → client-side fallback
+ */
 export async function fetchStores(): Promise<unknown> {
-  const res = await fetchWithFallback(
-    `${CHEAPSHARK}/stores`,
-    `/api/stores`,
-  );
-  return res.json();
+  const direct = await tryFetch(`${CHEAPSHARK}/stores`);
+  if (direct) return direct.json();
+
+  const proxy = await tryFetch(`/api/stores`, 10000);
+  if (proxy) return proxy.json();
+
+  return fallbackStores;
 }
 
+/**
+ * Fetch game info: CheapShark direct → API proxy → client-side fallback
+ */
 export async function fetchGameInfo(id: string): Promise<unknown> {
-  const res = await fetchWithFallback(
-    `${CHEAPSHARK}/games?id=${id}`,
-    `/api/game?id=${id}`,
-  );
-  return res.json();
+  const direct = await tryFetch(`${CHEAPSHARK}/games?id=${id}`);
+  if (direct) return direct.json();
+
+  const proxy = await tryFetch(`/api/game?id=${id}`, 10000);
+  if (proxy) return proxy.json();
+
+  return getFallbackGameInfo(id);
 }
 
+/**
+ * Fetch game search: CheapShark direct → API proxy → client-side fallback
+ */
 export async function fetchGameSearch(title: string, limit = 20): Promise<unknown> {
   const qs = `?title=${encodeURIComponent(title)}&limit=${limit}`;
-  const res = await fetchWithFallback(
-    `${CHEAPSHARK}/games${qs}`,
-    `/api/games${qs}`,
-  );
-  return res.json();
+
+  const direct = await tryFetch(`${CHEAPSHARK}/games${qs}`);
+  if (direct) return direct.json();
+
+  const proxy = await tryFetch(`/api/games${qs}`, 10000);
+  if (proxy) return proxy.json();
+
+  return searchFallbackGames(title);
 }
 
-export { CHEAPSHARK };
+export { CHEAPSHARK, fallbackDeals };
