@@ -7,14 +7,45 @@ import { useTranslations } from "next-intl";
 import type { Deal, Store } from "@/types";
 import { fetchDeals, fetchStores, fetchGameSearch } from "@/lib/fetch-deals";
 
-// Popüler F2P oyun başlıkları
+// Popüler F2P oyun başlıkları — tam eşleşme için kullanılır
 const F2P_TITLES = [
-  "Path of Exile", "Warframe", "Destiny 2", "Genshin Impact",
-  "Apex Legends", "War Thunder", "Star Trek Online", "Smite",
+  "Path of Exile", "Path of Exile 2", "Warframe", "Destiny 2", "Genshin Impact",
+  "Apex Legends", "War Thunder", "Star Trek Online", "SMITE",
   "Paladins", "Brawlhalla", "Enlisted", "MultiVersus",
   "The First Descendant", "Lost Ark", "Dauntless", "Neverwinter",
   "World of Tanks", "World of Warships", "Crossout", "Phantasy Star Online 2",
+  "Dota 2", "Counter-Strike 2", "Team Fortress 2", "Fortnite",
 ];
+
+// DLC, bundle, pack, starter, skin, gems, edition gibi sonuçları filtrele
+const DLC_KEYWORDS = [
+  "dlc", "bundle", "pack", "starter", "gems", "coins", "points",
+  "skin", "cosmetic", "costume", "season pass", "battle pass",
+  "expansion", "upgrade", "deluxe", "premium", "ultimate edition",
+  "gold edition", "silver edition", "bronze edition", "supporter",
+  "soundtrack", "ost", "art book", "artbook", "wallpaper",
+  "emote", "spray", "booster", "token", "ticket", "key",
+  "founder", "credit", "currency", "loot box", "crate",
+];
+
+function isDlcOrBundle(title: string): boolean {
+  const lower = title.toLowerCase();
+  return DLC_KEYWORDS.some((kw) => lower.includes(kw));
+}
+
+function isBaseGameMatch(searchTitle: string, resultTitle: string): boolean {
+  const search = searchTitle.toLowerCase().trim();
+  const result = resultTitle.toLowerCase().trim();
+  // Tam eşleşme
+  if (result === search) return true;
+  // "Destiny 2" → "Destiny 2" OK, "Destiny 2: Forsaken" NO
+  if (result.startsWith(search)) {
+    const rest = result.slice(search.length).trim();
+    // Arkasında hiçbir şey yoksa veya sadece trademark sembolü varsa kabul et
+    return rest === "" || rest === "™" || rest === "®";
+  }
+  return false;
+}
 
 function deduplicateDeals(deals: Deal[]): Deal[] {
   const map = new Map<string, Deal>();
@@ -66,7 +97,7 @@ export default function FreePage() {
           ...(Array.isArray(page3) ? page3 : []),
         ] as Deal[];
 
-        const freeGames = deduplicateDeals(allFree);
+        const freeGames = deduplicateDeals(allFree).filter((g) => !isDlcOrBundle(g.title));
         const stores = Array.isArray(storesRaw) ? storesRaw as Store[] : [];
         const storeMap = Object.fromEntries(stores.map((s) => [s.storeID, s.storeName]));
 
@@ -93,13 +124,14 @@ export default function FreePage() {
 
           for (let j = 0; j < results.length; j++) {
             const data: Record<string, string>[] = Array.isArray(results[j]) ? results[j] as Record<string, string>[] : [];
-            const searchTitle = batch[j].toLowerCase();
+            const searchTitle = batch[j];
 
             for (const game of data) {
               if (seenIds.has(game.gameID)) continue;
-              // İlk kelime eşleşmesi yeterli
-              const firstWord = searchTitle.split(" ")[0];
-              if (!game.external.toLowerCase().includes(firstWord)) continue;
+              // DLC/bundle filtrele
+              if (isDlcOrBundle(game.external)) continue;
+              // Sadece ana oyun eşleşmesi kabul et
+              if (!isBaseGameMatch(searchTitle, game.external)) continue;
 
               seenIds.add(game.gameID);
               f2pResults.push({
