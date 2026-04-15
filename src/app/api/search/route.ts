@@ -18,8 +18,8 @@ async function computeSearchResponse(query: string, locale?: string) {
 
 const getCachedSearchResponse = unstable_cache(
   async (query: string, locale?: string) => computeSearchResponse(query, locale),
-  ["ai-search-response"],
-  { revalidate: 60 * 30 }
+  ["ai-search-response-v2"],
+  { revalidate: 60 * 5 }
 );
 
 export async function POST(req: NextRequest) {

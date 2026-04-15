@@ -7,6 +7,11 @@ type GenrePreset = {
   titles: string[];
 };
 
+type ReferencePreset = {
+  keywords: string[];
+  titles: string[];
+};
+
 const GENRE_PRESETS: GenrePreset[] = [
   {
     label: "RPG",
@@ -47,6 +52,60 @@ const GENRE_PRESETS: GenrePreset[] = [
     label: "indie",
     keywords: ["indie", "bağımsız", "bagimsiz"],
     titles: ["Stardew Valley", "Hollow Knight", "Celeste", "Balatro", "Dave the Diver", "Katana ZERO", "A Short Hike", "Pizza Tower", "Loop Hero", "Vampire Survivors", "Cocoon", "Animal Well"],
+  },
+];
+
+const REFERENCE_PRESETS: ReferencePreset[] = [
+  {
+    keywords: ["cyberpunk", "cyberpunk 2077"],
+    titles: [
+      "Deus Ex: Human Revolution - Director's Cut",
+      "Deus Ex: Mankind Divided",
+      "Ghostrunner",
+      "The Ascent",
+      "Observer: System Redux",
+      "Cloudpunk",
+      "Remember Me",
+      "Ruiner",
+      "E.Y.E: Divine Cybermancy",
+      "Shadowrun: Dragonfall - Director's Cut",
+      "System Shock",
+      "Akane",
+    ],
+  },
+  {
+    keywords: ["witcher", "witcher 3"],
+    titles: [
+      "Kingdom Come: Deliverance",
+      "Dragon Age: Inquisition",
+      "GreedFall",
+      "The Elder Scrolls V: Skyrim Special Edition",
+      "Divinity II: Developer's Cut",
+      "Dragon's Dogma: Dark Arisen",
+      "Risen 3 - Titan Lords",
+      "Gothic 3",
+      "Two Worlds II HD",
+      "Middle-earth: Shadow of War",
+      "Assassin's Creed Odyssey",
+      "Outward Definitive Edition",
+    ],
+  },
+  {
+    keywords: ["elden ring", "dark souls", "souls"],
+    titles: [
+      "Lies of P",
+      "Remnant II",
+      "Mortal Shell",
+      "Code Vein",
+      "The Surge 2",
+      "Lords of the Fallen",
+      "Blasphemous",
+      "Salt and Sanctuary",
+      "Thymesia",
+      "Death's Gambit: Afterlife",
+      "Another Crab's Treasure",
+      "Steelrising",
+    ],
   },
 ];
 
@@ -120,6 +179,28 @@ function findGenrePreset(query: string): GenrePreset | null {
   ) ?? null;
 }
 
+function parseReferenceStyleTitles(query: string): string[] | null {
+  const normalized = normalizeText(query);
+  const hasSimilarIntent = [
+    "gibi",
+    "benzeri",
+    "tarzi",
+    "tarzı",
+    "like",
+    "similar to",
+  ].some((keyword) => normalized.includes(normalizeText(keyword)));
+
+  if (!hasSimilarIntent) {
+    return null;
+  }
+
+  const preset = REFERENCE_PRESETS.find((item) =>
+    item.keywords.some((keyword) => normalized.includes(normalizeText(keyword)))
+  );
+
+  return preset?.titles ?? null;
+}
+
 function buildHeuristicInterpretation(query: string, locale: string | undefined, genreLabel?: string, maxPrice?: number): string {
   const hasBudget = typeof maxPrice === "number";
 
@@ -161,9 +242,24 @@ function buildHeuristicSearch(userQuery: string, locale?: string): AISearchRespo
   const maxPrice = parseMaxPrice(userQuery);
   const storeID = parseStoreId(userQuery);
   const genrePreset = findGenrePreset(userQuery);
+  const referenceTitles = parseReferenceStyleTitles(userQuery);
   const normalized = normalizeText(userQuery);
   const isFree = /\bfree\b|\bbedava\b|\bucretsiz\b|\bücretsiz\b/.test(normalized);
   const onSaleIntent = isFree || parseOnSaleIntent(userQuery);
+
+  if (referenceTitles?.length) {
+    return {
+      interpretation: buildHeuristicInterpretation(userQuery, locale, undefined, isFree ? 0 : maxPrice),
+      searchMode: "similar",
+      gameTitles: referenceTitles,
+      filters: {
+        maxPrice: isFree ? 0 : maxPrice,
+        storeID,
+        sortBy: "Deal Rating",
+        onSale: onSaleIntent,
+      },
+    };
+  }
 
   if (genrePreset) {
     return {
