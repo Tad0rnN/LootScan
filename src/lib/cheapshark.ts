@@ -1,31 +1,17 @@
 import type { Deal, Store, GameInfo, SearchResult } from "@/types";
+import {
+  fetchCheapShark as fetchViaProxy,
+  CHEAPSHARK_BASE,
+} from "@/lib/cheapshark-proxy";
 
-const BASE_URL = "https://www.cheapshark.com/api/1.0";
+const BASE_URL = CHEAPSHARK_BASE;
 
+// Uses the shared in-memory cache + UA + 429 retry from cheapshark-proxy
 async function fetchCheapShark<T>(path: string, revalidate: number): Promise<T> {
-  let lastError: unknown;
-
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    try {
-      const res = await fetch(`${BASE_URL}${path}`, {
-        next: { revalidate },
-        signal: AbortSignal.timeout(15000),
-        headers: {
-          Accept: "application/json",
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error(`CheapShark request failed with ${res.status}`);
-      }
-
-      return res.json();
-    } catch (error) {
-      lastError = error;
-    }
-  }
-
-  throw lastError instanceof Error ? lastError : new Error("CheapShark request failed");
+  return fetchViaProxy<T>(`${BASE_URL}${path}`, {
+    ttlMs: revalidate * 1000,
+    timeoutMs: 15_000,
+  });
 }
 
 export async function getDeals(params: {
