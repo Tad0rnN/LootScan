@@ -23,7 +23,6 @@ export interface F2PGame {
 
 export const F2P_GAMES: F2PGame[] = [
   { title: "Path of Exile", steamAppID: "238960" },
-  { title: "Path of Exile 2", steamAppID: "2694490" },
   { title: "Warframe", steamAppID: "230410" },
   { title: "Destiny 2", steamAppID: "1085660" },
   { title: "Apex Legends", steamAppID: "1172470" },
