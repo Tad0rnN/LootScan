@@ -16,8 +16,36 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "LootScan — Game Price Tracker",
-  description: "Find the best game deals across all major stores. Powered by AI search.",
+  metadataBase: new URL("https://lootscan.co"),
+  title: {
+    default: "LootScan — Game Price Tracker",
+    template: "%s | LootScan",
+  },
+  description:
+    "Find the best PC game deals across Steam, Epic, GOG, and every major store. Free games, AAA discounts, and price tracking — updated hourly.",
+  keywords: [
+    "game deals",
+    "cheap games",
+    "free games",
+    "steam sales",
+    "epic games free",
+    "game price tracker",
+    "gog deals",
+    "pc games on sale",
+  ],
+  openGraph: {
+    type: "website",
+    siteName: "LootScan",
+    title: "LootScan — Game Price Tracker",
+    description:
+      "Find the best PC game deals across all major stores. Updated hourly.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "LootScan — Game Price Tracker",
+    description:
+      "Find the best PC game deals across all major stores. Updated hourly.",
+  },
 };
 
 export default async function LocaleLayout({
