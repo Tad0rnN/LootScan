@@ -33,7 +33,7 @@ export default async function Footer() {
             {t("poweredBy")}{" "}
             <a href="https://www.cheapshark.com" className="hover:text-slate-400 transition-colors" target="_blank" rel="noreferrer">CheapShark</a>
             {" & "}
-            <a href="https://groq.com" className="hover:text-slate-400 transition-colors" target="_blank" rel="noreferrer">Groq AI</a>
+            <a href="https://ai.google.dev/" className="hover:text-slate-400 transition-colors" target="_blank" rel="noreferrer">Gemini AI</a>
             {" · "}© {new Date().getFullYear()}
           </p>
         </div>

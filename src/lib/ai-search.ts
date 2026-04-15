@@ -1,5 +1,4 @@
 import type { AISearchResponse } from "@/types";
-import { parseNaturalLanguageSearch as parseWithGroq } from "@/lib/groq";
 import { parseNaturalLanguageSearch as parseWithGemini } from "@/lib/gemini";
 
 type GenrePreset = {
@@ -231,20 +230,14 @@ function normalizeResponse(response: AISearchResponse): AISearchResponse {
 
 export async function parseNaturalLanguageSearch(userQuery: string, locale?: string): Promise<AISearchResponse> {
   const heuristic = buildHeuristicSearch(userQuery, locale);
-  const errors: string[] = [];
-
-  try {
-    return mergeWithHeuristic(await parseWithGroq(userQuery), heuristic);
-  } catch (error) {
-    errors.push(error instanceof Error ? `Groq: ${error.message}` : "Groq: unknown error");
-  }
 
   try {
     return mergeWithHeuristic(await parseWithGemini(userQuery), heuristic);
   } catch (error) {
-    errors.push(error instanceof Error ? `Gemini: ${error.message}` : "Gemini: unknown error");
+    console.warn(
+      "AI search fallback is using heuristic parser:",
+      error instanceof Error ? `Gemini: ${error.message}` : "Gemini: unknown error"
+    );
   }
-
-  console.warn("AI search fallback is using heuristic parser:", errors.join(" | "));
   return heuristic;
 }
