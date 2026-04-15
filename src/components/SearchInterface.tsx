@@ -76,7 +76,36 @@ function toDeal(game: SearchResult): Deal {
   };
 }
 
-async function fetchDealsMode(filters: AISearchResponse["filters"] | undefined): Promise<Deal[]> {
+async function fetchDealsForSuggestedTitles(
+  gameTitles: string[],
+  filters: AISearchResponse["filters"] | undefined,
+  limit = MAX_SIMILAR_RESULTS
+): Promise<Deal[]> {
+  const seen = new Set<string>();
+  const suggestions: Deal[] = [];
+
+  for (const title of gameTitles.slice(0, limit)) {
+    let data: unknown;
+    try {
+      data = await fetchGameSearch(title);
+    } catch {
+      continue;
+    }
+
+    const results = Array.isArray(data) ? data as SearchResult[] : [];
+    const game = pickBestSearchResult(results, title, filters, seen);
+    if (!game) continue;
+    seen.add(game.gameID);
+    suggestions.push(toDeal(game));
+  }
+
+  return deduplicateDeals(suggestions);
+}
+
+async function fetchDealsMode(
+  filters: AISearchResponse["filters"] | undefined,
+  gameTitles: string[] = []
+): Promise<Deal[]> {
   const params = new URLSearchParams();
   if (filters?.title) params.set("title", filters.title);
   if (filters?.maxPrice !== undefined && filters.maxPrice !== null) params.set("upperPrice", String(filters.maxPrice));
@@ -91,6 +120,10 @@ async function fetchDealsMode(filters: AISearchResponse["filters"] | undefined):
     .then((d) => (Array.isArray(d) ? d as Deal[] : []))
     .catch(() => [] as Deal[]);
 
+  const suggestedGamesPromise = gameTitles.length > 0
+    ? fetchDealsForSuggestedTitles(gameTitles, filters, 12).catch(() => [] as Deal[])
+    : Promise.resolve([] as Deal[]);
+
   // Başlık aramasıysa, indirimde olmayan oyunları da çek
   let gameResults: Deal[] = [];
   if (filters?.title) {
@@ -101,8 +134,9 @@ async function fetchDealsMode(filters: AISearchResponse["filters"] | undefined):
   }
 
   const dealResults = await dealsPromise;
+  const suggestedResults = await suggestedGamesPromise;
   // Deal sonuçlarını öncelikli tut (indirimli fiyatı gösterir), sonra game sonuçlarını ekle
-  const merged = [...dealResults, ...gameResults];
+  const merged = [...dealResults, ...suggestedResults, ...gameResults];
   return deduplicateDeals(merged).slice(0, 24);
 }
 
@@ -190,7 +224,7 @@ export default function SearchInterface() {
       try {
         deals = data.searchMode === "similar"
           ? await fetchSimilarMode(data.gameTitles ?? [], data.filters)
-          : await fetchDealsMode(data.filters);
+          : await fetchDealsMode(data.filters, data.gameTitles ?? []);
       } catch (fetchError) {
         if (fetchError instanceof Error && fetchError.message === "rate_limited") {
           rateLimited = true;

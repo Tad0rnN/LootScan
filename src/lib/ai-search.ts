@@ -94,6 +94,26 @@ function parseStoreId(query: string): string | undefined {
   return undefined;
 }
 
+function parseOnSaleIntent(query: string): boolean {
+  const normalized = normalizeText(query);
+  return [
+    "discount",
+    "discounted",
+    "sale",
+    "on sale",
+    "deal",
+    "deals",
+    "indirim",
+    "indirimli",
+    "firsat",
+    "firsatlar",
+    "fırsat",
+    "fırsatlar",
+    "ucuz",
+    "cheap",
+  ].some((keyword) => normalized.includes(normalizeText(keyword)));
+}
+
 function findGenrePreset(query: string): GenrePreset | null {
   const normalized = normalizeText(query);
   return GENRE_PRESETS.find((preset) =>
@@ -144,6 +164,7 @@ function buildHeuristicSearch(userQuery: string, locale?: string): AISearchRespo
   const genrePreset = findGenrePreset(userQuery);
   const normalized = normalizeText(userQuery);
   const isFree = /\bfree\b|\bbedava\b|\bucretsiz\b|\bücretsiz\b/.test(normalized);
+  const onSaleIntent = isFree || parseOnSaleIntent(userQuery);
 
   if (genrePreset) {
     return {
@@ -154,7 +175,7 @@ function buildHeuristicSearch(userQuery: string, locale?: string): AISearchRespo
         maxPrice: isFree ? 0 : maxPrice,
         storeID,
         sortBy: "Deal Rating",
-        onSale: true,
+        onSale: onSaleIntent,
       },
     };
   }
@@ -168,7 +189,7 @@ function buildHeuristicSearch(userQuery: string, locale?: string): AISearchRespo
       maxPrice: isFree ? 0 : maxPrice,
       storeID,
       sortBy: "Deal Rating",
-      onSale: false,
+      onSale: onSaleIntent,
     },
   };
 }
