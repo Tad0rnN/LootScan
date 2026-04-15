@@ -6,6 +6,7 @@ import DealCard from "./DealCard";
 import type { AISearchResponse, Deal, SearchResult } from "@/types";
 import { useLocale, useTranslations } from "next-intl";
 import { fetchDeals as fetchDealsApi, fetchGameSearch } from "@/lib/fetch-deals";
+import { F2P_GAMES, f2pStoreUrl, f2pThumb } from "@/lib/f2p-games";
 
 interface SearchState {
   interpretation: string;
@@ -89,6 +90,10 @@ function deduplicateDeals(deals: Deal[]): Deal[] {
   return Array.from(map.values());
 }
 
+function normalizeGameId(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+}
+
 function toDeal(game: SearchResult): Deal {
   return {
     internalName: game.internalName,
@@ -111,6 +116,36 @@ function toDeal(game: SearchResult): Deal {
     dealRating: "0",
     thumb: game.thumb,
   };
+}
+
+function buildF2PSearchDeals(limit = 12): Deal[] {
+  return F2P_GAMES.slice(0, limit).map((game, index) => ({
+    internalName: game.title.toUpperCase().replace(/[^A-Z0-9]+/g, ""),
+    title: game.title,
+    metacriticLink: null,
+    dealID: `f2p-search-${index}-${normalizeGameId(game.title)}`,
+    storeID: "0",
+    gameID: `f2p-${normalizeGameId(game.title)}`,
+    salePrice: "0.00",
+    normalPrice: "0.00",
+    isOnSale: "1",
+    savings: "100",
+    metacriticScore: "0",
+    steamRatingText: null,
+    steamRatingPercent: "0",
+    steamRatingCount: "0",
+    steamAppID: game.steamAppID ?? null,
+    releaseDate: 0,
+    lastChange: 0,
+    dealRating: "0",
+    thumb: f2pThumb(game),
+  }));
+}
+
+function getF2PExternalHref(deal: Deal): string | undefined {
+  if (!deal.dealID.startsWith("f2p-search-")) return undefined;
+  const match = F2P_GAMES.find((game) => game.title === deal.title);
+  return match ? f2pStoreUrl(match) : undefined;
 }
 
 function looksLikeBroadDiscoveryQuery(title: string): boolean {
@@ -206,8 +241,10 @@ async function fetchDealsMode(
 
   const dealResults = await dealsPromise;
   const suggestedResults = await suggestedGamesPromise;
+  const freeFallbackResults =
+    filters?.maxPrice === 0 ? buildF2PSearchDeals(12) : [];
   // Deal sonuçlarını öncelikli tut (indirimli fiyatı gösterir), sonra game sonuçlarını ekle
-  const merged = [...dealResults, ...suggestedResults, ...gameResults];
+  const merged = [...dealResults, ...suggestedResults, ...gameResults, ...freeFallbackResults];
   return deduplicateDeals(merged).slice(0, 24);
 }
 
@@ -423,7 +460,11 @@ export default function SearchInterface() {
               <p className="text-slate-400 text-sm mb-4">{t("dealsFound", { count: result.deals.length, query: result.query })}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {result.deals.map((deal) => (
-                  <DealCard key={deal.dealID} deal={deal} />
+                  <DealCard
+                    key={deal.dealID}
+                    deal={deal}
+                    externalHref={getF2PExternalHref(deal)}
+                  />
                 ))}
               </div>
             </>
