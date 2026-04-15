@@ -12,6 +12,21 @@ type ReferencePreset = {
   titles: string[];
 };
 
+const GENERIC_RECOMMENDATION_TITLES = [
+  "The Witcher 3: Wild Hunt",
+  "Red Dead Redemption 2",
+  "Cyberpunk 2077",
+  "Hades",
+  "Hollow Knight",
+  "Disco Elysium",
+  "Divinity: Original Sin 2",
+  "Resident Evil 2",
+  "Stardew Valley",
+  "Deep Rock Galactic",
+  "Balatro",
+  "Dave the Diver",
+];
+
 const GENRE_PRESETS: GenrePreset[] = [
   {
     label: "RPG",
@@ -57,6 +72,26 @@ const GENRE_PRESETS: GenrePreset[] = [
     label: "indie",
     keywords: ["indie", "bağımsız", "bagimsiz"],
     titles: ["Stardew Valley", "Hollow Knight", "Celeste", "Balatro", "Dave the Diver", "Katana ZERO", "A Short Hike", "Pizza Tower", "Loop Hero", "Vampire Survivors", "Cocoon", "Animal Well"],
+  },
+  {
+    label: "shooter",
+    keywords: ["shooter", "fps", "tps", "nisanci", "nişancı", "silah"],
+    titles: ["DOOM Eternal", "Titanfall 2", "ULTRAKILL", "Severed Steel", "RoboCop: Rogue City", "Ready or Not", "Metro Exodus", "Dusk", "Trepang2", "Warhammer 40,000: Boltgun", "Deep Rock Galactic", "Insurgency: Sandstorm"],
+  },
+  {
+    label: "survival",
+    keywords: ["survival", "hayatta kalma", "hayatta", "zombi", "zombie"],
+    titles: ["Valheim", "Project Zomboid", "V Rising", "Subnautica", "The Long Dark", "Green Hell", "Don't Starve Together", "State of Decay 2", "Raft", "Sons Of The Forest", "7 Days to Die", "Rust"],
+  },
+  {
+    label: "story rich",
+    keywords: ["story", "hikaye", "hikayeli", "narrative", "senaryo", "story rich"],
+    titles: ["Disco Elysium", "Red Dead Redemption 2", "Detroit: Become Human", "Life is Strange", "A Plague Tale: Requiem", "What Remains of Edith Finch", "Firewatch", "Pentiment", "The Wolf Among Us", "Mass Effect Legendary Edition", "To the Moon", "Citizen Sleeper"],
+  },
+  {
+    label: "racing",
+    keywords: ["racing", "race", "yaris", "yarış", "araba", "driving"],
+    titles: ["Forza Horizon 5", "Need for Speed Heat", "Assetto Corsa", "Wreckfest", "Dirt Rally 2.0", "F1 24", "Burnout Paradise Remastered", "Hot Wheels Unleashed 2", "CarX Drift Racing Online", "Sonic & All-Stars Racing Transformed", "Trackmania", "Automobilista 2"],
   },
 ];
 
@@ -138,6 +173,15 @@ function parseMaxPrice(query: string): number | undefined {
   return undefined;
 }
 
+function hasAdultAgeIntent(query: string): boolean {
+  const raw = query.toLowerCase();
+  return /(^|\s)(\+?18|18\+)(\s|$)/.test(raw)
+    || raw.includes("adult")
+    || raw.includes("mature")
+    || raw.includes("yetiskin")
+    || raw.includes("yetişkin");
+}
+
 function parseStoreId(query: string): string | undefined {
   const normalized = normalizeText(query);
   const storeMap: Record<string, string> = {
@@ -201,7 +245,58 @@ function parseOnSaleIntent(query: string): boolean {
   ].some((keyword) => normalized.includes(normalizeText(keyword)));
 }
 
+function looksLikeBroadRecommendationQuery(query: string): boolean {
+  const normalized = normalizeText(query);
+  const recommendationWords = [
+    "oyun",
+    "oyunlar",
+    "games",
+    "game",
+    "oner",
+    "öner",
+    "recommend",
+    "tarzi",
+    "tarzı",
+    "benzeri",
+    "like",
+    "similar",
+  ];
+
+  const broadTokens = query
+    .toLowerCase()
+    .split(/[^a-z0-9ğüşöçıİĞÜŞÖÇ]+/i)
+    .filter(Boolean)
+    .filter((token) => !["oyun", "oyunlar", "games", "game", "ve", "the", "best", "top"].includes(token));
+
+  if (hasAdultAgeIntent(query)) return true;
+  if (broadTokens.length <= 2 && recommendationWords.some((word) => normalized.includes(normalizeText(word)))) return true;
+  if (normalized.includes("tarzi") || normalized.includes("tarzı") || normalized.includes("benzeri")) return true;
+
+  return false;
+}
+
 function findGenrePreset(query: string): GenrePreset | null {
+  if (hasAdultAgeIntent(query)) {
+    return {
+      label: "mature",
+      keywords: [],
+      titles: [
+        "Cyberpunk 2077",
+        "The Witcher 3: Wild Hunt",
+        "Resident Evil 4",
+        "Dead Space",
+        "DOOM Eternal",
+        "Mortal Kombat 11",
+        "Manhunt",
+        "The Callisto Protocol",
+        "Outlast",
+        "The Evil Within 2",
+        "Postal 2",
+        "Max Payne 3",
+      ],
+    };
+  }
+
   const normalized = normalizeText(query);
   return GENRE_PRESETS.find((preset) =>
     preset.keywords.some((keyword) => normalized.includes(normalizeText(keyword)))
@@ -296,6 +391,20 @@ function buildHeuristicSearch(userQuery: string, locale?: string): AISearchRespo
       interpretation: buildHeuristicInterpretation(userQuery, locale, genrePreset.label, isFree ? 0 : maxPrice),
       searchMode: "similar",
       gameTitles: genrePreset.titles,
+      filters: {
+        maxPrice: isFree ? 0 : maxPrice,
+        storeID,
+        sortBy: "Deal Rating",
+        onSale: onSaleIntent,
+      },
+    };
+  }
+
+  if (looksLikeBroadRecommendationQuery(userQuery)) {
+    return {
+      interpretation: buildHeuristicInterpretation(userQuery, locale, undefined, isFree ? 0 : maxPrice),
+      searchMode: "similar",
+      gameTitles: GENERIC_RECOMMENDATION_TITLES,
       filters: {
         maxPrice: isFree ? 0 : maxPrice,
         storeID,

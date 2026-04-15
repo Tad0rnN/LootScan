@@ -17,6 +17,7 @@ Classify the user query into one of two modes:
 
 MODE "similar":
 - User asks for games similar to another game, by genre, by mood, or by style.
+- Broad thematic requests like "+18 games", "simulation games", "story-rich games", "co-op games", "racing games" are also MODE "similar".
 - Return up to 12 specific real base game titles in "gameTitles".
 - Do not include DLC, soundtrack, expansion, bundle, season pass, or vague filler entries.
 - Only set filters.onSale to true if the user explicitly asks for discounts / sales / cheap games.
