@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -17,6 +17,11 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://lootscan.co"),
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
   title: {
     default: "LootScan — Game Price Tracker",
     template: "%s | LootScan",
@@ -46,6 +51,10 @@ export const metadata: Metadata = {
     description:
       "Find the best PC game deals across all major stores. Updated hourly.",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#07070f",
 };
 
 export default async function LocaleLayout({
