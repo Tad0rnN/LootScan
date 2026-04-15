@@ -157,6 +157,30 @@ function parseStoreId(query: string): string | undefined {
   return undefined;
 }
 
+function isStoreDealsQuery(query: string): boolean {
+  const normalized = normalizeText(query);
+  const hasStore = Boolean(parseStoreId(query));
+  const hasDealsIntent = [
+    "deal",
+    "deals",
+    "discount",
+    "discounted",
+    "sale",
+    "sales",
+    "indirim",
+    "indirimli",
+    "firsat",
+    "firsatlar",
+    "fırsat",
+    "fırsatlar",
+    "ozel",
+    "özel",
+    "exclusive",
+  ].some((keyword) => normalized.includes(normalizeText(keyword)));
+
+  return hasStore && hasDealsIntent;
+}
+
 function parseOnSaleIntent(query: string): boolean {
   const normalized = normalizeText(query);
   return [
@@ -251,6 +275,7 @@ function buildHeuristicSearch(userQuery: string, locale?: string): AISearchRespo
   const normalized = normalizeText(userQuery);
   const isFree = /\bfree\b|\bbedava\b|\bucretsiz\b|\bücretsiz\b/.test(normalized);
   const onSaleIntent = isFree || parseOnSaleIntent(userQuery);
+  const storeDealsIntent = isStoreDealsQuery(userQuery);
 
   if (referenceTitles?.length) {
     return {
@@ -285,7 +310,7 @@ function buildHeuristicSearch(userQuery: string, locale?: string): AISearchRespo
     searchMode: "deals",
     gameTitles: [],
     filters: {
-      title: userQuery.trim(),
+      title: storeDealsIntent ? undefined : userQuery.trim(),
       maxPrice: isFree ? 0 : maxPrice,
       storeID,
       sortBy: "Deal Rating",
