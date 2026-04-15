@@ -37,7 +37,23 @@ export default function Navbar() {
     });
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll);
-    return () => { subscription.unsubscribe(); window.removeEventListener("scroll", onScroll); };
+
+    // Global keyboard shortcut: "/" opens search (unless user is typing in an input)
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || target?.isContentEditable) return;
+      e.preventDefault();
+      setSearchOpen(true);
+    };
+    window.addEventListener("keydown", onKey);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("keydown", onKey);
+    };
   }, []);
 
   const handleSignOut = async () => {
@@ -90,10 +106,13 @@ export default function Navbar() {
             {/* Game search icon */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+              className="flex items-center gap-2 h-9 px-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
               title={t("searchGames")}
             >
               <Search className="w-4 h-4" />
+              <kbd className="hidden lg:inline-flex items-center justify-center h-5 min-w-[20px] px-1.5 rounded border border-white/10 bg-white/5 text-[11px] font-mono text-slate-500">
+                /
+              </kbd>
             </button>
             <LanguageSwitcher />
             {user ? (

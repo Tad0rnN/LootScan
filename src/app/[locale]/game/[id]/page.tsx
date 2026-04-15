@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ExternalLink, Tag, Loader2 } from "lucide-react";
 import WishlistButton from "@/components/WishlistButton";
+import ShareButton from "@/components/ShareButton";
 import { formatPrice, getStoreLogoUrl } from "@/lib/cheapshark";
 import { useTranslations, useLocale } from "next-intl";
 import type { GameInfo, Store } from "@/types";
@@ -104,13 +105,18 @@ export default function GamePage() {
                 )}
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-4 flex flex-wrap items-center gap-2">
               <WishlistButton
                 gameID={id}
                 gameTitle={gameInfo.info.title}
                 gameThumb={gameInfo.info.thumb}
                 normalPrice={cheapestDeal.retailPrice}
                 currentPrice={cheapestDeal.price}
+              />
+              <ShareButton
+                url=""
+                title={gameInfo.info.title}
+                text={`${gameInfo.info.title} — ${formatPrice(cheapestDeal.price)}${savings > 0 ? ` (-${savings}%)` : ""} on LootScan`}
               />
             </div>
           </div>
