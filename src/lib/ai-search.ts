@@ -34,6 +34,11 @@ const GENRE_PRESETS: GenrePreset[] = [
     titles: ["Civilization VI", "Age of Empires II: Definitive Edition", "XCOM 2", "Into the Breach", "Crusader Kings III", "Europa Universalis IV", "Total War: WARHAMMER III", "Shadow Tactics: Blades of the Shogun", "Northgard", "Battle Brothers", "Against the Storm", "Desperados III"],
   },
   {
+    label: "simulation",
+    keywords: ["simulation", "simulator", "simulasyon", "simülasyon", "similasyon", "tycoon", "management"],
+    titles: ["Euro Truck Simulator 2", "Microsoft Flight Simulator", "Two Point Hospital", "Two Point Campus", "Cities: Skylines", "Planet Zoo", "Planet Coaster", "Car Mechanic Simulator 2021", "PowerWash Simulator", "House Flipper", "Farming Simulator 22", "Kerbal Space Program"],
+  },
+  {
     label: "horror",
     keywords: ["horror", "korku", "survival horror"],
     titles: ["Resident Evil 2", "Alien: Isolation", "SOMA", "Signalis", "Amnesia: The Bunker", "The Evil Within 2", "Darkwood", "Dead Space", "Outlast", "Tormented Souls", "Little Nightmares II", "Visage"],
