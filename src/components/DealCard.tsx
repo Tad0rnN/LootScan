@@ -14,9 +14,11 @@ interface Props {
   deal: Deal;
   wishlisted?: boolean;
   onWishlistChange?: () => void;
+  /** If set, the card links to this external URL instead of our /game/[id] page. */
+  externalHref?: string;
 }
 
-export default function DealCard({ deal, wishlisted = false, onWishlistChange }: Props) {
+export default function DealCard({ deal, wishlisted = false, onWishlistChange, externalHref }: Props) {
   const [inWishlist, setInWishlist] = useState(wishlisted);
   const [loading, setLoading] = useState(false);
   const savings = Math.round(parseFloat(deal.savings));
@@ -53,11 +55,9 @@ export default function DealCard({ deal, wishlisted = false, onWishlistChange }:
     onWishlistChange?.();
   };
 
-  return (
-    <Link
-      href={`/${locale}/game/${deal.gameID}`}
-      className="group card card-hover flex flex-col overflow-hidden"
-    >
+  const cardClassName = "group card card-hover flex flex-col overflow-hidden";
+  const cardInner = (
+    <>
       {/* Thumbnail */}
       <div className="relative overflow-hidden bg-slate-900/50 aspect-[16/7]">
         <Image
@@ -136,6 +136,25 @@ export default function DealCard({ deal, wishlisted = false, onWishlistChange }:
           <p className="text-xs text-slate-600 truncate">{deal.steamRatingText} · {deal.steamRatingPercent}%</p>
         )}
       </div>
+    </>
+  );
+
+  if (externalHref) {
+    return (
+      <a
+        href={externalHref}
+        target="_blank"
+        rel="noreferrer"
+        className={cardClassName}
+      >
+        {cardInner}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={`/${locale}/game/${deal.gameID}`} className={cardClassName}>
+      {cardInner}
     </Link>
   );
 }

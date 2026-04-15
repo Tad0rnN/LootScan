@@ -5,18 +5,13 @@ import DealCard from "@/components/DealCard";
 import { Gift, RefreshCw, Loader2, Gamepad2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Deal, Store } from "@/types";
-import { fetchDeals, fetchStores, fetchGameSearch } from "@/lib/fetch-deals";
+import { fetchDeals, fetchStores } from "@/lib/fetch-deals";
+import { F2P_GAMES, f2pStoreUrl, f2pThumb } from "@/lib/f2p-games";
 
-// Popüler F2P oyun başlıkları — tam eşleşme için kullanılır
-const F2P_TITLES = [
-  "Path of Exile", "Path of Exile 2", "Warframe", "Destiny 2", "Genshin Impact",
-  "Apex Legends", "War Thunder", "Star Trek Online", "SMITE",
-  "Paladins", "Brawlhalla", "Enlisted", "MultiVersus",
-  "The First Descendant", "Lost Ark", "Dauntless", "Neverwinter",
-  "World of Tanks", "World of Warships", "Crossout", "Phantasy Star Online 2",
-  "Dota 2", "Counter-Strike 2", "Team Fortress 2", "Fortnite",
-  "Delta Force", "The Finals", "Albion Online",
-];
+interface F2PCardItem {
+  deal: Deal;
+  externalHref: string;
+}
 
 // DLC, bundle, pack, starter, skin, gems, edition gibi sonuçları filtrele
 const DLC_KEYWORDS = [
@@ -32,19 +27,6 @@ const DLC_KEYWORDS = [
 function isDlcOrBundle(title: string): boolean {
   const lower = title.toLowerCase();
   return DLC_KEYWORDS.some((kw) => lower.includes(kw));
-}
-
-// Harfleri ve rakamları dışındaki her şeyi (boşluk, tire, iki nokta,
-// ™, ®, ©, ":", noktalama) atar. Böylece "SMITE" ↔ "Smite",
-// "Warframe" ↔ "Warframe®", "Counter-Strike 2" ↔ "Counter-Strike: 2"
-// gibi varyasyonlar aynı sayılır ama "Destiny 2" ↔ "Destiny 2: Forsaken"
-// farklı kalır.
-function normalizeTitle(title: string): string {
-  return title.toLowerCase().replace(/[^a-z0-9]/g, "");
-}
-
-function isBaseGameMatch(searchTitle: string, resultTitle: string): boolean {
-  return normalizeTitle(searchTitle) === normalizeTitle(resultTitle);
 }
 
 function deduplicateDeals(deals: Deal[]): Deal[] {
@@ -73,10 +55,41 @@ function SkeletonCard() {
   );
 }
 
+function normalizeGameId(title: string): string {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+}
+
+function toF2PCardItem(title: string, index: number, externalHref: string, thumb: string, steamAppID?: string): F2PCardItem {
+  return {
+    deal: {
+      internalName: title.toUpperCase().replace(/[^A-Z0-9]+/g, ""),
+      title,
+      metacriticLink: null,
+      dealID: `f2p-${index}-${normalizeGameId(title)}`,
+      storeID: externalHref.includes("epicgames.com") ? "27" : "1",
+      gameID: `f2p-${normalizeGameId(title)}`,
+      salePrice: "0.00",
+      normalPrice: "0.00",
+      isOnSale: "1",
+      savings: "100",
+      metacriticScore: "0",
+      steamRatingText: null,
+      steamRatingPercent: "0",
+      steamRatingCount: "0",
+      steamAppID: steamAppID ?? null,
+      releaseDate: 0,
+      lastChange: 0,
+      dealRating: "0",
+      thumb,
+    },
+    externalHref,
+  };
+}
+
 export default function FreePage() {
   const t = useTranslations("free");
   const [byStore, setByStore] = useState<Record<string, Deal[]>>({});
-  const [f2pGames, setF2pGames] = useState<Deal[]>([]);
+  const [f2pGames, setF2pGames] = useState<F2PCardItem[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -109,58 +122,11 @@ export default function FreePage() {
         }
         setByStore(grouped);
         setTotalCount(freeGames.length);
-
-        // F2P oyunları çek (paralel, 5'erli batch)
-        const f2pResults: Deal[] = [];
-        const seenIds = new Set(freeGames.map(g => g.gameID));
-
-        for (let i = 0; i < F2P_TITLES.length; i += 5) {
-          const batch = F2P_TITLES.slice(i, i + 5);
-          const results = await Promise.all(
-            batch.map(title =>
-              fetchGameSearch(title, 5).catch(() => [])
-            )
-          );
-
-          for (let j = 0; j < results.length; j++) {
-            const data: Record<string, string>[] = Array.isArray(results[j]) ? results[j] as Record<string, string>[] : [];
-            const searchTitle = batch[j];
-
-            for (const game of data) {
-              if (seenIds.has(game.gameID)) continue;
-              // DLC/bundle filtrele
-              if (isDlcOrBundle(game.external)) continue;
-              // Sadece ana oyun eşleşmesi kabul et
-              if (!isBaseGameMatch(searchTitle, game.external)) continue;
-
-              seenIds.add(game.gameID);
-              f2pResults.push({
-                internalName: game.internalName,
-                title: game.external,
-                metacriticLink: null,
-                dealID: game.cheapestDealID ?? `f2p-${game.gameID}`,
-                storeID: "1",
-                gameID: game.gameID,
-                salePrice: "0.00",
-                normalPrice: "0.00",
-                isOnSale: "1",
-                savings: "100",
-                metacriticScore: "0",
-                steamRatingText: null,
-                steamRatingPercent: "0",
-                steamRatingCount: "0",
-                steamAppID: game.steamAppID ?? null,
-                releaseDate: 0,
-                lastChange: 0,
-                dealRating: "0",
-                thumb: game.thumb,
-              });
-              break;
-            }
-          }
-        }
-
-        setF2pGames(f2pResults);
+        setF2pGames(
+          F2P_GAMES.map((game, index) =>
+            toF2PCardItem(game.title, index, f2pStoreUrl(game), f2pThumb(game), game.steamAppID)
+          )
+        );
       } catch {
         // sessizce geç
       } finally {
@@ -242,7 +208,7 @@ export default function FreePage() {
               <div className="flex items-center gap-3 mb-4">
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
                   <Gamepad2 className="w-5 h-5 text-green-400" />
-                  Free to Play
+                  {t("f2pTitle")}
                 </h2>
                 <span className="text-xs bg-green-500/10 border border-green-500/20 text-green-400 px-2 py-0.5 rounded-full font-medium">
                   {t("gamesCount", { count: f2pGames.length })}
@@ -250,7 +216,11 @@ export default function FreePage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {f2pGames.map((game) => (
-                  <DealCard key={game.dealID} deal={game} />
+                  <DealCard
+                    key={game.deal.dealID}
+                    deal={game.deal}
+                    externalHref={game.externalHref}
+                  />
                 ))}
               </div>
             </section>
