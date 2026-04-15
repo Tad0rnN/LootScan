@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFallbackGameInfo } from "@/lib/fallback-data";
+import { fetchCheapShark, CHEAPSHARK_BASE } from "@/lib/cheapshark-proxy";
 
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id") ?? "";
@@ -8,27 +9,27 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const res = await fetch(
-      `https://www.cheapshark.com/api/1.0/games?id=${encodeURIComponent(id)}`,
-      { next: { revalidate: 300 }, signal: AbortSignal.timeout(15000) }
+    const data = await fetchCheapShark(
+      `${CHEAPSHARK_BASE}/games?id=${encodeURIComponent(id)}`,
+      { ttlMs: 5 * 60 * 1000, timeoutMs: 15_000 }
     );
-
-    if (!res.ok) {
-      const fallback = getFallbackGameInfo(id);
-      if (fallback) {
-        return NextResponse.json(fallback, { headers: { "x-lootscan-fallback": "1" } });
-      }
-      return NextResponse.json({ error: "Upstream error" }, { status: 502 });
-    }
-
-    const data = await res.json();
-    return NextResponse.json(data);
+    return NextResponse.json(data, {
+      headers: {
+        "Cache-Control":
+          "public, s-maxage=300, stale-while-revalidate=3600",
+      },
+    });
   } catch (error) {
     console.error("CheapShark game info error:", error);
     const fallback = getFallbackGameInfo(id);
     if (fallback) {
-      return NextResponse.json(fallback, { headers: { "x-lootscan-fallback": "1" } });
+      return NextResponse.json(fallback, {
+        headers: { "x-lootscan-fallback": "1" },
+      });
     }
-    return NextResponse.json({ error: "Failed to fetch game info" }, { status: 502 });
+    return NextResponse.json(
+      { error: "Failed to fetch game info" },
+      { status: 502 }
+    );
   }
 }
