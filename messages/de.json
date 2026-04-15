@@ -256,5 +256,21 @@
       "chairs": "Stühle",
       "controllers": "Controller"
     }
+  },
+  "newsletter": {
+    "eyebrow": "Wöchentlicher Newsletter",
+    "title": "Erhalte die 10 besten Deals der Woche",
+    "subtitle": "Trage dich in die LootScan-Liste ein und erhalte einmal pro Woche eine kurze Auswahl der besten Game-Deals.",
+    "benefit1": "Eine Mail pro Woche",
+    "benefit2": "10 kuratierte Deals",
+    "benefit3": "Jederzeit abmelden",
+    "inputLabel": "E-Mail-Adresse",
+    "placeholder": "du@beispiel.de",
+    "button": "Abonnieren",
+    "invalidEmail": "Bitte gib eine gültige E-Mail-Adresse ein.",
+    "success": "Du bist eingetragen. Prüfe dein Postfach für die Willkommensmail.",
+    "alreadySubscribed": "Du bist bereits für die wöchentlichen Deals angemeldet.",
+    "errorGeneric": "Die Anmeldung konnte gerade nicht abgeschlossen werden.",
+    "disclaimer": "Kein Spam. Nur eine wöchentliche Mail mit starken Rabatten und lohnenden Deals."
   }
 }

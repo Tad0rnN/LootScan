@@ -256,5 +256,21 @@
       "chairs": "Stoelen",
       "controllers": "Controllers"
     }
+  },
+  "newsletter": {
+    "eyebrow": "Wekelijkse nieuwsbrief",
+    "title": "Ontvang de top 10 beste deals van de week",
+    "subtitle": "Schrijf je in voor de LootScan-lijst en ontvang elke week een korte selectie van de beste game-deals.",
+    "benefit1": "Eén mail per week",
+    "benefit2": "10 geselecteerde deals",
+    "benefit3": "Altijd uitschrijven",
+    "inputLabel": "E-mailadres",
+    "placeholder": "jij@voorbeeld.nl",
+    "button": "Aanmelden",
+    "invalidEmail": "Voer een geldig e-mailadres in.",
+    "success": "Je bent aangemeld. Controleer je inbox voor de welkomstmail.",
+    "alreadySubscribed": "Je bent al aangemeld voor de wekelijkse deals.",
+    "errorGeneric": "Aanmelden lukt nu niet. Probeer het opnieuw.",
+    "disclaimer": "Geen spam. Alleen één wekelijkse mail met opvallende deals en sterke kortingen."
   }
 }

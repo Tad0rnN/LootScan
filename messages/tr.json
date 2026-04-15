@@ -256,5 +256,21 @@
       "chairs": "Koltuklar",
       "controllers": "Oyun Kolları"
     }
+  },
+  "newsletter": {
+    "eyebrow": "Haftalık Bülten",
+    "title": "Haftanın En İyi 10 Fırsatını Kaçırma",
+    "subtitle": "LootScan e-posta listesine katıl, haftada bir kez gerçekten tıklamaya değer en iyi oyun fırsatlarını mail olarak al.",
+    "benefit1": "Haftada tek mail",
+    "benefit2": "Elle seçilmiş 10 fırsat",
+    "benefit3": "İstediğin zaman çık",
+    "inputLabel": "E-posta adresi",
+    "placeholder": "ornek@mail.com",
+    "button": "Abone Ol",
+    "invalidEmail": "Lütfen geçerli bir e-posta adresi gir.",
+    "success": "Aboneliğin tamamlandı. Karşılama maili için gelen kutunu kontrol et.",
+    "alreadySubscribed": "Zaten haftalık fırsat listesine abonesin.",
+    "errorGeneric": "Şu anda abone olunamadı. Lütfen tekrar dene.",
+    "disclaimer": "Spam yok. Sadece haftada bir kez öne çıkan fırsatlar, güçlü indirimler ve geri gelmeye değer oyunlar."
   }
 }

@@ -36,3 +36,24 @@ create policy "Users can delete from their own wishlist"
 -- Migration: add new columns if table already exists
 alter table public.wishlist add column if not exists notify_on_sale   boolean not null default true;
 alter table public.wishlist add column if not exists last_notified_at timestamptz;
+
+-- Newsletter subscribers
+create table if not exists public.newsletter_subscribers (
+  id                uuid default gen_random_uuid() primary key,
+  email             text not null unique,
+  locale            text not null default 'en',
+  source            text not null default 'website',
+  signup_path       text not null default '/',
+  referrer          text,
+  user_agent        text,
+  status            text not null default 'subscribed' check (status in ('subscribed', 'unsubscribed')),
+  unsubscribe_token uuid not null default gen_random_uuid() unique,
+  subscribed_at     timestamptz not null default now(),
+  last_sent_at      timestamptz,
+  created_at        timestamptz not null default now()
+);
+
+alter table public.newsletter_subscribers enable row level security;
+
+-- No public policies on purpose:
+-- subscriptions are written only through our validated server route using the service role.

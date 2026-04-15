@@ -256,5 +256,21 @@
       "chairs": "Chairs",
       "controllers": "Controllers"
     }
+  },
+  "newsletter": {
+    "eyebrow": "Weekly Newsletter",
+    "title": "Get the Top 10 Best Deals of the Week",
+    "subtitle": "Join the LootScan email list and get one short weekly roundup with the best game deals worth clicking.",
+    "benefit1": "One email per week",
+    "benefit2": "Top 10 curated deals",
+    "benefit3": "Unsubscribe anytime",
+    "inputLabel": "Email address",
+    "placeholder": "you@example.com",
+    "button": "Subscribe",
+    "invalidEmail": "Please enter a valid email address.",
+    "success": "You're subscribed. Check your inbox for a welcome email.",
+    "alreadySubscribed": "You're already subscribed to the weekly deals list.",
+    "errorGeneric": "Could not subscribe right now. Please try again.",
+    "disclaimer": "No spam. Just one weekly email with standout deals, best discounts, and new reasons to come back."
   }
 }

@@ -256,5 +256,21 @@
       "chairs": "座椅",
       "controllers": "手柄"
     }
+  },
+  "newsletter": {
+    "eyebrow": "每周简报",
+    "title": "获取本周最值得看的 10 个最佳优惠",
+    "subtitle": "加入 LootScan 邮件列表，每周只收一封简短邮件，查看最值得点击的游戏优惠。",
+    "benefit1": "每周仅一封",
+    "benefit2": "精选 10 个优惠",
+    "benefit3": "随时退订",
+    "inputLabel": "电子邮件地址",
+    "placeholder": "you@example.com",
+    "button": "订阅",
+    "invalidEmail": "请输入有效的电子邮件地址。",
+    "success": "订阅成功。请检查收件箱中的欢迎邮件。",
+    "alreadySubscribed": "你已经订阅了每周优惠列表。",
+    "errorGeneric": "暂时无法完成订阅，请稍后再试。",
+    "disclaimer": "没有垃圾邮件。只有每周一封，包含最值得回访的优惠和折扣。"
   }
 }

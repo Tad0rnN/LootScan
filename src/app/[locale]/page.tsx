@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Zap, Search, Heart, Sparkles } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import HomeDeals from "@/components/HomeDeals";
+import NewsletterSignup from "@/components/NewsletterSignup";
 
 export default async function HomePage() {
   const t = await getTranslations("home");
@@ -64,6 +65,8 @@ export default async function HomePage() {
 
       {/* Hot Deals + Free Games — client-side fetch */}
       <HomeDeals />
+
+      <NewsletterSignup />
     </div>
   );
 }

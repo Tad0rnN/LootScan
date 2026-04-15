@@ -256,5 +256,21 @@
       "chairs": "チェア",
       "controllers": "コントローラー"
     }
+  },
+  "newsletter": {
+    "eyebrow": "週間ニュースレター",
+    "title": "今週のベスト10セールを受け取る",
+    "subtitle": "LootScan のメールリストに登録すると、毎週1回だけ注目のゲームセールをまとめて受け取れます。",
+    "benefit1": "週1通のみ",
+    "benefit2": "厳選された10件",
+    "benefit3": "いつでも解除可能",
+    "inputLabel": "メールアドレス",
+    "placeholder": "you@example.com",
+    "button": "登録する",
+    "invalidEmail": "有効なメールアドレスを入力してください。",
+    "success": "登録が完了しました。ウェルカムメールを確認してください。",
+    "alreadySubscribed": "すでに週間ディールに登録されています。",
+    "errorGeneric": "現在は登録できません。しばらくしてからお試しください。",
+    "disclaimer": "スパムはありません。毎週1通、価値の高いセールだけをお届けします。"
   }
 }
