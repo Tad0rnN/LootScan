@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, ExternalLink, Tag } from "lucide-react";
 import WishlistButton from "@/components/WishlistButton";
 import ShareButton from "@/components/ShareButton";
+import { trackAffiliateClick } from "@/lib/analytics";
 import { formatPrice, getStoreLogoUrl } from "@/lib/cheapshark";
 import { useTranslations, useLocale } from "next-intl";
 import type { GameInfo, Store } from "@/types";
@@ -172,6 +173,17 @@ export default function GameDetailClient({ id, gameInfo, stores }: Props) {
                         href={`https://www.cheapshark.com/redirect?dealID=${deal.dealID}`}
                         target="_blank"
                         rel="noreferrer"
+                        onClick={() =>
+                          trackAffiliateClick({
+                            deal_id: deal.dealID,
+                            game_id: id,
+                            title: gameInfo.info.title,
+                            store_id: deal.storeID,
+                            destination_url: `https://www.cheapshark.com/redirect?dealID=${deal.dealID}`,
+                            sale_price: deal.price,
+                            placement: "game_detail",
+                          })
+                        }
                         className="inline-flex items-center gap-1 text-xs btn-primary py-1.5 px-3"
                       >
                         <ExternalLink className="w-3 h-3" />

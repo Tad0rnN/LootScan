@@ -7,6 +7,7 @@ import { formatPrice, getStoreLogoUrl } from "@/lib/cheapshark";
 import type { Deal } from "@/types";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { trackAffiliateClick, trackDealClick } from "@/lib/analytics";
 import clsx from "clsx";
 import { useLocale } from "next-intl";
 
@@ -146,6 +147,18 @@ export default function DealCard({ deal, wishlisted = false, onWishlistChange, e
         target="_blank"
         rel="noreferrer"
         className={cardClassName}
+        onClick={(e) => {
+          if (e.defaultPrevented) return;
+          trackAffiliateClick({
+            deal_id: deal.dealID,
+            game_id: deal.gameID,
+            title: deal.title,
+            store_id: deal.storeID,
+            destination_url: externalHref,
+            sale_price: deal.salePrice,
+            placement: "deal_card",
+          });
+        }}
       >
         {cardInner}
       </a>
@@ -153,7 +166,21 @@ export default function DealCard({ deal, wishlisted = false, onWishlistChange, e
   }
 
   return (
-    <Link href={`/${locale}/game/${deal.gameID}`} className={cardClassName}>
+    <Link
+      href={`/${locale}/game/${deal.gameID}`}
+      className={cardClassName}
+      onClick={(e) => {
+        if (e.defaultPrevented) return;
+        trackDealClick({
+          deal_id: deal.dealID,
+          game_id: deal.gameID,
+          title: deal.title,
+          store_id: deal.storeID,
+          sale_price: deal.salePrice,
+          placement: "deal_card",
+        });
+      }}
+    >
       {cardInner}
     </Link>
   );

@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { fetchStores, fetchGameSearch, fetchGameInfo } from "@/lib/fetch-deals";
 import { createClient } from "@/lib/supabase/client";
+import { trackAffiliateClick, trackDealClick } from "@/lib/analytics";
 import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
 
@@ -192,7 +193,18 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
               href={`https://www.cheapshark.com/redirect?dealID=${deal.dealID}`}
               target="_blank"
               rel="noreferrer"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                trackAffiliateClick({
+                  deal_id: deal.dealID,
+                  game_id: gameID ?? String(game.appid),
+                  title: game.name,
+                  store_id: deal.storeID,
+                  destination_url: `https://www.cheapshark.com/redirect?dealID=${deal.dealID}`,
+                  sale_price: deal.price,
+                  placement: "popular_store_list",
+                });
+              }}
               className={clsx(
                 "flex items-center gap-2.5 px-3 py-1.5 hover:bg-slate-700/50 transition-colors group/deal",
                 idx === 0 && "bg-brand-500/5"
@@ -227,10 +239,17 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
           {gameID && (
             <Link
               href={`/${locale}/game/${gameID}`}
-            onClick={(e) => e.stopPropagation()}
-            className="flex items-center justify-center gap-1.5 py-1.5 text-[11px] text-slate-500 hover:text-brand-400 hover:bg-slate-700/30 transition-colors border-t border-white/5"
-          >
-            <ExternalLink className="w-3 h-3" />
+              onClick={(e) => {
+                e.stopPropagation();
+                trackDealClick({
+                  game_id: gameID,
+                  title: game.name,
+                  placement: "popular_compare_prices",
+                });
+              }}
+              className="flex items-center justify-center gap-1.5 py-1.5 text-[11px] text-slate-500 hover:text-brand-400 hover:bg-slate-700/30 transition-colors border-t border-white/5"
+            >
+              <ExternalLink className="w-3 h-3" />
               {t("comparePrices")}
             </Link>
           )}
@@ -243,8 +262,19 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
 
   const handleCardClick = () => {
     if (gameID) {
+      trackDealClick({
+        game_id: gameID,
+        title: game.name,
+        placement: featured ? "popular_featured_card" : "popular_card",
+      });
       router.push(`/${locale}/game/${gameID}`);
     } else {
+      trackAffiliateClick({
+        game_id: String(game.appid),
+        title: game.name,
+        destination_url: steamUrl,
+        placement: featured ? "popular_featured_steam" : "popular_steam",
+      });
       window.open(steamUrl, "_blank");
     }
   };
@@ -320,7 +350,15 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
                 href={steamUrl}
                 target="_blank"
                 rel="noreferrer"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  trackAffiliateClick({
+                    game_id: String(game.appid),
+                    title: game.name,
+                    destination_url: steamUrl,
+                    placement: "popular_featured_steam_button",
+                  });
+                }}
                 className="flex items-center gap-1.5 bg-[#1b2838] hover:bg-[#2a475e] border border-[#2a475e] text-white text-xs font-semibold px-3 py-2 rounded-xl transition-colors flex-shrink-0"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
