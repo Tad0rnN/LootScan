@@ -34,18 +34,17 @@ function isDlcOrBundle(title: string): boolean {
   return DLC_KEYWORDS.some((kw) => lower.includes(kw));
 }
 
+// Harfleri ve rakamları dışındaki her şeyi (boşluk, tire, iki nokta,
+// ™, ®, ©, ":", noktalama) atar. Böylece "SMITE" ↔ "Smite",
+// "Warframe" ↔ "Warframe®", "Counter-Strike 2" ↔ "Counter-Strike: 2"
+// gibi varyasyonlar aynı sayılır ama "Destiny 2" ↔ "Destiny 2: Forsaken"
+// farklı kalır.
+function normalizeTitle(title: string): string {
+  return title.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
 function isBaseGameMatch(searchTitle: string, resultTitle: string): boolean {
-  const search = searchTitle.toLowerCase().trim();
-  const result = resultTitle.toLowerCase().trim();
-  // Tam eşleşme
-  if (result === search) return true;
-  // "Destiny 2" → "Destiny 2" OK, "Destiny 2: Forsaken" NO
-  if (result.startsWith(search)) {
-    const rest = result.slice(search.length).trim();
-    // Arkasında hiçbir şey yoksa veya sadece trademark sembolü varsa kabul et
-    return rest === "" || rest === "™" || rest === "®";
-  }
-  return false;
+  return normalizeTitle(searchTitle) === normalizeTitle(resultTitle);
 }
 
 function deduplicateDeals(deals: Deal[]): Deal[] {
