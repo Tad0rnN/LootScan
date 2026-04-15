@@ -25,6 +25,7 @@ export default function DealCard({ deal, wishlisted = false, onWishlistChange, e
   const savings = Math.round(parseFloat(deal.savings));
   const isFree = parseFloat(deal.salePrice) === 0;
   const locale = useLocale();
+  const hasStoreLogo = Number.isFinite(Number(deal.storeID)) && Number(deal.storeID) > 0;
 
   const toggleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -122,14 +123,16 @@ export default function DealCard({ deal, wishlisted = false, onWishlistChange, e
                 {deal.metacriticScore}
               </span>
             )}
-            <div className="w-5 h-5 relative opacity-50 group-hover:opacity-80 transition-opacity">
-              <Image
-                src={getStoreLogoUrl(deal.storeID)}
-                alt={`Store ${deal.storeID}`}
-                fill
-                className="object-contain"
-              />
-            </div>
+            {hasStoreLogo && (
+              <div className="w-5 h-5 relative opacity-50 group-hover:opacity-80 transition-opacity">
+                <Image
+                  src={getStoreLogoUrl(deal.storeID)}
+                  alt={`Store ${deal.storeID}`}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            )}
           </div>
         </div>
 

@@ -11,9 +11,22 @@ export async function parseNaturalLanguageSearch(
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-  const prompt = `You are a game deal search assistant for a site called LootScan that uses the CheapShark API.
+  const prompt = `You are a game recommendation and deal search assistant for a site called LootScan that uses the CheapShark API.
 
-Convert this natural language query into structured search filters.
+Classify the user query into one of two modes:
+
+MODE "similar":
+- User asks for games similar to another game, by genre, by mood, or by style.
+- Return up to 12 specific real base game titles in "gameTitles".
+- Do not include DLC, soundtrack, expansion, bundle, season pass, or vague filler entries.
+- Only set filters.onSale to true if the user explicitly asks for discounts / sales / cheap games.
+
+MODE "deals":
+- User asks for prices, discounts, free games, store-specific deals, or budget limits.
+- Return "gameTitles": [].
+- Use filters.title only when the query is clearly a specific game title.
+- Do not use filters.title for broad genre/style recommendation queries.
+- Only set filters.onSale to true when the user explicitly asks for deals / discounts / free / cheap games.
 
 User query: "${userQuery}"
 
@@ -29,19 +42,20 @@ CheapShark API filter options:
 Respond ONLY with valid JSON in this exact format:
 {
   "interpretation": "A friendly 1-sentence summary of what the user is looking for",
-  "query": "cleaned up search query for display",
+  "searchMode": "similar" | "deals",
+  "gameTitles": ["Title 1"],
   "filters": {
     "title": "optional game title",
     "maxPrice": 0,
     "minMetacritic": 0,
     "storeID": "optional store id",
     "sortBy": "optional sort",
-    "onSale": true,
+    "onSale": false,
     "steamworks": false
   }
 }
 
-Only include filter fields that are relevant to the query. Always include "onSale": true unless user specifically asks for all games.`;
+Only include fields relevant to the query.`;
 
   const result = await model.generateContent(prompt);
   const text = result.response.text();

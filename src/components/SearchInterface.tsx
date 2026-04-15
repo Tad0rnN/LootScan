@@ -32,8 +32,45 @@ const EXCLUDED_TITLE_TERMS = [
   "weapon pack",
 ];
 
+const SEARCH_NOISE_TERMS = [
+  "game",
+  "games",
+  "oyun",
+  "oyunlar",
+  "cheap",
+  "discount",
+  "discounted",
+  "deal",
+  "deals",
+  "sale",
+  "sales",
+  "indirim",
+  "indirimli",
+  "firsat",
+  "fırsat",
+  "best",
+  "top",
+  "good",
+  "recommended",
+  "like",
+  "benzeri",
+  "gibi",
+  "under",
+  "below",
+  "dolar",
+  "dollar",
+  "usd",
+];
+
 function normalizeText(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
+
+function tokenizeMeaningful(value: string): string[] {
+  return value
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((token) => token.length > 1 && !SEARCH_NOISE_TERMS.includes(token));
 }
 
 function isBaseGameTitle(value: string): boolean {
@@ -58,7 +95,7 @@ function toDeal(game: SearchResult): Deal {
     title: game.external,
     metacriticLink: null,
     dealID: game.cheapestDealID ?? `search-${game.gameID}`,
-    storeID: "1",
+    storeID: "0",
     gameID: game.gameID,
     salePrice: game.cheapest,
     normalPrice: game.cheapest,
@@ -74,6 +111,40 @@ function toDeal(game: SearchResult): Deal {
     dealRating: "0",
     thumb: game.thumb,
   };
+}
+
+function looksLikeBroadDiscoveryQuery(title: string): boolean {
+  const normalized = title.toLowerCase();
+  const tokens = tokenizeMeaningful(title);
+
+  if (tokens.length === 0) return true;
+  if (tokens.length > 4) return true;
+  if (normalized.includes("under ") || normalized.includes("below ") || normalized.includes(" like ")) return true;
+  if (normalized.includes("indirim") || normalized.includes("fırsat") || normalized.includes("firsat")) return true;
+  if (normalized.includes("rpg") || normalized.includes("strategy") || normalized.includes("souls") || normalized.includes("horror")) return true;
+
+  return false;
+}
+
+function scoreSearchResultMatch(result: SearchResult, title: string): number {
+  const normalizedTitle = normalizeText(title);
+  const external = normalizeText(result.external);
+  const internal = normalizeText(result.internalName);
+
+  if (external === normalizedTitle || internal === normalizedTitle) return 1;
+  if (external.startsWith(normalizedTitle) || internal.startsWith(normalizedTitle)) return 0.92;
+  if (external.includes(normalizedTitle) || internal.includes(normalizedTitle)) return 0.75;
+
+  const queryTokens = tokenizeMeaningful(title);
+  if (queryTokens.length === 0) return 0;
+
+  const candidateTokens = new Set([
+    ...tokenizeMeaningful(result.external),
+    ...tokenizeMeaningful(result.internalName),
+  ]);
+
+  const overlap = queryTokens.filter((token) => candidateTokens.has(token)).length;
+  return overlap / queryTokens.length;
 }
 
 async function fetchDealsForSuggestedTitles(
@@ -126,7 +197,7 @@ async function fetchDealsMode(
 
   // Başlık aramasıysa, indirimde olmayan oyunları da çek
   let gameResults: Deal[] = [];
-  if (filters?.title) {
+  if (filters?.title && !looksLikeBroadDiscoveryQuery(filters.title)) {
     const gamesPromise = fetchGameSearch(filters.title, 20)
       .then((d) => (Array.isArray(d) ? (d as SearchResult[]).filter(isBaseGameTitle2).map(toDeal) : []))
       .catch(() => [] as Deal[]);
@@ -145,7 +216,6 @@ function isBaseGameTitle2(game: SearchResult): boolean {
 }
 
 function pickBestSearchResult(results: SearchResult[], title: string, filters: AISearchResponse["filters"] | undefined, seen: Set<string>): SearchResult | null {
-  const normalizedTitle = normalizeText(title);
   const maxPrice = filters?.maxPrice ?? undefined;
 
   const candidates = results.filter((item) => {
@@ -157,9 +227,18 @@ function pickBestSearchResult(results: SearchResult[], title: string, filters: A
 
   if (candidates.length === 0) return null;
 
-  return candidates.find((item) => normalizeText(item.external) === normalizedTitle)
-    ?? candidates.find((item) => normalizeText(item.internalName) === normalizedTitle)
-    ?? candidates[0];
+  const ranked = candidates
+    .map((item) => ({ item, score: scoreSearchResultMatch(item, title) }))
+    .sort((a, b) => b.score - a.score);
+
+  const topMatch = ranked[0];
+  const minScore = tokenizeMeaningful(title).length >= 2 ? 0.55 : 0.34;
+
+  if (!topMatch || topMatch.score < minScore) {
+    return null;
+  }
+
+  return topMatch.item;
 }
 
 async function fetchSimilarMode(gameTitles: string[], filters: AISearchResponse["filters"] | undefined): Promise<Deal[]> {
