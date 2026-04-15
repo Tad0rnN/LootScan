@@ -15,6 +15,7 @@ const F2P_TITLES = [
   "The First Descendant", "Lost Ark", "Dauntless", "Neverwinter",
   "World of Tanks", "World of Warships", "Crossout", "Phantasy Star Online 2",
   "Dota 2", "Counter-Strike 2", "Team Fortress 2", "Fortnite",
+  "Delta Force", "The Finals", "Albion Online",
 ];
 
 // DLC, bundle, pack, starter, skin, gems, edition gibi sonuçları filtrele
