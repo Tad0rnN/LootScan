@@ -18,9 +18,9 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL("https://lootscan.co"),
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    icon: [{ url: "/icon.svg?v=3", type: "image/svg+xml", sizes: "any" }],
+    shortcut: ["/icon.svg?v=3"],
+    apple: [{ url: "/icon.svg?v=3" }],
   },
   title: {
     default: "LootScan — Game Price Tracker",
