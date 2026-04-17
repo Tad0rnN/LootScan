@@ -344,16 +344,16 @@ function buildHeuristicInterpretation(query: string, locale: string | undefined,
       if (genreLabel) return `${genreLabel}-aanraders worden getoond.`;
       if (hasBudget) return `Games onder ${maxPrice} dollar worden getoond.`;
       return `Aanraders en deals voor "${query}" worden getoond.`;
-    case "ja":
-      if (genreLabel && hasBudget) return `${maxPrice}ドル以下の${genreLabel}作品を表示しています。`;
-      if (genreLabel) return `${genreLabel}のおすすめ作品を表示しています。`;
-      if (hasBudget) return `${maxPrice}ドル以下のゲームを表示しています。`;
-      return `「${query}」に合うおすすめとセールを表示しています。`;
-    case "zh":
-      if (genreLabel && hasBudget) return `正在显示 ${maxPrice} 美元以下的${genreLabel}游戏推荐。`;
-      if (genreLabel) return `正在显示${genreLabel}类型的游戏推荐。`;
-      if (hasBudget) return `正在显示 ${maxPrice} 美元以下的游戏。`;
-      return `正在显示与“${query}”相关的推荐和优惠。`;
+    case "fr":
+      if (genreLabel && hasBudget) return `Affichage des recommandations ${genreLabel} à moins de ${maxPrice} dollars.`;
+      if (genreLabel) return `Affichage des recommandations de jeux ${genreLabel}.`;
+      if (hasBudget) return `Affichage des jeux à moins de ${maxPrice} dollars.`;
+      return `Affichage des recommandations et des offres pour "${query}".`;
+    case "it":
+      if (genreLabel && hasBudget) return `Mostro consigli ${genreLabel} sotto i ${maxPrice} dollari.`;
+      if (genreLabel) return `Mostro consigli di giochi ${genreLabel}.`;
+      if (hasBudget) return `Mostro giochi sotto i ${maxPrice} dollari.`;
+      return `Mostro consigli e offerte per "${query}".`;
     default:
       if (genreLabel && hasBudget) return `Showing ${genreLabel} recommendations under $${maxPrice}.`;
       if (genreLabel) return `Showing ${genreLabel} game recommendations.`;

@@ -10,8 +10,8 @@ const languages = [
   { code: "tr", label: "Türkçe", flag: "🇹🇷" },
   { code: "de", label: "Deutsch", flag: "🇩🇪" },
   { code: "nl", label: "Nederlands", flag: "🇳🇱" },
-  { code: "zh", label: "中文", flag: "🇨🇳" },
-  { code: "ja", label: "日本語", flag: "🇯🇵" },
+  { code: "fr", label: "Français", flag: "🇫🇷" },
+  { code: "it", label: "Italiano", flag: "🇮🇹" },
 ];
 
 export default function LanguageSwitcher() {

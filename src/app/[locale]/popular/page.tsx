@@ -16,7 +16,7 @@ function isValveGame(developer: string, publisher: string, name: string): boolea
 
 function getMonthLabel(locale: string): string {
   const formatMap: Record<string, string> = {
-    en: "en-US", tr: "tr-TR", de: "de-DE", nl: "nl-NL", zh: "zh-CN", ja: "ja-JP",
+    en: "en-US", tr: "tr-TR", de: "de-DE", nl: "nl-NL", fr: "fr-FR", it: "it-IT",
   };
   return new Date().toLocaleString(formatMap[locale] ?? "en-US", { month: "long", year: "numeric" });
 }
