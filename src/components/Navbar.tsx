@@ -11,6 +11,15 @@ import clsx from "clsx";
 import { useTranslations, useLocale } from "next-intl";
 import LanguageSwitcher from "./LanguageSwitcher";
 
+function getUserInitial(user: User | null): string {
+  const source = user?.user_metadata?.full_name
+    || user?.user_metadata?.name
+    || user?.email
+    || "?";
+
+  return source.trim().charAt(0).toUpperCase() || "?";
+}
+
 export default function Navbar() {
   const pathname = usePathname();
   const locale = useLocale();
@@ -20,6 +29,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const t = useTranslations("nav");
   const supabase = createClient();
+  const userInitial = getUserInitial(user);
 
   const navLinks = [
     { href: `/${locale}/deals`, label: t("deals"), icon: Zap },
@@ -117,7 +127,13 @@ export default function Navbar() {
             <LanguageSwitcher />
             {user ? (
               <div className="flex items-center gap-2">
-                <span className="text-slate-500 text-xs truncate max-w-[120px]">{user.email}</span>
+                <div
+                  title={user.email ?? undefined}
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-sm font-semibold text-slate-200 shadow-inner shadow-white/5"
+                  aria-label={user.email ?? "Account"}
+                >
+                  {userInitial}
+                </div>
                 <button onClick={handleSignOut} className="btn-secondary flex items-center gap-1.5 text-sm py-1.5 px-3">
                   <LogOut className="w-3.5 h-3.5" />
                   {t("signOut")}
