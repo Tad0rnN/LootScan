@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
   const { data, error } = await supabase.from("wishlist").upsert({
     user_id: user.id,
     game_id: body.game_id,
+    locale: body.locale ?? "en",
     game_title: body.game_title,
     game_thumb: body.game_thumb,
     normal_price: body.normal_price,

@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { Zap, Search, Heart, Sparkles } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import HomeDeals from "@/components/HomeDeals";
 import NewsletterSignup from "@/components/NewsletterSignup";
 
 export default async function HomePage() {
   const t = await getTranslations("home");
+  const locale = await getLocale();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -33,11 +34,11 @@ export default async function HomePage() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link href="/deals" className="btn-primary flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold">
+          <Link href={`/${locale}/deals`} className="btn-primary flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold">
             <Zap className="w-4 h-4" />
             {t("browseDeals")}
           </Link>
-          <Link href="/search" className="btn-secondary flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold">
+          <Link href={`/${locale}/search`} className="btn-secondary flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold">
             <Search className="w-4 h-4" />
             {t("aiSearch")}
           </Link>

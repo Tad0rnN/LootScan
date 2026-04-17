@@ -52,6 +52,7 @@ export default function WishlistButton({ gameID, gameTitle, gameThumb, normalPri
       await supabase.from("wishlist").upsert({
         user_id: user.id,
         game_id: gameID,
+        locale,
         game_title: gameTitle,
         game_thumb: gameThumb,
         normal_price: normalPrice,

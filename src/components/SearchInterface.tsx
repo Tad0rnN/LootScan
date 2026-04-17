@@ -447,10 +447,20 @@ export default function SearchInterface() {
               {result.gameTitles && result.gameTitles.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 text-left">
                   {result.gameTitles.slice(0, MAX_SIMILAR_RESULTS).map((title) => (
-                    <div key={title} className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
-                      <p className="text-sm font-medium text-white">{title}</p>
-                      <p className="text-xs text-slate-500 mt-1">{t("aiSuggestionLabel")}</p>
-                    </div>
+                    <button
+                      key={title}
+                      type="button"
+                      onClick={() => search(title)}
+                      className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left hover:border-brand-500/30 hover:bg-brand-500/5 transition-colors"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-medium text-white">{title}</p>
+                          <p className="text-xs text-slate-500 mt-1">{t("aiSuggestionLabel")}</p>
+                        </div>
+                        <span className="text-xs text-brand-400 font-medium">{t("button")}</span>
+                      </div>
+                    </button>
                   ))}
                 </div>
               )}

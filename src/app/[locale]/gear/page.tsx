@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Gamepad2, Monitor, Headphones, Mouse, Keyboard, Armchair } from "lucide-react";
+import { trackAffiliateClick } from "@/lib/analytics";
 
 interface GearItem {
   name: string;
@@ -35,7 +36,7 @@ const GEAR_ITEMS: GearItem[] = [
     name: "Logitech G Pro X 2",
     image: "https://m.media-amazon.com/images/I/61UL0oU8YXL._AC_SL1500_.jpg",
     price: "$199.99",
-    affiliateUrl: "https://www.amazon.com/dp/B0C7QMPFYS?tag=YOUR_TAG",
+    affiliateUrl: "https://www.amazon.com/dp/B0C7QMPFYS",
     category: "headsets",
   },
   // Mice
@@ -97,14 +98,14 @@ const GEAR_ITEMS: GearItem[] = [
     name: "LG 27GP850-B",
     image: "https://m.media-amazon.com/images/I/81mJit2RrfL._AC_SL1500_.jpg",
     price: "$349.99",
-    affiliateUrl: "https://www.amazon.com/dp/B093MTSTKD?tag=YOUR_TAG",
+    affiliateUrl: "https://www.amazon.com/dp/B093MTSTKD",
     category: "monitors",
   },
   {
     name: "Samsung Odyssey G7",
     image: "https://m.media-amazon.com/images/I/81LXDO4JRCL._AC_SL1500_.jpg",
     price: "$449.99",
-    affiliateUrl: "https://www.amazon.com/dp/B088HJ4VQK?tag=YOUR_TAG",
+    affiliateUrl: "https://www.amazon.com/dp/B088HJ4VQK",
     category: "monitors",
   },
   // Chairs
@@ -112,14 +113,14 @@ const GEAR_ITEMS: GearItem[] = [
     name: "Secretlab Titan Evo 2022",
     image: "https://m.media-amazon.com/images/I/71JLU6yTJIL._AC_SL1500_.jpg",
     price: "$519.00",
-    affiliateUrl: "https://www.amazon.com/dp/B09P1KJR8K?tag=YOUR_TAG",
+    affiliateUrl: "https://www.amazon.com/dp/B09P1KJR8K",
     category: "chairs",
   },
   {
     name: "Herman Miller x Logitech Embody",
     image: "https://m.media-amazon.com/images/I/71kv6WZB5BL._AC_SL1500_.jpg",
     price: "$1,795.00",
-    affiliateUrl: "https://www.amazon.com/dp/B0C64GM7PM?tag=YOUR_TAG",
+    affiliateUrl: "https://www.amazon.com/dp/B0C64GM7PM",
     category: "chairs",
     badge: "Premium",
   },
@@ -128,7 +129,7 @@ const GEAR_ITEMS: GearItem[] = [
     name: "Xbox Elite Series 2 Core",
     image: "https://m.media-amazon.com/images/I/71rS5JnzSSL._AC_SL1500_.jpg",
     price: "$129.99",
-    affiliateUrl: "https://www.amazon.com/dp/B0B6J3WLMG?tag=YOUR_TAG",
+    affiliateUrl: "https://www.amazon.com/dp/B0B6J3WLMG",
     category: "controllers",
     badge: "Best Value",
   },
@@ -136,14 +137,14 @@ const GEAR_ITEMS: GearItem[] = [
     name: "PS5 DualSense Edge",
     image: "https://m.media-amazon.com/images/I/51drTTQRR6L._AC_SL1000_.jpg",
     price: "$199.99",
-    affiliateUrl: "https://www.amazon.com/dp/B0BSYFB99D?tag=YOUR_TAG",
+    affiliateUrl: "https://www.amazon.com/dp/B0BSYFB99D",
     category: "controllers",
   },
   {
     name: "SCUF Reflex Pro",
     image: "https://m.media-amazon.com/images/I/61qSg2SpJRL._AC_SL1500_.jpg",
     price: "$239.99",
-    affiliateUrl: "https://www.amazon.com/dp/B09QN3PP7K?tag=YOUR_TAG",
+    affiliateUrl: "https://www.amazon.com/dp/B09QN3PP7K",
     category: "controllers",
   },
 ];
@@ -157,6 +158,24 @@ const CATEGORIES = [
   { id: "chairs", icon: Armchair },
   { id: "controllers", icon: Gamepad2 },
 ];
+
+const AMAZON_AFFILIATE_TAG = process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG?.trim();
+
+function resolveAffiliateUrl(url: string): string {
+  if (!url.includes("amazon.com/dp/")) return url;
+
+  try {
+    const parsed = new URL(url);
+    if (AMAZON_AFFILIATE_TAG) {
+      parsed.searchParams.set("tag", AMAZON_AFFILIATE_TAG);
+    } else {
+      parsed.searchParams.delete("tag");
+    }
+    return parsed.toString();
+  } catch {
+    return url.replace(/[?&]tag=YOUR_TAG/, "");
+  }
+}
 
 export default function GearPage() {
   const t = useTranslations("gear");
@@ -196,10 +215,19 @@ export default function GearPage() {
         {filtered.map((item) => (
           <a
             key={item.name}
-            href={item.affiliateUrl}
+            href={resolveAffiliateUrl(item.affiliateUrl)}
             target="_blank"
             rel="noopener noreferrer sponsored"
             className="card group overflow-hidden hover:border-brand-500/30 transition-all duration-200"
+            onClick={() =>
+              trackAffiliateClick({
+                title: item.name,
+                destination_url: resolveAffiliateUrl(item.affiliateUrl),
+                placement: "gear_page",
+                category: item.category,
+                price: item.price,
+              })
+            }
           >
             <div className="relative aspect-square bg-white/5 p-4 flex items-center justify-center">
               <Image

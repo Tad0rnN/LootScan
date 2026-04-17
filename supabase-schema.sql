@@ -7,6 +7,7 @@ create table if not exists public.wishlist (
   id               uuid default gen_random_uuid() primary key,
   user_id          uuid references auth.users(id) on delete cascade not null,
   game_id          text not null,
+  locale           text not null default 'en',
   game_title       text not null,
   game_thumb       text not null,
   normal_price     text not null default '0.00',
@@ -36,6 +37,7 @@ create policy "Users can delete from their own wishlist"
 -- Migration: add new columns if table already exists
 alter table public.wishlist add column if not exists notify_on_sale   boolean not null default true;
 alter table public.wishlist add column if not exists last_notified_at timestamptz;
+alter table public.wishlist add column if not exists locale           text not null default 'en';
 
 -- Newsletter subscribers
 create table if not exists public.newsletter_subscribers (

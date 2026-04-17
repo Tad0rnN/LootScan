@@ -49,6 +49,7 @@ function ResultRow({
       await supabase.from("wishlist").upsert({
         user_id: user.id,
         game_id: game.gameID,
+        locale,
         game_title: game.external,
         game_thumb: game.thumb,
         normal_price: String(cheapNum),

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getGameInfo } from "@/lib/cheapshark";
 import { sendSaleAlert } from "@/lib/email";
 
 const supabase = createClient(
@@ -25,21 +26,15 @@ export async function GET(req: NextRequest) {
     }
 
     let notified = 0;
-
-    // Her oyunun fiyatını bir kez çek (cache)
     const priceCache = new Map<string, { salePrice: string; savings: string; dealID: string } | null>();
+    const userEmailCache = new Map<string, string | null>();
 
     for (const item of items) {
       try {
         // Fiyatı cache'den al ya da çek
         if (!priceCache.has(item.game_id)) {
-          const res = await fetch(
-            `https://www.cheapshark.com/api/1.0/games?id=${item.game_id}`,
-            { cache: "no-store" }
-          );
-          if (!res.ok) { priceCache.set(item.game_id, null); continue; }
-          const gameInfo = await res.json();
-          const deals: Array<{ price: string; savings: string; dealID: string }> = gameInfo.deals ?? [];
+          const gameInfo = await getGameInfo(item.game_id).catch(() => null);
+          const deals: Array<{ price: string; savings: string; dealID: string }> = gameInfo?.deals ?? [];
           if (deals.length === 0) { priceCache.set(item.game_id, null); continue; }
           const cheapest = deals.reduce((a, b) => parseFloat(a.price) < parseFloat(b.price) ? a : b);
           priceCache.set(item.game_id, {
@@ -65,12 +60,17 @@ export async function GET(req: NextRequest) {
         }
 
         // Kullanıcı emailini al
-        const { data: userData } = await supabase.auth.admin.getUserById(item.user_id);
-        const email = userData?.user?.email;
+        if (!userEmailCache.has(item.user_id)) {
+          const { data: userData } = await supabase.auth.admin.getUserById(item.user_id);
+          userEmailCache.set(item.user_id, userData?.user?.email ?? null);
+        }
+
+        const email = userEmailCache.get(item.user_id);
         if (!email) continue;
 
         await sendSaleAlert({
           to: email,
+          locale: item.locale ?? "en",
           gameTitle: item.game_title,
           gameThumb: item.game_thumb,
           gameID: item.game_id,

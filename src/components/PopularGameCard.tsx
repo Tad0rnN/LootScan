@@ -8,6 +8,7 @@ import type { Deal } from "@/types";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import clsx from "clsx";
+import { useLocale } from "next-intl";
 
 interface Props {
   deal: Deal;
@@ -17,6 +18,7 @@ interface Props {
 export default function PopularGameCard({ deal, featured = false }: Props) {
   const [inWishlist, setInWishlist] = useState(false);
   const [loading, setLoading] = useState(false);
+  const locale = useLocale();
   const savings = Math.round(parseFloat(deal.savings));
   const isOnSale = savings > 0;
   const isFree = parseFloat(deal.salePrice) === 0;
@@ -27,7 +29,7 @@ export default function PopularGameCard({ deal, featured = false }: Props) {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) { window.location.href = "/auth/login"; setLoading(false); return; }
+    if (!user) { window.location.href = `/${locale}/auth/login`; setLoading(false); return; }
 
     if (inWishlist) {
       await supabase.from("wishlist").delete().eq("user_id", user.id).eq("game_id", deal.gameID);
@@ -36,6 +38,7 @@ export default function PopularGameCard({ deal, featured = false }: Props) {
       await supabase.from("wishlist").upsert({
         user_id: user.id,
         game_id: deal.gameID,
+        locale,
         game_title: deal.title,
         game_thumb: deal.thumb,
         normal_price: deal.normalPrice,
@@ -50,7 +53,7 @@ export default function PopularGameCard({ deal, featured = false }: Props) {
   if (featured) {
     return (
       <Link
-        href={`/game/${deal.gameID}`}
+        href={`/${locale}/game/${deal.gameID}`}
         className="group card card-hover flex flex-col overflow-hidden h-full min-h-[280px]"
       >
         <div className="relative flex-1 overflow-hidden bg-slate-900/50 min-h-[200px]">
@@ -133,7 +136,7 @@ export default function PopularGameCard({ deal, featured = false }: Props) {
   // Normal kart
   return (
     <Link
-      href={`/game/${deal.gameID}`}
+      href={`/${locale}/game/${deal.gameID}`}
       className="group card card-hover flex flex-col overflow-hidden"
     >
       <div className="relative overflow-hidden bg-slate-900/50 aspect-[16/7]">

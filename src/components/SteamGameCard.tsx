@@ -166,6 +166,7 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
       await supabase.from("wishlist").upsert({
         user_id: user.id,
         game_id: wishlistGameId,
+        locale,
         game_title: game.name,
         game_thumb: game.headerImage,
         normal_price: normalizeStoredPrice(cheapestOriginal ?? cheapestPrice),

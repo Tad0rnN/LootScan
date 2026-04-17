@@ -46,6 +46,7 @@ function GameCard({ game, onWishlistChange }: {
       await supabase.from("wishlist").upsert({
         user_id: user.id,
         game_id: game.gameID,
+        locale,
         game_title: game.external,
         game_thumb: game.thumb,
         normal_price: game.cheapest ?? "0",

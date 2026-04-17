@@ -46,6 +46,7 @@ export default function DealCard({ deal, wishlisted = false, onWishlistChange, e
       await supabase.from("wishlist").upsert({
         user_id: user.id,
         game_id: deal.gameID,
+        locale,
         game_title: deal.title,
         game_thumb: deal.thumb,
         normal_price: deal.normalPrice,
