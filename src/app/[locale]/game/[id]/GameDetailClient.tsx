@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, ExternalLink, Tag } from "lucide-react";
 import WishlistButton from "@/components/WishlistButton";
 import ShareButton from "@/components/ShareButton";
+import RegionalSteamPrice from "@/components/RegionalSteamPrice";
 import { trackAffiliateClick } from "@/lib/analytics";
 import { formatPrice, getStoreLogoUrl } from "@/lib/cheapshark";
 import { useTranslations, useLocale } from "next-intl";
@@ -90,6 +91,7 @@ export default function GameDetailClient({ id, gameInfo, stores }: Props) {
                 )}
               </div>
             </div>
+            <RegionalSteamPrice appId={gameInfo.info.steamAppID} className="mb-4 text-slate-300" />
             <div className="mt-4 flex flex-wrap items-center gap-2">
               <WishlistButton
                 gameID={id}

@@ -13,6 +13,7 @@ import { createClient } from "@/lib/supabase/client";
 import { trackAffiliateClick, trackDealClick } from "@/lib/analytics";
 import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
+import RegionalSteamPrice from "./RegionalSteamPrice";
 
 interface StoreDeal {
   storeID: string;
@@ -346,6 +347,7 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
                     </span>
                   )}
                 </div>
+                <RegionalSteamPrice appId={game.appid} compact className="mt-2 text-slate-400" />
               </div>
               <a
                 href={steamUrl}
@@ -452,6 +454,8 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
             )}
           </div>
         </div>
+
+        <RegionalSteamPrice appId={game.appid} compact className="text-slate-500" />
       </div>
 
       {storeListSection}

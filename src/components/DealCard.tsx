@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { trackAffiliateClick, trackDealClick } from "@/lib/analytics";
 import clsx from "clsx";
 import { useLocale } from "next-intl";
+import RegionalSteamPrice from "./RegionalSteamPrice";
 
 interface Props {
   deal: Deal;
@@ -140,6 +141,8 @@ export default function DealCard({ deal, wishlisted = false, onWishlistChange, e
         {deal.steamRatingText && (
           <p className="text-xs text-slate-600 truncate">{deal.steamRatingText} · {deal.steamRatingPercent}%</p>
         )}
+
+        <RegionalSteamPrice appId={deal.steamAppID} compact className="text-slate-500" />
       </div>
     </>
   );

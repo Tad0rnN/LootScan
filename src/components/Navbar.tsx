@@ -10,6 +10,7 @@ import type { User } from "@supabase/supabase-js";
 import clsx from "clsx";
 import { useTranslations, useLocale } from "next-intl";
 import LanguageSwitcher from "./LanguageSwitcher";
+import RegionSwitcher from "./RegionSwitcher";
 
 function getUserInitial(user: User | null): string {
   const source = user?.user_metadata?.full_name
@@ -124,6 +125,7 @@ export default function Navbar() {
                 /
               </kbd>
             </button>
+            <RegionSwitcher />
             <LanguageSwitcher />
             {user ? (
               <div className="flex items-center gap-2">
