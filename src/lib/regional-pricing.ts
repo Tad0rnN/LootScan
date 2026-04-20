@@ -35,11 +35,11 @@ export const REGION_OPTIONS: RegionOption[] = [
   },
   {
     code: "tr",
-    label: "Turkey (TRY)",
+    label: "Turkey (USD)",
     shortLabel: "TR",
     countryCode: "tr",
-    currency: "TRY",
-    locale: "tr-TR",
+    currency: "USD",
+    locale: "en-US",
     flag: "🇹🇷",
   },
 ];

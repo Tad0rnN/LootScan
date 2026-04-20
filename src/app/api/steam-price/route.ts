@@ -10,6 +10,37 @@ import {
 
 export const revalidate = 3600;
 
+async function fetchUsdExchangeRate(baseCurrency: string): Promise<number | null> {
+  if (baseCurrency === "USD") return 1;
+
+  try {
+    const response = await fetch(
+      `https://api.frankfurter.dev/v2/rate/${encodeURIComponent(baseCurrency)}/USD?providers=ECB`,
+      {
+        next: { revalidate: 3600 },
+        signal: AbortSignal.timeout(10000),
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) return null;
+
+    const data = (await response.json()) as { rate?: number };
+    return typeof data.rate === "number" && Number.isFinite(data.rate)
+      ? data.rate
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function convertMinorUnits(amountMinor: number, rate: number): number {
+  const amountMajor = amountMinor / 100;
+  return Math.round(amountMajor * rate * 100);
+}
+
 function buildUnavailable(appid: number, region: RegionCode): RegionalSteamPrice {
   return {
     appid,
@@ -94,16 +125,30 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(buildUnavailable(appid, region));
     }
 
+    let finalMinor = overview.final;
+    let initialMinor = overview.initial;
+    let outputCurrency = overview.currency || option.currency;
+
+    if (region === "tr" && overview.currency && overview.currency !== option.currency) {
+      const exchangeRate = await fetchUsdExchangeRate(overview.currency);
+
+      if (exchangeRate) {
+        finalMinor = convertMinorUnits(overview.final, exchangeRate);
+        initialMinor = convertMinorUnits(overview.initial, exchangeRate);
+        outputCurrency = option.currency;
+      }
+    }
+
     return NextResponse.json({
       appid,
       region,
-      currency: overview.currency || option.currency,
-      final: overview.final,
-      initial: overview.initial,
+      currency: outputCurrency,
+      final: finalMinor,
+      initial: initialMinor,
       discountPercent: overview.discount_percent ?? 0,
-      formattedFinal: formatRegionalCurrency(overview.final, region),
-      formattedInitial: formatRegionalCurrency(overview.initial, region),
-      isFree: overview.final === 0,
+      formattedFinal: formatRegionalCurrency(finalMinor, region),
+      formattedInitial: formatRegionalCurrency(initialMinor, region),
+      isFree: finalMinor === 0,
       unavailable: false,
     } satisfies RegionalSteamPrice);
   } catch {
