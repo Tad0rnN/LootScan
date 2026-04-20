@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Crosshair, Search, Heart, Zap, Menu, X, LogIn, LogOut, Gift, TrendingUp, Bot, Gamepad2 } from "lucide-react";
 import GameSearchModal from "./GameSearchModal";
 import { createClient } from "@/lib/supabase/client";
@@ -28,9 +28,11 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const t = useTranslations("nav");
   const supabase = createClient();
   const userInitial = getUserInitial(user);
+  const profileRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
     { href: `/${locale}/deals`, label: t("deals"), icon: Zap },
@@ -48,6 +50,12 @@ export default function Navbar() {
     });
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll);
+    const onPointerDown = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onPointerDown);
 
     // Global keyboard shortcut: "/" opens search (unless user is typing in an input)
     const onKey = (e: KeyboardEvent) => {
@@ -64,12 +72,14 @@ export default function Navbar() {
       subscription.unsubscribe();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onPointerDown);
     };
   }, []);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     setUser(null);
+    setProfileOpen(false);
   };
 
   return (
@@ -132,18 +142,39 @@ export default function Navbar() {
             <RegionSwitcher />
             <LanguageSwitcher />
             {user ? (
-              <div className="flex items-center gap-2">
-                <div
+              <div ref={profileRef} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setProfileOpen((value) => !value)}
                   title={user.email ?? undefined}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-sm font-semibold text-slate-200 shadow-inner shadow-white/5"
                   aria-label={user.email ?? "Account"}
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-sm font-semibold text-slate-200 shadow-inner shadow-white/5 hover:border-white/20 hover:bg-white/[0.07] transition-colors"
                 >
                   {userInitial}
-                </div>
-                <button onClick={handleSignOut} className="btn-secondary whitespace-nowrap flex items-center gap-1.5 text-sm py-1.5 px-3">
-                  <LogOut className="w-3.5 h-3.5" />
-                  {t("signOut")}
                 </button>
+
+                {profileOpen && (
+                  <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-white/10 bg-[#0f0f1a] p-2 shadow-2xl shadow-black/50">
+                    <div className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-left">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-sm font-semibold text-slate-200">
+                        {userInitial}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-slate-500">Account</p>
+                        <p className="truncate text-sm font-medium text-slate-200">
+                          {user.email}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={handleSignOut}
+                      className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      {t("signOut")}
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <Link href={`/${locale}/auth/login`} className="btn-primary whitespace-nowrap flex items-center gap-1.5 text-sm py-1.5 px-4">
