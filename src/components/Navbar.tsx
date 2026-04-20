@@ -81,10 +81,10 @@ export default function Navbar() {
         : "bg-transparent"
     )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between gap-3 h-16">
 
           {/* Logo */}
-          <Link href={`/${locale}`} className="flex items-center gap-2.5 group">
+          <Link href={`/${locale}`} className="flex shrink-0 items-center gap-2.5 group">
             <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center shadow-lg shadow-brand-500/30 group-hover:shadow-brand-500/50 transition-shadow">
               <Crosshair className="w-4.5 h-4.5 text-white" strokeWidth={2.5} />
             </div>
@@ -94,26 +94,30 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center p-1 bg-white/[0.03] border border-white/[0.06] rounded-2xl gap-0.5">
-            {navLinks.map(({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
-                className={clsx(
-                  "flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-150",
-                  pathname === href
-                    ? "bg-brand-500/15 text-brand-400 shadow-sm"
-                    : "text-slate-400 hover:text-white hover:bg-white/5"
-                )}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                {label}
-              </Link>
-            ))}
+          <div className="hidden md:block flex-1 min-w-0">
+            <div className="overflow-x-auto overflow-y-hidden no-scrollbar">
+              <div className="inline-flex min-w-max items-center p-1 bg-white/[0.03] border border-white/[0.06] rounded-2xl gap-0.5">
+                {navLinks.map(({ href, label, icon: Icon }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={clsx(
+                      "shrink-0 whitespace-nowrap flex items-center gap-1.5 px-2.5 lg:px-3 py-2 rounded-xl text-[13px] lg:text-sm font-medium transition-all duration-150",
+                      pathname === href
+                        ? "bg-brand-500/15 text-brand-400 shadow-sm"
+                        : "text-slate-400 hover:text-white hover:bg-white/5"
+                    )}
+                  >
+                    <Icon className="w-3.5 h-3.5 shrink-0" />
+                    <span className="whitespace-nowrap">{label}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Right side */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex shrink-0 items-center gap-1.5 lg:gap-2">
             {/* Game search icon */}
             <button
               onClick={() => setSearchOpen(true)}
@@ -136,13 +140,13 @@ export default function Navbar() {
                 >
                   {userInitial}
                 </div>
-                <button onClick={handleSignOut} className="btn-secondary flex items-center gap-1.5 text-sm py-1.5 px-3">
+                <button onClick={handleSignOut} className="btn-secondary whitespace-nowrap flex items-center gap-1.5 text-sm py-1.5 px-3">
                   <LogOut className="w-3.5 h-3.5" />
                   {t("signOut")}
                 </button>
               </div>
             ) : (
-              <Link href={`/${locale}/auth/login`} className="btn-primary flex items-center gap-1.5 text-sm py-1.5 px-4">
+              <Link href={`/${locale}/auth/login`} className="btn-primary whitespace-nowrap flex items-center gap-1.5 text-sm py-1.5 px-4">
                 <LogIn className="w-3.5 h-3.5" />
                 {t("signIn")}
               </Link>
@@ -186,7 +190,10 @@ export default function Navbar() {
               </Link>
             ))}
             <div className="pt-2 flex items-center justify-between px-1">
-              <LanguageSwitcher />
+              <div className="flex items-center gap-2">
+                <RegionSwitcher />
+                <LanguageSwitcher />
+              </div>
               {user ? (
                 <button onClick={handleSignOut} className="text-slate-500 hover:text-white text-xs flex items-center gap-1.5 transition-colors">
                   <LogOut className="w-3.5 h-3.5" /> {t("signOut")}

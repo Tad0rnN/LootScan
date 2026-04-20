@@ -65,4 +65,13 @@
   .glow {
     @apply shadow-lg shadow-brand-500/20;
   }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
