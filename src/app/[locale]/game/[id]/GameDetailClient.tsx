@@ -6,6 +6,7 @@ import { ArrowLeft, ExternalLink, Tag } from "lucide-react";
 import WishlistButton from "@/components/WishlistButton";
 import ShareButton from "@/components/ShareButton";
 import RegionalSteamPrice from "@/components/RegionalSteamPrice";
+import GameDealInsights from "@/components/GameDealInsights";
 import { trackAffiliateClick } from "@/lib/analytics";
 import { formatPrice, getStoreLogoUrl } from "@/lib/cheapshark";
 import { useTranslations, useLocale } from "next-intl";
@@ -109,6 +110,8 @@ export default function GameDetailClient({ id, gameInfo, stores }: Props) {
           </div>
         </div>
       </div>
+
+      <GameDealInsights gameInfo={gameInfo} />
 
       <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
         <Tag className="w-5 h-5 text-brand-400" />

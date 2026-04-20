@@ -127,7 +127,40 @@
     "regularPrice": "Regular Price",
     "savings": "Savings",
     "getDeal": "Get Deal",
-    "best": "Best"
+    "best": "Best",
+    "priceHistoryTitle": "Price History Graph",
+    "priceHistorySubtitle": "Regular price, historical low, and today's best price at a glance.",
+    "regular": "Regular",
+    "historicalLow": "All-time low",
+    "current": "Current",
+    "today": "Today",
+    "dealScoreTitle": "Is this a good deal?",
+    "outOf100": "/ 100",
+    "dealScoreAtLow": "This matches the all-time low at {low}, so you're catching it at its best recorded price.",
+    "dealScoreAboveLow": "This is {percent}% above the all-time low of {low}, so it's worth comparing against the historic bottom.",
+    "discountNow": "Discount now",
+    "storesTracked": "Stores tracked",
+    "bestTimeToBuyTitle": "Best time to buy",
+    "dealVerdicts": {
+      "buyNow": "Buy now",
+      "strongDeal": "Strong deal",
+      "fairPrice": "Fair price",
+      "waitForSale": "Wait for a better sale"
+    },
+    "buyTiming": {
+      "buyNow": {
+        "title": "Now is a strong buy window",
+        "description": "Today's best price is close to the historical low of {low}, so waiting may not save much."
+      },
+      "watch": {
+        "title": "Good, but you can keep an eye on it",
+        "description": "This deal is {percent}% above the all-time low of {low}. Buy if you want it now, but a better dip is possible."
+      },
+      "wait": {
+        "title": "Wait for the next sale wave",
+        "description": "The game has reached {low} before, and the current price is still {percent}% higher. It may be worth holding off."
+      }
+    }
   },
   "auth": {
     "signIn": "Sign In",

@@ -127,7 +127,40 @@
     "regularPrice": "原价",
     "savings": "节省",
     "getDeal": "获取优惠",
-    "best": "最佳"
+    "best": "最佳",
+    "priceHistoryTitle": "价格走势",
+    "priceHistorySubtitle": "原价、历史最低价和今天的最佳价格一眼看清。",
+    "regular": "原价",
+    "historicalLow": "历史最低",
+    "current": "当前",
+    "today": "今天",
+    "dealScoreTitle": "现在值得买吗？",
+    "outOf100": "/ 100",
+    "dealScoreAtLow": "当前价格已达到历史最低价 {low}，现在就是非常好的入手时机。",
+    "dealScoreAboveLow": "当前价格比历史最低价 {low} 高出 {percent}% ，算不错，但不是最低点。",
+    "discountNow": "当前折扣",
+    "storesTracked": "跟踪商店数",
+    "bestTimeToBuyTitle": "最佳购买时机",
+    "dealVerdicts": {
+      "buyNow": "现在买",
+      "strongDeal": "很强的优惠",
+      "fairPrice": "价格还可以",
+      "waitForSale": "等下一波促销"
+    },
+    "buyTiming": {
+      "buyNow": {
+        "title": "现在是不错的入手窗口",
+        "description": "今天的最佳价格已经很接近历史最低价 {low}，继续等待未必能省下太多。"
+      },
+      "watch": {
+        "title": "不错，但也可以继续观察",
+        "description": "这次优惠比历史最低价 {low} 高出 {percent}% 。如果现在就想玩可以买，但后面还有机会更低。"
+      },
+      "wait": {
+        "title": "更适合等下一次打折",
+        "description": "这款游戏以前曾降到 {low}，而现在的价格仍高出 {percent}% ，再等等可能更划算。"
+      }
+    }
   },
   "auth": {
     "signIn": "登录",

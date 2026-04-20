@@ -127,7 +127,40 @@
     "regularPrice": "Normal Fiyat",
     "savings": "İndirim",
     "getDeal": "Fırsata Git",
-    "best": "En İyi"
+    "best": "En İyi",
+    "priceHistoryTitle": "Fiyat Geçmişi Grafiği",
+    "priceHistorySubtitle": "Normal fiyatı, tarihi dip noktayı ve bugünkü en iyi fiyatı tek bakışta gör.",
+    "regular": "Normal",
+    "historicalLow": "Tarihi dip",
+    "current": "Şimdiki fiyat",
+    "today": "Bugün",
+    "dealScoreTitle": "Bu iyi bir deal mi?",
+    "outOf100": "/ 100",
+    "dealScoreAtLow": "Bu fiyat {low} ile tarihi dip seviyeyi yakalıyor. Yani şimdi almak en iyi seviyelerden biri.",
+    "dealScoreAboveLow": "Bu fiyat, {low} olan tarihi dip seviyenin %{percent} üstünde. Yani iyi ama dip nokta değil.",
+    "discountNow": "Şu anki indirim",
+    "storesTracked": "Takip edilen mağaza",
+    "bestTimeToBuyTitle": "Almak için en iyi zaman",
+    "dealVerdicts": {
+      "buyNow": "Şimdi al",
+      "strongDeal": "Güçlü fırsat",
+      "fairPrice": "Fena değil",
+      "waitForSale": "Daha iyi indirimi bekle"
+    },
+    "buyTiming": {
+      "buyNow": {
+        "title": "Şu an almak mantıklı",
+        "description": "Bugünkü en iyi fiyat, {low} olan tarihi dip seviyeye çok yakın. Beklemek çok büyük fark yaratmayabilir."
+      },
+      "watch": {
+        "title": "İyi, ama biraz takip edilebilir",
+        "description": "Bu deal, {low} olan tarihi dip seviyenin %{percent} üstünde. Hemen almak da mantıklı, biraz beklemek de."
+      },
+      "wait": {
+        "title": "Bir sonraki indirim dalgasını bekle",
+        "description": "Oyun daha önce {low} seviyesine kadar düşmüş. Şu anki fiyat hâlâ %{percent} daha yüksek olduğu için beklemek mantıklı olabilir."
+      }
+    }
   },
   "auth": {
     "signIn": "Giriş Yap",

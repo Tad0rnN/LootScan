@@ -127,7 +127,40 @@
     "regularPrice": "Prix normal",
     "savings": "Économie",
     "getDeal": "Voir l'offre",
-    "best": "Meilleur"
+    "best": "Meilleur",
+    "priceHistoryTitle": "Graphique de prix",
+    "priceHistorySubtitle": "Prix normal, plus bas historique et meilleur prix du jour en un coup d'oeil.",
+    "regular": "Prix normal",
+    "historicalLow": "Plus bas historique",
+    "current": "Actuel",
+    "today": "Aujourd'hui",
+    "dealScoreTitle": "Est-ce une bonne offre ?",
+    "outOf100": "/ 100",
+    "dealScoreAtLow": "Ce prix rejoint le plus bas historique à {low}. C'est l'un des meilleurs moments pour acheter.",
+    "dealScoreAboveLow": "Ce prix est {percent}% au-dessus du plus bas historique de {low}. C'est bon, sans être le minimum.",
+    "discountNow": "Réduction actuelle",
+    "storesTracked": "Boutiques suivies",
+    "bestTimeToBuyTitle": "Meilleur moment pour acheter",
+    "dealVerdicts": {
+      "buyNow": "Acheter maintenant",
+      "strongDeal": "Très bonne offre",
+      "fairPrice": "Prix correct",
+      "waitForSale": "Attendre une meilleure promo"
+    },
+    "buyTiming": {
+      "buyNow": {
+        "title": "C'est un bon moment pour acheter",
+        "description": "Le meilleur prix actuel est proche du plus bas historique de {low}. Attendre ne fera sans doute pas gagner grand-chose."
+      },
+      "watch": {
+        "title": "Bien, mais vous pouvez encore surveiller",
+        "description": "Cette offre est {percent}% au-dessus du plus bas historique de {low}. Acheter maintenant reste correct, mais une meilleure baisse est possible."
+      },
+      "wait": {
+        "title": "Mieux vaut attendre la prochaine promo",
+        "description": "Le jeu est déjà descendu à {low} et le prix actuel reste {percent}% plus haut. Patienter peut valoir le coup."
+      }
+    }
   },
   "auth": {
     "signIn": "Connexion",

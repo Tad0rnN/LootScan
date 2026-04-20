@@ -127,7 +127,40 @@
     "regularPrice": "Normale prijs",
     "savings": "Besparing",
     "getDeal": "Naar aanbieding",
-    "best": "Beste"
+    "best": "Beste",
+    "priceHistoryTitle": "Prijsgrafiek",
+    "priceHistorySubtitle": "Normale prijs, historisch dieptepunt en de beste prijs van vandaag in één oogopslag.",
+    "regular": "Normaal",
+    "historicalLow": "Laagste ooit",
+    "current": "Nu",
+    "today": "Vandaag",
+    "dealScoreTitle": "Is dit een goede deal?",
+    "outOf100": "/ 100",
+    "dealScoreAtLow": "Deze prijs evenaart de laagste prijs ooit van {low}. Dit is dus een sterk koopmoment.",
+    "dealScoreAboveLow": "Deze prijs ligt {percent}% boven de laagste prijs ooit van {low}. Goed, maar niet op het absolute dieptepunt.",
+    "discountNow": "Huidige korting",
+    "storesTracked": "Gevolgde winkels",
+    "bestTimeToBuyTitle": "Beste moment om te kopen",
+    "dealVerdicts": {
+      "buyNow": "Nu kopen",
+      "strongDeal": "Sterke deal",
+      "fairPrice": "Prima prijs",
+      "waitForSale": "Wacht op een betere sale"
+    },
+    "buyTiming": {
+      "buyNow": {
+        "title": "Dit is een goed koopmoment",
+        "description": "De beste prijs van vandaag ligt dicht bij het historische dieptepunt van {low}. Wachten levert waarschijnlijk weinig extra op."
+      },
+      "watch": {
+        "title": "Goed, maar nog even volgen kan ook",
+        "description": "Deze deal ligt {percent}% boven de laagste prijs ooit van {low}. Nu kopen kan, maar een betere dip is nog mogelijk."
+      },
+      "wait": {
+        "title": "Wacht liever op de volgende sale",
+        "description": "De game is eerder al gezakt naar {low}, en de huidige prijs ligt nog {percent}% hoger. Even wachten kan slim zijn."
+      }
+    }
   },
   "auth": {
     "signIn": "Inloggen",

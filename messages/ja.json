@@ -127,7 +127,40 @@
     "regularPrice": "通常価格",
     "savings": "割引",
     "getDeal": "ディールへ",
-    "best": "最安"
+    "best": "最安",
+    "priceHistoryTitle": "価格推移グラフ",
+    "priceHistorySubtitle": "通常価格、過去最安値、今日の最安価格をひと目で確認できます。",
+    "regular": "通常",
+    "historicalLow": "過去最安",
+    "current": "現在",
+    "today": "今日",
+    "dealScoreTitle": "今は買い時？",
+    "outOf100": "/ 100",
+    "dealScoreAtLow": "この価格は{low}の過去最安値と同じです。かなり良い買い時です。",
+    "dealScoreAboveLow": "この価格は過去最安値{low}より{percent}%高いです。悪くはありませんが最安ではありません。",
+    "discountNow": "現在の割引",
+    "storesTracked": "追跡ストア数",
+    "bestTimeToBuyTitle": "ベストな購入タイミング",
+    "dealVerdicts": {
+      "buyNow": "今買ってOK",
+      "strongDeal": "かなり良いディール",
+      "fairPrice": "悪くない価格",
+      "waitForSale": "次のセールを待つ"
+    },
+    "buyTiming": {
+      "buyNow": {
+        "title": "今はかなり良い買い時です",
+        "description": "今日の最安価格は過去最安値{low}にかなり近く、待っても大きな差が出ない可能性があります。"
+      },
+      "watch": {
+        "title": "悪くないが、様子見もあり",
+        "description": "このディールは過去最安値{low}より{percent}%高いです。今買ってもよいですが、もう少し下がる可能性もあります。"
+      },
+      "wait": {
+        "title": "次のセールまで待つのが無難",
+        "description": "このゲームは過去に{low}まで下がっています。現在価格はまだ{percent}%高いため、待つ価値があります。"
+      }
+    }
   },
   "auth": {
     "signIn": "ログイン",
