@@ -95,18 +95,6 @@ const STORE_URL_BUILDERS: Record<string, (title: string, steamAppID?: string | n
     return `https://www.indiegala.com/store/game/${slug}/${steamAppID}`;
   },
   "23": (title) => {
-    // URL cache from scripts/validate-gamebillet.mjs — run that script to populate.
-    // Falls back to slug-based URL (unvalidated) if no cache entry exists.
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const cache = require("../../data/gamebillet-url-cache.json") as {
-        results: Record<string, { status: string; url: string }>;
-      };
-      const entry = cache.results[title ?? ""];
-      if (entry?.status === "valid") return entry.url.split("?")[0]; // affiliate added by addAffiliateParam
-    } catch {
-      // cache file doesn't exist yet
-    }
     if (!title) return "https://www.gamebillet.com/";
     const slug = title.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-").replace(/-+/g, "-");
     return `https://www.gamebillet.com/${slug}`;
