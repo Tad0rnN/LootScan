@@ -99,6 +99,11 @@ const STORE_URL_BUILDERS: Record<string, (title: string, steamAppID?: string | n
     const slug = title.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-").replace(/-+/g, "-");
     return `https://www.gamebillet.com/${slug}`;
   },
+  "2": (title) => {
+    if (!title) return "https://www.gamersgate.com/";
+    const slug = title.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-").replace(/-+/g, "-");
+    return `https://www.gamersgate.com/product/${slug}/`;
+  },
 };
 
 export function getStoreLogoUrl(storeID: string): string {
