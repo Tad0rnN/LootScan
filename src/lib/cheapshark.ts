@@ -1,4 +1,5 @@
 import type { Deal, Store, GameInfo, SearchResult } from "@/types";
+import { getAffiliateLink } from "@/lib/affiliate";
 import {
   fetchCheapShark as fetchViaProxy,
   CHEAPSHARK_BASE,
@@ -79,9 +80,8 @@ export async function findGameBySteamAppIdOrTitle(params: {
 }
 
 export const INDIEGALA_STORE_ID = "30";
-const INDIEGALA_REF = "nzyzndh";
 
-function toIndieGalaSlug(title: string): string {
+function toSlug(title: string): string {
   return title
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
@@ -89,7 +89,7 @@ function toIndieGalaSlug(title: string): string {
 }
 
 export function getIndieGalaUrl(title: string): string {
-  return `https://www.indiegala.com/store/game/${toIndieGalaSlug(title)}?ref=${INDIEGALA_REF}`;
+  return getAffiliateLink(`https://www.indiegala.com/store/game/${toSlug(title)}`);
 }
 
 export function getStoreLogoUrl(storeID: string): string {

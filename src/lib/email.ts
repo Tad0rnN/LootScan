@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import type { Deal } from "@/types";
+import { getDealUrl } from "@/lib/cheapshark";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -248,7 +249,7 @@ export async function sendTopDealsNewsletter({
       const price = parseFloat(deal.salePrice) === 0 ? "FREE" : `$${parseFloat(deal.salePrice).toFixed(2)}`;
       const normal = `$${parseFloat(deal.normalPrice).toFixed(2)}`;
       const savings = Math.round(parseFloat(deal.savings));
-      const dealUrl = `https://www.cheapshark.com/redirect?dealID=${deal.dealID}`;
+      const dealUrl = getDealUrl(deal.dealID, deal.storeID, deal.title);
       return `
         <tr>
           <td style="padding:0 0 18px;">

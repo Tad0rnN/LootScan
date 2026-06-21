@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Heart, Star } from "lucide-react";
 import { formatPrice, getStoreLogoUrl } from "@/lib/cheapshark";
+import { getAffiliateLink } from "@/lib/affiliate";
 import type { Deal } from "@/types";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -20,7 +21,8 @@ interface Props {
   externalHref?: string;
 }
 
-export default function DealCard({ deal, wishlisted = false, onWishlistChange, externalHref }: Props) {
+export default function DealCard({ deal, wishlisted = false, onWishlistChange, externalHref: rawExternalHref }: Props) {
+  const externalHref = rawExternalHref ? getAffiliateLink(rawExternalHref) : undefined;
   const [inWishlist, setInWishlist] = useState(wishlisted);
   const [loading, setLoading] = useState(false);
   const savings = Math.round(parseFloat(deal.savings));

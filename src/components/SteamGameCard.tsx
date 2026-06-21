@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Heart, Bell, Users, Clock, ExternalLink, Loader2 } from "lucide-react";
 import { formatSteamPrice, formatPlaytime } from "@/lib/steam";
-import { getStoreLogoUrl } from "@/lib/cheapshark";
+import { getStoreLogoUrl, getDealUrl } from "@/lib/cheapshark";
 import type { SteamGameWithImage } from "@/lib/steam";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -192,7 +192,7 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
           {deals.slice(0, 5).map((deal, idx) => (
             <a
               key={deal.dealID}
-              href={`https://www.cheapshark.com/redirect?dealID=${deal.dealID}`}
+              href={getDealUrl(deal.dealID, deal.storeID, game.name)}
               target="_blank"
               rel="noreferrer"
               onClick={(e) => {
@@ -202,7 +202,7 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
                   game_id: gameID ?? String(game.appid),
                   title: game.name,
                   store_id: deal.storeID,
-                  destination_url: `https://www.cheapshark.com/redirect?dealID=${deal.dealID}`,
+                  destination_url: getDealUrl(deal.dealID, deal.storeID, game.name),
                   sale_price: deal.price,
                   placement: "popular_store_list",
                 });
