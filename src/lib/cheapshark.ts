@@ -88,14 +88,6 @@ function toSlug(title: string): string {
     .replace(/^-|-$/g, "");
 }
 
-export function getIndieGalaUrl(title: string, steamAppID?: string | number | null): string {
-  const slug = toSlug(title);
-  const path = steamAppID
-    ? `/store/game/${slug}/${steamAppID}_m`
-    : `/store/game/${slug}`;
-  return getAffiliateLink(`https://www.indiegala.com${path}`);
-}
-
 export function getStoreLogoUrl(storeID: string): string {
   return `https://www.cheapshark.com/img/stores/icons/${parseInt(storeID) - 1}.png`;
 }
@@ -106,8 +98,9 @@ export function getDealUrl(
   title?: string,
   steamAppID?: string | number | null,
 ): string {
-  if (storeID === INDIEGALA_STORE_ID && title) {
-    return getIndieGalaUrl(title, steamAppID);
+  if (storeID === INDIEGALA_STORE_ID && title && steamAppID) {
+    const slug = toSlug(title);
+    return getAffiliateLink(`https://www.indiegala.com/store/game/${slug}/${steamAppID}`);
   }
   return `https://www.cheapshark.com/redirect?dealID=${dealID}`;
 }
