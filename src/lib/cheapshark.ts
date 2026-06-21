@@ -78,8 +78,17 @@ export async function findGameBySteamAppIdOrTitle(params: {
   }) ?? null;
 }
 
+export const INDIEGALA_STORE_ID = "30";
+
 export function getStoreLogoUrl(storeID: string): string {
   return `https://www.cheapshark.com/img/stores/icons/${parseInt(storeID) - 1}.png`;
+}
+
+export function getDealUrl(dealID: string, storeID: string): string {
+  if (storeID === INDIEGALA_STORE_ID) {
+    return `/api/indiegala-redirect?dealID=${dealID}`;
+  }
+  return `https://www.cheapshark.com/redirect?dealID=${dealID}`;
 }
 
 export function formatPrice(price: string | number): string {

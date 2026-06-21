@@ -8,7 +8,7 @@ import ShareButton from "@/components/ShareButton";
 import RegionalSteamPrice from "@/components/RegionalSteamPrice";
 import GameDealInsights from "@/components/GameDealInsights";
 import { trackAffiliateClick } from "@/lib/analytics";
-import { formatPrice, getStoreLogoUrl } from "@/lib/cheapshark";
+import { formatPrice, getStoreLogoUrl, getDealUrl } from "@/lib/cheapshark";
 import { useTranslations, useLocale } from "next-intl";
 import type { GameInfo, Store } from "@/types";
 
@@ -175,7 +175,7 @@ export default function GameDetailClient({ id, gameInfo, stores }: Props) {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <a
-                        href={`https://www.cheapshark.com/redirect?dealID=${deal.dealID}`}
+                        href={getDealUrl(deal.dealID, deal.storeID)}
                         target="_blank"
                         rel="noreferrer"
                         onClick={() =>
@@ -184,7 +184,7 @@ export default function GameDetailClient({ id, gameInfo, stores }: Props) {
                             game_id: id,
                             title: gameInfo.info.title,
                             store_id: deal.storeID,
-                            destination_url: `https://www.cheapshark.com/redirect?dealID=${deal.dealID}`,
+                            destination_url: getDealUrl(deal.dealID, deal.storeID),
                             sale_price: deal.price,
                             placement: "game_detail",
                           })
