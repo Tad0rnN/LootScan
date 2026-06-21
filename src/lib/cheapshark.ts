@@ -94,11 +94,7 @@ const STORE_URL_BUILDERS: Record<string, (title: string, steamAppID?: string | n
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     return `https://www.indiegala.com/store/game/${slug}/${steamAppID}`;
   },
-  // "23": (title, steamAppID) => {
-  //   // Gamebillet: URL format unknown — Cloudflare blocks automated discovery.
-  //   // Uncomment and fill in once the format is known.
-  //   return null;
-  // },
+  "23": () => "https://www.gamebillet.com/",
 };
 
 export function getStoreLogoUrl(storeID: string): string {
