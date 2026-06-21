@@ -79,14 +79,26 @@ export async function findGameBySteamAppIdOrTitle(params: {
 }
 
 export const INDIEGALA_STORE_ID = "30";
+const INDIEGALA_REF = "nzyzndh";
+
+function toIndieGalaSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+export function getIndieGalaUrl(title: string): string {
+  return `https://www.indiegala.com/store/game/${toIndieGalaSlug(title)}?ref=${INDIEGALA_REF}`;
+}
 
 export function getStoreLogoUrl(storeID: string): string {
   return `https://www.cheapshark.com/img/stores/icons/${parseInt(storeID) - 1}.png`;
 }
 
-export function getDealUrl(dealID: string, storeID: string): string {
-  if (storeID === INDIEGALA_STORE_ID) {
-    return `/api/indiegala-redirect?dealID=${dealID}`;
+export function getDealUrl(dealID: string, storeID: string, title?: string): string {
+  if (storeID === INDIEGALA_STORE_ID && title) {
+    return getIndieGalaUrl(title);
   }
   return `https://www.cheapshark.com/redirect?dealID=${dealID}`;
 }

@@ -175,7 +175,7 @@ export default function GameDetailClient({ id, gameInfo, stores }: Props) {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <a
-                        href={getDealUrl(deal.dealID, deal.storeID)}
+                        href={getDealUrl(deal.dealID, deal.storeID, gameInfo.info.title)}
                         target="_blank"
                         rel="noreferrer"
                         onClick={() =>
@@ -184,7 +184,7 @@ export default function GameDetailClient({ id, gameInfo, stores }: Props) {
                             game_id: id,
                             title: gameInfo.info.title,
                             store_id: deal.storeID,
-                            destination_url: getDealUrl(deal.dealID, deal.storeID),
+                            destination_url: getDealUrl(deal.dealID, deal.storeID, gameInfo.info.title),
                             sale_price: deal.price,
                             placement: "game_detail",
                           })
