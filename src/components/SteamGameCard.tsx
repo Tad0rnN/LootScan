@@ -192,7 +192,7 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
           {deals.slice(0, 5).map((deal, idx) => (
             <a
               key={deal.dealID}
-              href={getDealUrl(deal.dealID, deal.storeID, game.name)}
+              href={getDealUrl(deal.dealID, deal.storeID, game.name, game.appid)}
               target="_blank"
               rel="noreferrer"
               onClick={(e) => {
@@ -202,7 +202,7 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
                   game_id: gameID ?? String(game.appid),
                   title: game.name,
                   store_id: deal.storeID,
-                  destination_url: getDealUrl(deal.dealID, deal.storeID, game.name),
+                  destination_url: getDealUrl(deal.dealID, deal.storeID, game.name, game.appid),
                   sale_price: deal.price,
                   placement: "popular_store_list",
                 });

@@ -249,7 +249,7 @@ export async function sendTopDealsNewsletter({
       const price = parseFloat(deal.salePrice) === 0 ? "FREE" : `$${parseFloat(deal.salePrice).toFixed(2)}`;
       const normal = `$${parseFloat(deal.normalPrice).toFixed(2)}`;
       const savings = Math.round(parseFloat(deal.savings));
-      const dealUrl = getDealUrl(deal.dealID, deal.storeID, deal.title);
+      const dealUrl = getDealUrl(deal.dealID, deal.storeID, deal.title, deal.steamAppID);
       return `
         <tr>
           <td style="padding:0 0 18px;">
