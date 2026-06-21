@@ -1,5 +1,5 @@
 import type { Deal, Store, GameInfo, SearchResult } from "@/types";
-import { getAffiliateLink } from "@/lib/affiliate";
+import { addAffiliateParam } from "@/lib/affiliate";
 import {
   fetchCheapShark as fetchViaProxy,
   CHEAPSHARK_BASE,
@@ -79,28 +79,47 @@ export async function findGameBySteamAppIdOrTitle(params: {
   }) ?? null;
 }
 
-export const INDIEGALA_STORE_ID = "30";
-
-function toSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
+/**
+ * CheapShark store IDs for stores where we can construct direct URLs.
+ * Stores NOT listed here fall back to the CheapShark redirect link.
+ *
+ * NOTE: CheapShark redirect returns HTTP 200 + JavaScript redirect (not 302),
+ * so the "Location header" approach is impossible. For each store we want to
+ * support, we must discover and hard-code their URL format manually.
+ */
+const STORE_URL_BUILDERS: Record<string, (title: string, steamAppID?: string | number | null) => string | null> = {
+  "30": (title, steamAppID) => {
+    // IndieGala: /store/game/[slug]/[steamAppID]  (steamAppID required — slug-only gives 302)
+    if (!steamAppID) return null;
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    return `https://www.indiegala.com/store/game/${slug}/${steamAppID}`;
+  },
+  // "23": (title, steamAppID) => {
+  //   // Gamebillet: URL format unknown — Cloudflare blocks automated discovery.
+  //   // Uncomment and fill in once the format is known.
+  //   return null;
+  // },
+};
 
 export function getStoreLogoUrl(storeID: string): string {
   return `https://www.cheapshark.com/img/stores/icons/${parseInt(storeID) - 1}.png`;
 }
 
+/**
+ * Returns the best URL for a deal.
+ * - If we know the store's URL format → constructs it directly with affiliate param.
+ * - Otherwise → falls back to the CheapShark redirect (no affiliate tracking possible).
+ */
 export function getDealUrl(
   dealID: string,
   storeID: string,
   title?: string,
   steamAppID?: string | number | null,
 ): string {
-  if (storeID === INDIEGALA_STORE_ID && title && steamAppID) {
-    const slug = toSlug(title);
-    return getAffiliateLink(`https://www.indiegala.com/store/game/${slug}/${steamAppID}`);
+  const builder = STORE_URL_BUILDERS[storeID];
+  if (builder && title) {
+    const base = builder(title, steamAppID);
+    if (base) return addAffiliateParam(base);
   }
   return `https://www.cheapshark.com/redirect?dealID=${dealID}`;
 }
