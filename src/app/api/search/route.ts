@@ -18,7 +18,7 @@ async function computeSearchResponse(query: string, locale?: string) {
 
 const getCachedSearchResponse = unstable_cache(
   async (query: string, locale?: string) => computeSearchResponse(query, locale),
-  ["ai-search-response-v4"],
+  ["ai-search-response-v5"],
   { revalidate: 60 * 5 }
 );
 

@@ -11,52 +11,63 @@ export async function parseNaturalLanguageSearch(
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-  const prompt = `You are a game recommendation and deal search assistant for a site called LootScan that uses the CheapShark API.
+  const prompt = `You are a game deal search assistant for LootScan (lootscan.co), a site that aggregates PC game prices across online stores using the CheapShark API.
 
-Classify the user query into one of two modes:
+The user may write in any language (Turkish, English, German, French, etc.). Understand the query in any language. Write "interpretation" in the SAME language as the user's query.
 
-MODE "similar":
-- User asks for games similar to another game, by genre, by mood, or by style.
-- Broad thematic requests like "+18 games", "simulation games", "story-rich games", "co-op games", "racing games" are also MODE "similar".
-- Return up to 12 specific real base game titles in "gameTitles".
-- Do not include DLC, soundtrack, expansion, bundle, season pass, or vague filler entries.
-- Only set filters.onSale to true if the user explicitly asks for discounts / sales / cheap games.
+---
+## SEARCH MODES
 
-MODE "deals":
-- User asks for prices, discounts, free games, store-specific deals, or budget limits.
-- Return "gameTitles": [].
-- Use filters.title only when the query is clearly a specific game title.
-- Do not use filters.title for broad genre/style recommendation queries.
-- Only set filters.onSale to true when the user explicitly asks for deals / discounts / free / cheap games.
+### MODE "similar" — use when user asks for:
+- Games similar to a specific game ("games like X", "X gibi oyunlar", "X benzeri")
+- Genre or style requests ("RPG", "soulslike", "horror oyunları", "strateji oyunları", "co-op", "korku oyunları", "bulmaca", "platform")
+- Mood/theme requests ("relaxing games", "rahatlatıcı oyunlar", "scary games", "arkadaşlarla oynayabileceğim")
+- Mature content requests ("+18 games", "yetişkin oyunları", "adult games")
+- Return 10-12 specific, well-known, diverse PC game titles in "gameTitles"
+- Never include DLC, soundtrack, expansion, bundle, season pass
 
+### MODE "deals" — use when user asks for:
+- A specific game title's price ("Half-Life 2 kaç para", "how much is RDR2")
+- Store-specific browsing ("Steam'deki indirimler", "GOG deals")
+- Budget-limited browsing ("10 dolar altı oyunlar", "games under $5")
+- Free game requests ("bedava oyunlar", "free games", "ücretsiz")
+- Return "gameTitles": []
+- Use filters.title only for specific named game lookups (not genres)
+
+---
+## RULES
+- onSale: true ONLY when user explicitly says sale/discount/indirim/ucuz/cheap/deal/fırsat
+- filters.title: ONLY for specific named games, never for genres
+- storeID: ONLY when user names a specific store
+- Interpret Turkish game genre words: "soulslike/souls benzeri", "strateji", "korku/horror", "yarış/racing", "bulmaca/puzzle", "platform/platformer", "hayatta kalma/survival", "rol yapma/RPG", "açık dünya/open world", "atıcı/shooter", "dövüş/fighting", "simülasyon/simulation", "macera/adventure", "hikayeli/story-rich", "gizlilik/stealth"
+
+---
+## CheapShark Filters
+- title: string
+- maxPrice: number (USD, 0 = free only)
+- minMetacritic: number (0-100)
+- storeID: "1"=Steam, "2"=GamersGate, "3"=GreenManGaming, "7"=GOG, "8"=Origin, "11"=Humble, "15"=Fanatical, "21"=WinGameStore, "23"=Gamebillet, "25"=Epic
+- sortBy: "Deal Rating" | "Title" | "Savings" | "Price" | "Metacritic" | "Reviews" | "Release" | "recent"
+- onSale: boolean
+- steamworks: boolean
+
+---
 User query: "${userQuery}"
 
-CheapShark API filter options:
-- title: string (game title keyword)
-- maxPrice: number (maximum price in USD, 0 for free games)
-- minMetacritic: number (minimum Metacritic score, 0-100)
-- storeID: string (1=Steam, 2=GamersGate, 3=GreenManGaming, 7=GOG, 8=Origin, 11=Humble, 13=IGS, 15=Fanatical, 21=WinGameStore, 23=GreenManGaming, 25=Voidu, 27=Epic)
-- sortBy: string (one of: Deal Rating, Title, Savings, Price, Metacritic, Reviews, Release, Store, recent)
-- onSale: boolean (only show games currently on sale)
-- steamworks: boolean (only show steamworks games)
-
-Respond ONLY with valid JSON in this exact format:
+Respond with ONLY valid JSON (no markdown, no code blocks):
 {
-  "interpretation": "A friendly 1-sentence summary of what the user is looking for",
-  "searchMode": "similar" | "deals",
-  "gameTitles": ["Title 1"],
+  "interpretation": "Friendly 1-sentence summary in the user's language",
+  "searchMode": "similar",
+  "gameTitles": ["Title 1", "Title 2"],
   "filters": {
-    "title": "optional game title",
-    "maxPrice": 0,
-    "minMetacritic": 0,
-    "storeID": "optional store id",
-    "sortBy": "optional sort",
+    "maxPrice": null,
+    "minMetacritic": null,
+    "storeID": null,
+    "sortBy": "Deal Rating",
     "onSale": false,
     "steamworks": false
   }
-}
-
-Only include fields relevant to the query.`;
+}`;
 
   const result = await model.generateContent(prompt);
   const text = result.response.text();

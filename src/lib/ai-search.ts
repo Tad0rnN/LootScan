@@ -15,7 +15,6 @@ type ReferencePreset = {
 const GENERIC_RECOMMENDATION_TITLES = [
   "The Witcher 3: Wild Hunt",
   "Red Dead Redemption 2",
-  "Cyberpunk 2077",
   "Hades",
   "Hollow Knight",
   "Disco Elysium",
@@ -25,6 +24,7 @@ const GENERIC_RECOMMENDATION_TITLES = [
   "Deep Rock Galactic",
   "Balatro",
   "Dave the Diver",
+  "Outer Wilds",
 ];
 
 const GENRE_PRESETS: GenrePreset[] = [
@@ -93,6 +93,41 @@ const GENRE_PRESETS: GenrePreset[] = [
     keywords: ["racing", "race", "yaris", "yarış", "araba", "driving"],
     titles: ["Forza Horizon 5", "Need for Speed Heat", "Assetto Corsa", "Wreckfest", "Dirt Rally 2.0", "F1 24", "Burnout Paradise Remastered", "Hot Wheels Unleashed 2", "CarX Drift Racing Online", "Sonic & All-Stars Racing Transformed", "Trackmania", "Automobilista 2"],
   },
+  {
+    label: "puzzle",
+    keywords: ["puzzle", "bulmaca", "bölüm", "logic", "mantık", "brain"],
+    titles: ["Portal 2", "The Witness", "Baba Is You", "The Talos Principle", "Return of the Obra Dinn", "Outer Wilds", "Antichamber", "The Room", "Opus Magnum", "Stephen's Sausage Roll", "Viewfinder", "Cocoon"],
+  },
+  {
+    label: "platformer",
+    keywords: ["platformer", "platform", "platform oyunu", "jump", "zıplama", "metroidvania"],
+    titles: ["Hollow Knight", "Celeste", "Ori and the Blind Forest", "Ori and the Will of the Wisps", "Shovel Knight", "A Hat in Time", "Cuphead", "Rayman Legends", "Axiom Verge 2", "Blasphemous", "Aeterna Noctis", "Nine Sols"],
+  },
+  {
+    label: "adventure",
+    keywords: ["adventure", "macera", "macera oyunu", "exploration", "keşif", "point and click"],
+    titles: ["Outer Wilds", "What Remains of Edith Finch", "A Short Hike", "Firewatch", "Subnautica", "Heaven's Vault", "Sable", "Journey", "Abzu", "Alba: A Wildlife Adventure", "Gris", "Spiritfarer"],
+  },
+  {
+    label: "fighting",
+    keywords: ["fighting", "dövüş", "dövüş oyunu", "fight", "beat em up", "arena", "versus"],
+    titles: ["Mortal Kombat 11", "Street Fighter 6", "Tekken 7", "Dragon Ball FighterZ", "Guilty Gear Strive", "Brawlhalla", "Skullgirls 2nd Encore", "Rivals of Aether", "Them's Fightin' Herds", "King of Fighters XV", "BlazBlue: Cross Tag Battle", "Streets of Rage 4"],
+  },
+  {
+    label: "stealth",
+    keywords: ["stealth", "gizlilik", "gizli", "sneaky", "assassin", "spy"],
+    titles: ["Hitman World of Assassination", "Dishonored 2", "Deus Ex: Mankind Divided", "Thief", "Shadow Tactics: Blades of the Shogun", "Desperados III", "Cyberpunk 2077", "Assassin's Creed Odyssey", "Mark of the Ninja: Remastered", "Aragami 2", "Invisible Inc.", "Splinter Cell: Blacklist"],
+  },
+  {
+    label: "sports",
+    keywords: ["sports", "spor", "football", "futbol", "soccer", "basketball", "tennis", "golf"],
+    titles: ["Football Manager 2024", "Rocket League", "EA Sports FC 25", "NBA 2K24", "Tennis World Tour 2", "Golf With Your Friends", "PGA Tour 2K23", "Escape Academy", "Riders Republic", "Steep", "EA Sports WRC", "Super Mega Baseball 4"],
+  },
+  {
+    label: "action",
+    keywords: ["action", "aksiyon", "hack and slash", "beat em up", "katana", "sword"],
+    titles: ["Hades", "Devil May Cry 5", "Sekiro: Shadows Die Twice", "Metal Gear Rising: Revengeance", "Bayonetta", "Ghostrunner", "Sifu", "Neon White", "Transistor", "Katana ZERO", "ULTRAKILL", "Hi-Fi Rush"],
+  },
 ];
 
 const REFERENCE_PRESETS: ReferencePreset[] = [
@@ -107,10 +142,10 @@ const REFERENCE_PRESETS: ReferencePreset[] = [
       "Cloudpunk",
       "Remember Me",
       "Ruiner",
-      "E.Y.E: Divine Cybermancy",
       "Shadowrun: Dragonfall - Director's Cut",
       "System Shock",
-      "Akane",
+      "VirtuaVerse",
+      "Neon White",
     ],
   },
   {
@@ -120,14 +155,14 @@ const REFERENCE_PRESETS: ReferencePreset[] = [
       "Dragon Age: Inquisition",
       "GreedFall",
       "The Elder Scrolls V: Skyrim Special Edition",
-      "Divinity II: Developer's Cut",
       "Dragon's Dogma: Dark Arisen",
-      "Risen 3 - Titan Lords",
       "Gothic 3",
-      "Two Worlds II HD",
       "Middle-earth: Shadow of War",
       "Assassin's Creed Odyssey",
       "Outward Definitive Edition",
+      "Elex II",
+      "Risen 3 - Titan Lords",
+      "SpellForce 3: Reforced",
     ],
   },
   {
@@ -145,6 +180,125 @@ const REFERENCE_PRESETS: ReferencePreset[] = [
       "Death's Gambit: Afterlife",
       "Another Crab's Treasure",
       "Steelrising",
+    ],
+  },
+  {
+    keywords: ["gta", "grand theft auto", "gta 5", "gta v"],
+    titles: [
+      "Saints Row IV: Re-Elected",
+      "Sleeping Dogs: Definitive Edition",
+      "Mafia: Definitive Edition",
+      "Mafia II: Definitive Edition",
+      "Mafia III: Definitive Edition",
+      "Just Cause 4",
+      "Watch Dogs 2",
+      "Cyberpunk 2077",
+      "True Crime: Streets of LA",
+      "Yakuza 0",
+      "Yakuza Kiwami",
+      "Scarface: The World Is Yours",
+    ],
+  },
+  {
+    keywords: ["minecraft"],
+    titles: [
+      "Terraria",
+      "Valheim",
+      "Starbound",
+      "Subnautica",
+      "Raft",
+      "Planet Crafter",
+      "No Man's Sky",
+      "Creativerse",
+      "Eco",
+      "7 Days to Die",
+      "Empyrion - Galactic Survival",
+      "The Planet Crafter",
+    ],
+  },
+  {
+    keywords: ["stardew", "stardew valley"],
+    titles: [
+      "Story of Seasons: Friends of Mineral Town",
+      "Coral Island",
+      "Sun Haven",
+      "Littlewood",
+      "Potion Permit",
+      "Wylde Flowers",
+      "Roots of Pacha",
+      "Kynseed",
+      "My Time at Portia",
+      "My Time at Sandrock",
+      "Ooblets",
+      "Hokko Life",
+    ],
+  },
+  {
+    keywords: ["portal", "portal 2"],
+    titles: [
+      "The Talos Principle",
+      "The Talos Principle 2",
+      "Antichamber",
+      "Manifold Garden",
+      "The Witness",
+      "Baba Is You",
+      "Viewfinder",
+      "Q.U.B.E. 2",
+      "The Room VR",
+      "Maquette",
+      "Superliminal",
+      "Splitgate",
+    ],
+  },
+  {
+    keywords: ["terraria"],
+    titles: [
+      "Starbound",
+      "Core Keeper",
+      "Forager",
+      "Graveyard Keeper",
+      "Hollow Knight",
+      "Dead Cells",
+      "Risk of Rain 2",
+      "No Man's Sky",
+      "Subnautica",
+      "Valheim",
+      "Raft",
+      "Hades",
+    ],
+  },
+  {
+    keywords: ["red dead", "rdr2", "red dead redemption"],
+    titles: [
+      "Assassin's Creed Odyssey",
+      "Far Cry 5",
+      "Days Gone",
+      "Kingdom Come: Deliverance",
+      "Death Stranding: Director's Cut",
+      "A Plague Tale: Requiem",
+      "The Last of Us Part I",
+      "Horizon Zero Dawn",
+      "Sleeping Dogs: Definitive Edition",
+      "Mad Max",
+      "The Witcher 3: Wild Hunt",
+      "Cyberpunk 2077",
+    ],
+  },
+  {
+    keywords: ["hades"],
+    titles: [
+      "Dead Cells",
+      "Curse of the Dead Gods",
+      "Rogue Legacy 2",
+      "Children of Morta",
+      "Returnal",
+      "Neon Abyss",
+      "Enter the Gungeon",
+      "The Binding of Isaac: Rebirth",
+      "Skul: The Hero Slayer",
+      "Hades II",
+      "Moonscars",
+      "Slay the Spire",
     ],
   },
 ];
@@ -179,7 +333,9 @@ function hasAdultAgeIntent(query: string): boolean {
     || raw.includes("adult")
     || raw.includes("mature")
     || raw.includes("yetiskin")
-    || raw.includes("yetişkin");
+    || raw.includes("yetişkin")
+    || raw.includes("18 ve ustu")
+    || raw.includes("18 ve üstü");
 }
 
 function parseStoreId(query: string): string | undefined {
@@ -305,24 +461,31 @@ function findGenrePreset(query: string): GenrePreset | null {
 
 function parseReferenceStyleTitles(query: string): string[] | null {
   const normalized = normalizeText(query);
-  const hasSimilarIntent = [
-    "gibi",
-    "benzeri",
-    "tarzi",
-    "tarzı",
-    "like",
-    "similar to",
-  ].some((keyword) => normalized.includes(normalizeText(keyword)));
 
-  if (!hasSimilarIntent) {
-    return null;
-  }
-
+  // Check reference presets regardless of "similar" intent words —
+  // "gta gibi", "minecraft oyunları", "stardew valley tarzı" all match
   const preset = REFERENCE_PRESETS.find((item) =>
     item.keywords.some((keyword) => normalized.includes(normalizeText(keyword)))
   );
 
-  return preset?.titles ?? null;
+  if (!preset) return null;
+
+  // Only use reference preset if query contains a similarity/recommendation signal
+  const hasSimilarIntent = [
+    "gibi", "benzeri", "tarzi", "tarzı", "like", "similar to",
+    "oyunlari", "oyunları", "alternative", "alternatif", "öneri", "oneri",
+    "oyunlar", "games", "oyna",
+  ].some((keyword) => normalized.includes(normalizeText(keyword)));
+
+  // Also match bare reference queries like "minecraft" or "gta oyunları"
+  const queryTokens = query.trim().split(/\s+/);
+  const isShortQuery = queryTokens.length <= 3;
+
+  if (hasSimilarIntent || isShortQuery) {
+    return preset.titles;
+  }
+
+  return null;
 }
 
 function buildHeuristicInterpretation(query: string, locale: string | undefined, genreLabel?: string, maxPrice?: number): string {
