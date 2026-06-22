@@ -1,6 +1,7 @@
 import type { Deal, Store, GameInfo, SearchResult } from "@/types";
 import { addAffiliateParam } from "@/lib/affiliate";
 import gpCache from "../../data/gamesplanet-url-cache.json";
+import ggCache from "../../data/gamersgate-url-cache.json";
 import {
   fetchCheapShark as fetchViaProxy,
   CHEAPSHARK_BASE,
@@ -118,6 +119,11 @@ const STORE_URL_BUILDERS: Record<string, (title: string, steamAppID?: string | n
   },
   "2": (title) => {
     if (!title) return "https://www.gamersgate.com/";
+    const cache = ggCache as { byName: Record<string, string> };
+    const key = title.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const url = cache.byName[key];
+    if (url) return url;
+    // Fallback: generate slug from title
     const slug = title.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-").replace(/-+/g, "-");
     return `https://www.gamersgate.com/product/${slug}/`;
   },
