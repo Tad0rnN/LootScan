@@ -1,5 +1,6 @@
 import type { Deal, Store, GameInfo, SearchResult } from "@/types";
 import { addAffiliateParam } from "@/lib/affiliate";
+import gpCache from "../../data/gamesplanet-url-cache.json";
 import {
   fetchCheapShark as fetchViaProxy,
   CHEAPSHARK_BASE,
@@ -99,7 +100,22 @@ const STORE_URL_BUILDERS: Record<string, (title: string, steamAppID?: string | n
     const slug = title.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-").replace(/-+/g, "-");
     return `https://www.gamebillet.com/${slug}`;
   },
-  "27": () => "https://www.gamesplanet.com/",
+  "27": (title, steamAppID) => {
+    const cache = gpCache as {
+      bySteamAppId: Record<string, string>;
+      byName: Record<string, string>;
+    };
+    if (steamAppID) {
+      const url = cache.bySteamAppId[String(steamAppID)];
+      if (url) return url;
+    }
+    if (title) {
+      const key = title.toLowerCase().replace(/[^a-z0-9]/g, "");
+      const url = cache.byName[key];
+      if (url) return url;
+    }
+    return "https://us.gamesplanet.com/";
+  },
   "2": (title) => {
     if (!title) return "https://www.gamersgate.com/";
     const slug = title.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-").replace(/-+/g, "-");
