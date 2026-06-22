@@ -9,6 +9,7 @@ export const AFFILIATE_CONFIG: Record<string, { param: string; id: string }> = {
   "indiegala.com":  { param: "ref",       id: "nzyzndh" },
   "gamebillet.com": { param: "affiliate", id: "c5712e54-9925-4300-bc22-e3c1a586c9ee" },
   "gamersgate.com": { param: "aff",       id: "da4e3b6df6985a96c5550154b9207ed340684dd7" },
+  "gamesplanet.com": { param: "ref",      id: "lootscan" },
   // "humblebundle.com": { param: "partner", id: "xxx" },
   // "fanatical.com":    { param: "ref",     id: "xxx" },
   // "gog.com":          { param: "pp",      id: "xxx" },
