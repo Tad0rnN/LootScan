@@ -78,7 +78,7 @@ export default function DealCard({ deal, wishlisted = false, onWishlistChange, e
         {savings > 0 && (
           <div className="absolute top-2.5 left-2.5">
             <span className={clsx(
-              "text-[11px] font-bold px-2.5 py-1 rounded-lg backdrop-blur-md tracking-wide",
+              "text-xs font-extrabold px-2.5 py-1 rounded-lg backdrop-blur-md tracking-wide",
               isFree ? "badge-free" : "badge-savings"
             )}>
               {isFree ? "FREE" : `-${savings}%`}
@@ -125,9 +125,13 @@ export default function DealCard({ deal, wishlisted = false, onWishlistChange, e
         <div className="flex items-end justify-between mt-auto">
           <div className="flex items-baseline gap-2">
             <span className={clsx(
-              "font-bold text-lg leading-none tracking-tight",
+              "font-extrabold text-xl leading-none tracking-tight",
               isFree ? "text-amber-400" : "text-brand-400"
-            )}>
+            )}
+              style={isFree
+                ? { textShadow: '0 0 20px rgba(251,191,36,0.4)' }
+                : { textShadow: '0 0 20px rgba(34,197,94,0.4)' }
+              }>
               {formatPrice(deal.salePrice)}
             </span>
             {savings > 0 && !isFree && (
@@ -138,7 +142,7 @@ export default function DealCard({ deal, wishlisted = false, onWishlistChange, e
           </div>
 
           {deal.metacriticScore !== "0" && (
-            <span className="flex items-center gap-1 text-[11px] text-amber-400/80 font-semibold bg-amber-400/10 border border-amber-400/15 px-1.5 py-0.5 rounded-md">
+            <span className="flex items-center gap-1 text-[11px] text-amber-400 font-bold bg-amber-400/10 border border-amber-400/20 px-2 py-1 rounded-lg">
               <Star className="w-3 h-3 fill-current" />
               {deal.metacriticScore}
             </span>
@@ -160,8 +164,7 @@ export default function DealCard({ deal, wishlisted = false, onWishlistChange, e
   );
 
   const cardClassName = clsx(
-    "group card card-hover flex flex-col overflow-hidden",
-    "ring-0 hover:ring-1 hover:ring-white/10 transition-all duration-300"
+    "group card card-hover deal-card-hover flex flex-col overflow-hidden transition-all duration-300"
   );
 
   if (externalHref) {
