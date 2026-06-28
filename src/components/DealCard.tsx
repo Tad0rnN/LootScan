@@ -24,6 +24,7 @@ export default function DealCard({ deal, wishlisted = false, onWishlistChange, e
   const externalHref = rawExternalHref ? getAffiliateLink(rawExternalHref) : undefined;
   const [inWishlist, setInWishlist] = useState(wishlisted);
   const [loading, setLoading] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const savings = Math.round(parseFloat(deal.savings));
   const isFree = parseFloat(deal.salePrice) === 0;
   const locale = useLocale();
@@ -64,13 +65,21 @@ export default function DealCard({ deal, wishlisted = false, onWishlistChange, e
     <div className="flex flex-col h-full">
       {/* Thumbnail */}
       <div className="relative overflow-hidden bg-slate-950 aspect-[16/7]">
-        <Image
-          src={deal.thumb}
-          alt={deal.title}
-          fill
-          className="object-cover group-hover:scale-[1.06] transition-transform duration-700 ease-out"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
+        {imgError ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-950">
+            <span className="text-slate-700 text-xs font-medium px-3 text-center leading-relaxed line-clamp-3">{deal.title}</span>
+          </div>
+        ) : (
+          <Image
+            src={deal.thumb}
+            alt={deal.title}
+            fill
+            unoptimized={deal.thumb.includes('greenmangaming') || deal.thumb.includes('gog') || deal.thumb.includes('fanatical') || deal.thumb.includes('nuuvem')}
+            className="object-cover group-hover:scale-[1.06] transition-transform duration-700 ease-out"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            onError={() => setImgError(true)}
+          />
+        )}
         {/* Gradient overlay — always visible at bottom */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 

@@ -10,55 +10,52 @@ export async function parseNaturalLanguageSearch(
 
   const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-  const prompt = `You are a game deal search assistant for LootScan (lootscan.co), a site that aggregates PC game prices across online stores using the CheapShark API.
+  const systemPrompt = `You are an expert game recommendation and deal search assistant for LootScan (lootscan.co), a PC game price comparison site powered by the CheapShark API.
 
-The user may write in any language (Turkish, English, German, French, etc.). Understand the query in any language. Write "interpretation" in the SAME language as the user's query.
+You understand queries in ANY language (Turkish, English, German, French, Spanish, etc.) and always reply in the SAME language the user used.
 
----
+## YOUR JOB
+Parse the user's natural language query into a structured JSON search request.
+
 ## SEARCH MODES
 
-### MODE "similar" — use when user asks for:
-- Games similar to a specific game ("games like X", "X gibi oyunlar", "X benzeri")
-- Genre or style requests ("RPG", "soulslike", "horror oyunları", "strateji oyunları", "co-op", "korku oyunları", "bulmaca", "platform")
-- Mood/theme requests ("relaxing games", "rahatlatıcı oyunlar", "scary games", "arkadaşlarla oynayabileceğim")
-- Mature content requests ("+18 games", "yetişkin oyunları", "adult games")
-- Return 10-12 specific, well-known, diverse PC game titles in "gameTitles"
-- Never include DLC, soundtrack, expansion, bundle, season pass
+### "similar" mode — for discovery/recommendation queries:
+- Genre requests: "RPG", "soulslike", "horror", "strateji", "korku oyunları", "yarış", "bulmaca", "platform", "survival", "co-op", "açık dünya", "shooter", "simülasyon", "macera", "stealth", "fighting", "visual novel"
+- "Games like X" / "X gibi oyunlar" / "X benzeri"
+- Mood: "relaxing", "rahatlatıcı", "scary", "challenging", "zor", "hikayeli", "story-rich"
+- Multiplayer: "arkadaşlarla", "co-op", "multiplayer", "online"
+- Era: "retro games", "eski oyunlar", "klasik"
+- Return 12-15 DIVERSE, well-known PC game titles — no DLCs, no soundtracks, no Season Pass, no bundles
+- Prioritize games that are commonly discounted and available on CheapShark
 
-### MODE "deals" — use when user asks for:
-- A specific game title's price ("Half-Life 2 kaç para", "how much is RDR2")
-- Store-specific browsing ("Steam'deki indirimler", "GOG deals")
-- Budget-limited browsing ("10 dolar altı oyunlar", "games under $5")
-- Free game requests ("bedava oyunlar", "free games", "ücretsiz")
-- Return "gameTitles": []
-- Use filters.title only for specific named game lookups (not genres)
+### "deals" mode — for specific price/deal queries:
+- Specific game: "The Witcher 3 kaç para", "how much is GTA 5"
+- Budget: "5 dolar altı", "under $10", "cheap games", "ucuz oyunlar"
+- Store-specific: "Steam deals", "GOG'da indirim"
+- Free: "bedava oyunlar", "free games", "ücretsiz"
+- "gameTitles" must be [] in this mode
+- Use "title" filter ONLY for specific named games
 
----
-## RULES
-- onSale: true ONLY when user explicitly says sale/discount/indirim/ucuz/cheap/deal/fırsat
-- filters.title: ONLY for specific named games, never for genres
-- storeID: ONLY when user names a specific store
-- Interpret Turkish game genre words: "soulslike/souls benzeri", "strateji", "korku/horror", "yarış/racing", "bulmaca/puzzle", "platform/platformer", "hayatta kalma/survival", "rol yapma/RPG", "açık dünya/open world", "atıcı/shooter", "dövüş/fighting", "simülasyon/simulation", "macera/adventure", "hikayeli/story-rich", "gizlilik/stealth"
+## FILTER RULES
+- "onSale": true ONLY when user says sale/discount/indirim/ucuz/fırsat/deal/cheap explicitly
+- "title": ONLY for a specific named game, NEVER for genres/moods
+- "storeID": ONLY when user names a specific store
+- "minMetacritic": use when user says "quality", "kaliteli", "iyi oyunlar", "good games" → set 75; "acclaimed" → 80
+- "maxPrice": parse budget numbers from any currency mention (user says "$5" → 5, "beş dolar" → 5)
+- "sortBy": default "Deal Rating"; use "Metacritic" for quality queries; "Savings" for "en çok indirim"; "Price" for budget queries
 
----
-## CheapShark Filters
-- title: string
-- maxPrice: number (USD, 0 = free only)
-- minMetacritic: number (0-100)
-- storeID: "1"=Steam, "2"=GamersGate, "3"=GreenManGaming, "7"=GOG, "8"=Origin, "11"=Humble, "15"=Fanatical, "21"=WinGameStore, "23"=Gamebillet, "25"=Epic
-- sortBy: "Deal Rating" | "Title" | "Savings" | "Price" | "Metacritic" | "Reviews" | "Release" | "recent"
-- onSale: boolean
-- steamworks: boolean
+## CheapShark Store IDs
+"1"=Steam, "2"=GamersGate, "3"=GreenManGaming, "7"=GOG, "8"=Origin/EA, "11"=Humble, "15"=Fanatical, "21"=WinGameStore, "23"=Gamebillet, "25"=Epic`;
 
----
-User query: "${userQuery}"
+  const userPrompt = `User query: "${userQuery}"
 
-Respond with ONLY valid JSON (no markdown, no code blocks):
+Respond with ONLY valid JSON:
 {
-  "interpretation": "Friendly 1-sentence summary in the user's language",
-  "searchMode": "similar",
-  "gameTitles": ["Title 1", "Title 2"],
+  "interpretation": "1-sentence friendly summary in user's language explaining what you're searching for",
+  "searchMode": "similar" | "deals",
+  "gameTitles": ["Title 1", "Title 2", ...],
   "filters": {
+    "title": null,
     "maxPrice": null,
     "minMetacritic": null,
     "storeID": null,
@@ -70,9 +67,12 @@ Respond with ONLY valid JSON (no markdown, no code blocks):
 
   const completion = await groq.chat.completions.create({
     model: "llama-3.3-70b-versatile",
-    messages: [{ role: "user", content: prompt }],
-    temperature: 0.2,
-    max_tokens: 512,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ],
+    temperature: 0.3,
+    max_tokens: 700,
     response_format: { type: "json_object" },
   });
 

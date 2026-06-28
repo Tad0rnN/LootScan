@@ -6,31 +6,32 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const nextConfig = {
   images: {
     remotePatterns: [
-      // Steam CDNs
-      { protocol: "https", hostname: "cdn.cloudflare.steamstatic.com" },
-      { protocol: "https", hostname: "cdn.akamai.steamstatic.com" },
-      { protocol: "https", hostname: "shared.fastly.steamstatic.com" },
-      { protocol: "https", hostname: "store.akamai.steamstatic.com" },
+      // Steam CDNs (all subdomains)
+      { protocol: "https", hostname: "**.steamstatic.com" },
+      { protocol: "https", hostname: "**.steampowered.com" },
       // Epic Games
-      { protocol: "https", hostname: "cdn1.epicgames.com" },
-      { protocol: "https", hostname: "cdn2.epicgames.com" },
+      { protocol: "https", hostname: "**.epicgames.com" },
       // GOG
       { protocol: "https", hostname: "images.gog.com" },
       { protocol: "https", hostname: "images.gog-statics.com" },
       { protocol: "https", hostname: "**.gog-statics.com" },
+      { protocol: "https", hostname: "**.gog.com" },
       // Humble Bundle
-      { protocol: "https", hostname: "hb.imgix.net" },
       { protocol: "https", hostname: "**.imgix.net" },
       // Fanatical
       { protocol: "https", hostname: "cdn.fanatical.com" },
       { protocol: "https", hostname: "**.fanatical.com" },
       // Green Man Gaming
-      { protocol: "https", hostname: "www.greenmangaming.com" },
+      { protocol: "https", hostname: "images.greenmangaming.com" },
       { protocol: "https", hostname: "**.greenmangaming.com" },
       // GamersGate
       { protocol: "https", hostname: "www.gamersgate.com" },
+      { protocol: "https", hostname: "**.gamersgate.com" },
       // Nuuvem
       { protocol: "https", hostname: "**.nuuvem.com" },
+      // WinGameStore / Gamebillet
+      { protocol: "https", hostname: "**.wingamestore.com" },
+      { protocol: "https", hostname: "**.gamebillet.com" },
       // Amazon
       { protocol: "https", hostname: "m.media-amazon.com" },
       // CheapShark (fallback thumbnails)
