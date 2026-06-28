@@ -172,7 +172,19 @@
     "password": "パスワード",
     "passwordPlaceholder": "••••••••",
     "checkEmail": "確認リンクをメールで送信しました！",
-    "backToHome": "← ホームに戻る"
+    "backToHome": "← ホームに戻る",
+    "welcomeBack": "おかえりなさい",
+    "createAccount": "アカウントを作成",
+    "liveTracking": "リアルタイムセール追跡",
+    "heroTitle": "すべてのセールを追跡。",
+    "heroHighlight": "値下げを見逃さない。",
+    "heroDesc": "AIを使って主要なPCゲームストアの価格を追跡。ウィッシュリストに追加して価格が下がった瞬間に通知を受け取ろう。",
+    "featurePriceHistory": "価格履歴",
+    "featureAlerts": "即時アラート",
+    "featurePrivate": "プライベート & 安全",
+    "statGames": "追跡中のゲーム",
+    "statSavings": "平均節約額",
+    "statStores": "対応ストア数"
   },
   "footer": {
     "poweredBy": "提供",

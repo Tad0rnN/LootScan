@@ -172,7 +172,19 @@
     "password": "Şifre",
     "passwordPlaceholder": "••••••••",
     "checkEmail": "E-postanı kontrol et, onay linki gönderildi!",
-    "backToHome": "← Ana sayfaya dön"
+    "backToHome": "← Ana sayfaya dön",
+    "welcomeBack": "Tekrar hoş geldin",
+    "createAccount": "Hesap oluştur",
+    "liveTracking": "Canlı fırsat takibi",
+    "heroTitle": "Her fırsatı takip et.",
+    "heroHighlight": "Hiçbir indirimi kaçırma.",
+    "heroDesc": "Tüm büyük PC oyun mağazalarında AI destekli fiyat takibi. Oyunları listene ekle, fiyat düşünce anında bildirim al.",
+    "featurePriceHistory": "Fiyat geçmişi",
+    "featureAlerts": "Anlık bildirimler",
+    "featurePrivate": "Güvenli & gizli",
+    "statGames": "Takip edilen oyun",
+    "statSavings": "Ort. tasarruf",
+    "statStores": "Mağaza kapsama"
   },
   "footer": {
     "poweredBy": "Destekleyen",

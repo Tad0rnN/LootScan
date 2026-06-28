@@ -172,7 +172,19 @@
     "password": "Passwort",
     "passwordPlaceholder": "••••••••",
     "checkEmail": "Überprüfe deine E-Mail für einen Bestätigungslink!",
-    "backToHome": "← Zurück zur Startseite"
+    "backToHome": "← Zurück zur Startseite",
+    "welcomeBack": "Willkommen zurück",
+    "createAccount": "Konto erstellen",
+    "liveTracking": "Live Deal-Tracking",
+    "heroTitle": "Jeden Deal verfolgen.",
+    "heroHighlight": "Keinen Preisnachlass verpassen.",
+    "heroDesc": "KI-gestütztes Preis-Tracking in allen großen PC-Spieleshops. Spiele auf die Wunschliste setzen und sofort benachrichtigt werden.",
+    "featurePriceHistory": "Preisverlauf",
+    "featureAlerts": "Sofortige Benachrichtigungen",
+    "featurePrivate": "Privat & sicher",
+    "statGames": "Verfolgte Spiele",
+    "statSavings": "Durchschn. Ersparnis",
+    "statStores": "Abgedeckte Shops"
   },
   "footer": {
     "poweredBy": "Unterstützt von",

@@ -8,17 +8,8 @@ import { useLocale, useTranslations } from "next-intl";
 
 type Mode = "login" | "signup";
 
-const BRAND_FEATURES = [
-  { icon: TrendingDown, label: "Price history" },
-  { icon: Bell, label: "Instant alerts" },
-  { icon: ShieldCheck, label: "Private & secure" },
-] as const;
-
-const AMBIENT_STATS = [
-  { value: "50k+", label: "Games tracked" },
-  { value: "67%", label: "Avg. savings" },
-  { value: "30+", label: "Stores covered" },
-] as const;
+const BRAND_FEATURE_ICONS = [TrendingDown, Bell, ShieldCheck] as const;
+const AMBIENT_STAT_VALUES = ["50k+", "67%", "30+"] as const;
 
 export default function LoginPage() {
   const [mode, setMode] = useState<Mode>("login");
@@ -112,34 +103,37 @@ export default function LoginPage() {
           <div className="inline-flex items-center gap-2 mb-5">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
             <span className="text-brand-400/80 text-[11px] font-semibold tracking-[0.18em] uppercase">
-              Live deal tracking
+              {t("liveTracking")}
             </span>
           </div>
 
           <h2 className="text-[3.25rem] font-bold text-white leading-[1.1] tracking-tight mb-6">
-            Track every deal.
+            {t("heroTitle")}
             <br />
-            <span className="text-brand-400">Never miss a drop.</span>
+            <span className="text-brand-400">{t("heroHighlight")}</span>
           </h2>
 
           <p className="text-slate-400 text-base leading-relaxed max-w-sm">
-            AI-powered price tracking across every major PC game store. Wishlist games and get
-            alerted the moment prices fall.
+            {t("heroDesc")}
           </p>
 
           {/* Stat tiles */}
           <div className="mt-12 grid grid-cols-3 gap-3">
-            {AMBIENT_STATS.map((stat) => (
+            {([
+              { value: AMBIENT_STAT_VALUES[0], labelKey: "statGames" },
+              { value: AMBIENT_STAT_VALUES[1], labelKey: "statSavings" },
+              { value: AMBIENT_STAT_VALUES[2], labelKey: "statStores" },
+            ] as const).map(({ value, labelKey }) => (
               <div
-                key={stat.label}
+                key={labelKey}
                 className="relative overflow-hidden rounded-xl border border-white/[0.07] p-4"
                 style={{
                   background:
                     "linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)",
                 }}
               >
-                <div className="text-2xl font-bold text-white tabular-nums mb-0.5">{stat.value}</div>
-                <div className="text-slate-500 text-[11px] leading-tight">{stat.label}</div>
+                <div className="text-2xl font-bold text-white tabular-nums mb-0.5">{value}</div>
+                <div className="text-slate-500 text-[11px] leading-tight">{t(labelKey)}</div>
               </div>
             ))}
           </div>
@@ -147,10 +141,14 @@ export default function LoginPage() {
 
         {/* Feature row */}
         <div className="relative z-10 flex items-center gap-6 border-t border-white/[0.06] pt-6">
-          {BRAND_FEATURES.map(({ icon: Icon, label }) => (
-            <div key={label} className="flex items-center gap-2 text-slate-500 text-sm">
+          {([
+            { Icon: BRAND_FEATURE_ICONS[0], labelKey: "featurePriceHistory" },
+            { Icon: BRAND_FEATURE_ICONS[1], labelKey: "featureAlerts" },
+            { Icon: BRAND_FEATURE_ICONS[2], labelKey: "featurePrivate" },
+          ] as const).map(({ Icon, labelKey }) => (
+            <div key={labelKey} className="flex items-center gap-2 text-slate-500 text-sm">
               <Icon className="w-4 h-4 text-brand-500/60" />
-              <span>{label}</span>
+              <span>{t(labelKey)}</span>
             </div>
           ))}
         </div>
@@ -177,7 +175,7 @@ export default function LoginPage() {
           {/* Heading */}
           <div className="mb-7">
             <h1 className="text-2xl font-bold text-white mb-1">
-              {mode === "login" ? "Welcome back" : "Create your account"}
+              {mode === "login" ? t("welcomeBack") : t("createAccount")}
             </h1>
             <p className="text-slate-400 text-sm">
               {mode === "login" ? t("signInDesc") : t("signUpDesc")}

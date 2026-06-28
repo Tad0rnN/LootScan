@@ -172,7 +172,19 @@
     "password": "Wachtwoord",
     "passwordPlaceholder": "••••••••",
     "checkEmail": "Controleer je e-mail voor een bevestigingslink!",
-    "backToHome": "← Terug naar home"
+    "backToHome": "← Terug naar home",
+    "welcomeBack": "Welkom terug",
+    "createAccount": "Account aanmaken",
+    "liveTracking": "Live deal-tracking",
+    "heroTitle": "Volg elke aanbieding.",
+    "heroHighlight": "Mis geen enkele korting.",
+    "heroDesc": "AI-gestuurde prijstracking in alle grote pc-gamewinkels. Voeg games toe aan je verlanglijst en ontvang een melding zodra de prijs daalt.",
+    "featurePriceHistory": "Prijsgeschiedenis",
+    "featureAlerts": "Directe meldingen",
+    "featurePrivate": "Privé & veilig",
+    "statGames": "Gevolgde games",
+    "statSavings": "Gem. besparing",
+    "statStores": "Winkels gedekt"
   },
   "footer": {
     "poweredBy": "Mogelijk gemaakt door",

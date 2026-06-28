@@ -172,7 +172,19 @@
     "password": "密码",
     "passwordPlaceholder": "••••••••",
     "checkEmail": "请检查您的电子邮件以获取确认链接！",
-    "backToHome": "← 返回首页"
+    "backToHome": "← 返回首页",
+    "welcomeBack": "欢迎回来",
+    "createAccount": "创建您的账户",
+    "liveTracking": "实时优惠追踪",
+    "heroTitle": "追踪每一个优惠。",
+    "heroHighlight": "不错过任何降价。",
+    "heroDesc": "通过AI驱动的价格追踪覆盖所有主要PC游戏商店。将游戏加入愿望清单，价格下降时立即收到提醒。",
+    "featurePriceHistory": "价格历史",
+    "featureAlerts": "即时提醒",
+    "featurePrivate": "私密与安全",
+    "statGames": "追踪游戏数",
+    "statSavings": "平均节省",
+    "statStores": "覆盖商店"
   },
   "footer": {
     "poweredBy": "技术支持",

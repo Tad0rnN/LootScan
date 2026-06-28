@@ -172,7 +172,19 @@
     "password": "Mot de passe",
     "passwordPlaceholder": "••••••••",
     "checkEmail": "Vérifiez votre boîte mail pour le lien de confirmation.",
-    "backToHome": "← Retour à l'accueil"
+    "backToHome": "← Retour à l'accueil",
+    "welcomeBack": "Bon retour",
+    "createAccount": "Créer votre compte",
+    "liveTracking": "Suivi des offres en direct",
+    "heroTitle": "Suivez chaque offre.",
+    "heroHighlight": "Ne manquez aucune promo.",
+    "heroDesc": "Suivi des prix par IA dans tous les grands magasins de jeux PC. Ajoutez des jeux à vos favoris et soyez alerté dès que les prix baissent.",
+    "featurePriceHistory": "Historique des prix",
+    "featureAlerts": "Alertes instantanées",
+    "featurePrivate": "Privé & sécurisé",
+    "statGames": "Jeux suivis",
+    "statSavings": "Économies moy.",
+    "statStores": "Magasins couverts"
   },
   "footer": {
     "poweredBy": "Propulsé par",

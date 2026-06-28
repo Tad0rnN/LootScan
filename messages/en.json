@@ -172,7 +172,19 @@
     "password": "Password",
     "passwordPlaceholder": "••••••••",
     "checkEmail": "Check your email for a confirmation link!",
-    "backToHome": "← Back to home"
+    "backToHome": "← Back to home",
+    "welcomeBack": "Welcome back",
+    "createAccount": "Create your account",
+    "liveTracking": "Live deal tracking",
+    "heroTitle": "Track every deal.",
+    "heroHighlight": "Never miss a drop.",
+    "heroDesc": "AI-powered price tracking across every major PC game store. Wishlist games and get alerted the moment prices fall.",
+    "featurePriceHistory": "Price history",
+    "featureAlerts": "Instant alerts",
+    "featurePrivate": "Private & secure",
+    "statGames": "Games tracked",
+    "statSavings": "Avg. savings",
+    "statStores": "Stores covered"
   },
   "footer": {
     "poweredBy": "Powered by",
