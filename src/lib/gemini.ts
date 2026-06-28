@@ -25,7 +25,7 @@ Parse the user's natural language query into a structured JSON search request.
 - Mood: "relaxing", "rahatlatıcı", "scary", "challenging", "zor", "hikayeli", "story-rich"
 - Multiplayer: "arkadaşlarla", "co-op", "multiplayer", "online"
 - Era: "retro games", "eski oyunlar", "klasik"
-- Return 12-15 DIVERSE, well-known PC game titles — no DLCs, no soundtracks, no Season Pass, no bundles
+- Return 20-25 DIVERSE, well-known PC game titles — no DLCs, no soundtracks, no Season Pass, no bundles
 - Prioritize games that are commonly discounted and available on CheapShark
 
 ### "deals" mode — for specific price/deal queries:
@@ -72,7 +72,7 @@ Respond with ONLY valid JSON:
       { role: "user", content: userPrompt },
     ],
     temperature: 0.3,
-    max_tokens: 700,
+    max_tokens: 1000,
     response_format: { type: "json_object" },
   });
 
