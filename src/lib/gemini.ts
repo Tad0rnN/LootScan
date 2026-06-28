@@ -1,15 +1,14 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 import type { AISearchResponse } from "@/types";
 
 export async function parseNaturalLanguageSearch(
   userQuery: string
 ): Promise<AISearchResponse> {
-  if (!process.env.GEMINI_API_KEY) {
-    throw new Error("GEMINI_API_KEY is not configured");
+  if (!process.env.GROQ_API_KEY) {
+    throw new Error("GROQ_API_KEY is not configured");
   }
 
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
   const prompt = `You are a game deal search assistant for LootScan (lootscan.co), a site that aggregates PC game prices across online stores using the CheapShark API.
 
@@ -69,12 +68,14 @@ Respond with ONLY valid JSON (no markdown, no code blocks):
   }
 }`;
 
-  const result = await model.generateContent(prompt);
-  const text = result.response.text();
+  const completion = await groq.chat.completions.create({
+    model: "llama-3.3-70b-versatile",
+    messages: [{ role: "user", content: prompt }],
+    temperature: 0.2,
+    max_tokens: 512,
+    response_format: { type: "json_object" },
+  });
 
-  // Extract JSON from markdown code blocks if present
-  const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/) || text.match(/(\{[\s\S]*\})/);
-  const jsonStr = jsonMatch ? jsonMatch[1] : text;
-
-  return JSON.parse(jsonStr.trim());
+  const text = completion.choices[0]?.message?.content ?? "{}";
+  return JSON.parse(text);
 }
