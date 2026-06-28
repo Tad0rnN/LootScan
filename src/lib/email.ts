@@ -6,6 +6,15 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 const NEWSLETTER_FROM = process.env.NEWSLETTER_FROM_EMAIL ?? "LootScan <newsletter@lootscan.app>";
 
+function esc(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;");
+}
+
 interface SaleAlertParams {
   to: string;
   locale?: string;
@@ -137,7 +146,7 @@ export async function sendSaleAlert({
     <div style="background:#0f0f1a;border:1px solid rgba(255,255,255,0.06);border-radius:20px;overflow:hidden;">
 
       <!-- Game thumbnail -->
-      <img src="${gameThumb}" alt="${gameTitle}" style="width:100%;height:180px;object-fit:cover;display:block;" />
+      <img src="${esc(gameThumb)}" alt="${esc(gameTitle)}" style="width:100%;height:180px;object-fit:cover;display:block;" />
 
       <div style="padding:24px;">
         <!-- Badge -->
@@ -146,7 +155,7 @@ export async function sendSaleAlert({
         </div>
 
         <h2 style="color:white;font-size:20px;font-weight:700;margin:0 0 16px;line-height:1.3;">
-          ${gameTitle}
+          ${esc(gameTitle)}
         </h2>
 
         <!-- Price -->
@@ -254,10 +263,10 @@ export async function sendTopDealsNewsletter({
         <tr>
           <td style="padding:0 0 18px;">
             <div style="border:1px solid rgba(255,255,255,0.08);border-radius:18px;background:#0f172a;overflow:hidden;">
-              <img src="${deal.thumb}" alt="${deal.title}" style="display:block;width:100%;height:170px;object-fit:cover;background:#020617;" />
+              <img src="${esc(deal.thumb)}" alt="${esc(deal.title)}" style="display:block;width:100%;height:170px;object-fit:cover;background:#020617;" />
               <div style="padding:18px;">
                 <div style="color:#64748b;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">${copy.weeklyRankLabel(index)}</div>
-                <h2 style="margin:8px 0 10px;font-size:20px;line-height:1.35;color:white;">${deal.title}</h2>
+                <h2 style="margin:8px 0 10px;font-size:20px;line-height:1.35;color:white;">${esc(deal.title)}</h2>
                 <div style="margin-bottom:14px;">
                   <span style="font-size:24px;font-weight:800;color:#4ade80;">${price}</span>
                   <span style="margin-left:10px;color:#64748b;font-size:14px;text-decoration:line-through;">${normal}</span>

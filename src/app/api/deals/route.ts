@@ -2,9 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { getFallbackDeals } from "@/lib/fallback-data";
 import { fetchCheapShark, CHEAPSHARK_BASE } from "@/lib/cheapshark-proxy";
 
+const ALLOWED_DEAL_PARAMS = new Set([
+  "title", "storeID", "upperPrice", "lowerPrice", "metacritic",
+  "onSale", "sortBy", "pageSize", "pageNumber", "steamAppID", "exact", "AAA",
+]);
+
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
-  const params = searchParams.toString();
+  const forwarded = new URLSearchParams();
+  searchParams.forEach((value, key) => {
+    if (ALLOWED_DEAL_PARAMS.has(key)) forwarded.set(key, value);
+  });
+  const params = forwarded.toString();
   const url = params
     ? `${CHEAPSHARK_BASE}/deals?${params}`
     : `${CHEAPSHARK_BASE}/deals`;

@@ -85,41 +85,48 @@ export default function Navbar() {
   return (
     <>
     <nav className={clsx(
-      "sticky top-0 z-50 transition-all duration-300",
+      "sticky top-0 z-50 transition-all duration-500",
       scrolled
-        ? "bg-[#07070f]/90 backdrop-blur-xl border-b border-white/5 shadow-xl shadow-black/20"
+        ? "backdrop-blur-2xl border-b border-white/[0.06] shadow-2xl shadow-black/30"
         : "bg-transparent"
-    )}>
+    )}
+      style={scrolled ? { background: 'rgba(5,5,13,0.85)' } : undefined}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-3 h-16">
 
           {/* Logo */}
           <Link href={`/${locale}`} className="flex shrink-0 items-center gap-2.5 group">
-            <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center shadow-lg shadow-brand-500/30 group-hover:shadow-brand-500/50 transition-shadow">
-              <Crosshair className="w-4.5 h-4.5 text-white" strokeWidth={2.5} />
+            <div className="relative w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300"
+              style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)', boxShadow: '0 0 16px rgba(34,197,94,0.3)' }}>
+              <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ boxShadow: '0 0 24px rgba(34,197,94,0.5)' }} />
+              <Crosshair className="w-4 h-4 text-white relative z-10" strokeWidth={2.5} />
             </div>
-            <span className="font-bold text-[1.1rem] text-white tracking-tight">
-              Loot<span className="text-brand-400">Scan</span>
+            <span className="font-bold text-[1.1rem] tracking-tight">
+              <span className="text-white">Loot</span><span className="text-brand-400">Scan</span>
             </span>
           </Link>
 
           {/* Desktop nav */}
           <div className="hidden md:block flex-1 min-w-0">
             <div className="overflow-x-auto overflow-y-hidden no-scrollbar">
-              <div className="inline-flex min-w-max items-center p-1 bg-white/[0.03] border border-white/[0.06] rounded-2xl gap-0.5">
+              <div className="inline-flex min-w-max items-center p-1 rounded-2xl gap-0.5"
+                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
                 {navLinks.map(({ href, label, icon: Icon }) => (
                   <Link
                     key={href}
                     href={href}
                     className={clsx(
-                      "shrink-0 whitespace-nowrap flex items-center gap-1.5 px-2.5 lg:px-3 py-2 rounded-xl text-[13px] lg:text-sm font-medium transition-all duration-150",
+                      "shrink-0 whitespace-nowrap flex items-center gap-1.5 px-2.5 lg:px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-200",
                       pathname === href
-                        ? "bg-brand-500/15 text-brand-400 shadow-sm"
-                        : "text-slate-400 hover:text-white hover:bg-white/5"
+                        ? "text-brand-400"
+                        : "text-slate-500 hover:text-white hover:bg-white/[0.05]"
                     )}
+                    style={pathname === href ? { background: 'rgba(34,197,94,0.1)' } : undefined}
                   >
                     <Icon className="w-3.5 h-3.5 shrink-0" />
-                    <span className="whitespace-nowrap">{label}</span>
+                    <span>{label}</span>
                   </Link>
                 ))}
               </div>
@@ -128,14 +135,14 @@ export default function Navbar() {
 
           {/* Right side */}
           <div className="hidden md:flex shrink-0 items-center gap-1.5 lg:gap-2">
-            {/* Game search icon */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 h-9 px-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+              className="flex items-center gap-2 h-9 px-3 rounded-xl text-slate-500 hover:text-white hover:bg-white/[0.06] transition-all duration-150"
               title={t("searchGames")}
             >
               <Search className="w-4 h-4" />
-              <kbd className="hidden lg:inline-flex items-center justify-center h-5 min-w-[20px] px-1.5 rounded border border-white/10 bg-white/5 text-[11px] font-mono text-slate-500">
+              <kbd className="hidden lg:inline-flex items-center justify-center h-5 min-w-[20px] px-1.5 rounded text-[11px] font-mono text-slate-600"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
                 /
               </kbd>
             </button>
@@ -145,30 +152,35 @@ export default function Navbar() {
               <div ref={profileRef} className="relative">
                 <button
                   type="button"
-                  onClick={() => setProfileOpen((value) => !value)}
+                  onClick={() => setProfileOpen((v) => !v)}
                   title={user.email ?? undefined}
                   aria-label={user.email ?? "Account"}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-sm font-semibold text-slate-200 shadow-inner shadow-white/5 hover:border-white/20 hover:bg-white/[0.07] transition-colors"
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold text-white transition-all duration-200 hover:scale-105"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.05))',
+                    border: '1px solid rgba(34,197,94,0.25)',
+                  }}
                 >
                   {userInitial}
                 </button>
 
                 {profileOpen && (
-                  <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-white/10 bg-[#0f0f1a] p-2 shadow-2xl shadow-black/50">
-                    <div className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-left">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-sm font-semibold text-slate-200">
+                  <div className="absolute right-0 mt-2 w-56 rounded-2xl p-2 shadow-2xl shadow-black/60 animate-fade-in"
+                    style={{ background: '#0c0c18', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div className="flex items-center gap-3 rounded-xl px-3 py-2.5">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
+                        style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.2)' }}>
                         {userInitial}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs text-slate-500">Account</p>
-                        <p className="truncate text-sm font-medium text-slate-200">
-                          {user.email}
-                        </p>
+                        <p className="text-[10px] text-slate-600 uppercase tracking-wider">Account</p>
+                        <p className="truncate text-sm font-medium text-slate-200">{user.email}</p>
                       </div>
                     </div>
+                    <div className="h-px bg-white/5 my-1" />
                     <button
                       onClick={handleSignOut}
-                      className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-colors"
+                      className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-slate-400 hover:bg-white/[0.05] hover:text-white transition-all duration-150"
                     >
                       <LogOut className="w-4 h-4" />
                       {t("signOut")}
@@ -177,7 +189,8 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <Link href={`/${locale}/auth/login`} className="btn-primary whitespace-nowrap flex items-center gap-1.5 text-sm py-1.5 px-4">
+              <Link href={`/${locale}/auth/login`}
+                className="btn-primary whitespace-nowrap flex items-center gap-1.5 text-sm !py-2 !px-4">
                 <LogIn className="w-3.5 h-3.5" />
                 {t("signIn")}
               </Link>

@@ -82,11 +82,18 @@ export default async function LocaleLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body className="min-h-screen flex flex-col bg-[#07070f] text-slate-200 antialiased font-sans">
+      <body className="min-h-screen flex flex-col bg-[#05050d] text-slate-200 antialiased font-sans">
         <NextIntlClientProvider messages={messages}>
-          <div className="fixed inset-0 -z-10 pointer-events-none">
-            <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-brand-500/5 rounded-full blur-[120px]" />
-            <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-purple-500/4 rounded-full blur-[100px]" />
+          <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+            {/* Primary glow — top center */}
+            <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full"
+              style={{ background: 'radial-gradient(ellipse, rgba(34,197,94,0.06) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+            {/* Secondary — bottom right */}
+            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full"
+              style={{ background: 'radial-gradient(ellipse, rgba(139,92,246,0.04) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+            {/* Tertiary — left mid */}
+            <div className="absolute top-1/2 -left-32 w-[400px] h-[400px] rounded-full"
+              style={{ background: 'radial-gradient(ellipse, rgba(34,197,94,0.03) 0%, transparent 70%)', filter: 'blur(50px)' }} />
           </div>
           <Navbar />
           <main className="flex-1">{children}</main>
