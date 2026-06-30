@@ -32,8 +32,6 @@ const nextConfig = {
       // WinGameStore / Gamebillet
       { protocol: "https", hostname: "**.wingamestore.com" },
       { protocol: "https", hostname: "**.gamebillet.com" },
-      // Amazon
-      { protocol: "https", hostname: "m.media-amazon.com" },
       // CheapShark (fallback thumbnails)
       { protocol: "https", hostname: "www.cheapshark.com" },
       // Wraith Esports (Shopify CDN)

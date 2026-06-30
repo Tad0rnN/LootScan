@@ -291,15 +291,12 @@
   "gear": {
     "title": "Gaming Gear",
     "subtitle": "Top-rated gaming peripherals and accessories. Upgrade your setup.",
-    "disclosure": "As an Amazon Associate and Wraith Esports partner, we may earn from qualifying purchases. Prices may vary.",
+    "disclosure": "As a Wraith Esports partner, we may earn a commission from qualifying purchases. Prices may vary.",
     "categories": {
       "all": "All",
       "headsets": "Headsets",
       "mice": "Mice",
       "keyboards": "Keyboards",
-      "monitors": "Monitors",
-      "chairs": "Chairs",
-      "controllers": "Controllers",
       "mousepads": "Mousepads",
       "keycaps": "Keycaps",
       "switches": "Switches",

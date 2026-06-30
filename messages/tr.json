@@ -291,15 +291,12 @@
   "gear": {
     "title": "Gaming Ekipman",
     "subtitle": "En iyi oyuncu ekipmanları ve aksesuarları. Kurulumunu yükselt.",
-    "disclosure": "Amazon ortağı ve Wraith Esports iş ortağı olarak, satın alımlardan komisyon kazanabiliriz. Fiyatlar değişkenlik gösterebilir.",
+    "disclosure": "Wraith Esports iş ortağı olarak, satın alımlardan komisyon kazanabiliriz. Fiyatlar değişkenlik gösterebilir.",
     "categories": {
       "all": "Tümü",
       "headsets": "Kulaklıklar",
       "mice": "Fareler",
       "keyboards": "Klavyeler",
-      "monitors": "Monitörler",
-      "chairs": "Koltuklar",
-      "controllers": "Oyun Kolları",
       "mousepads": "Mousepadler",
       "keycaps": "Tuş Takımları",
       "switches": "Switchler",

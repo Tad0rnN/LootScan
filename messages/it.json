@@ -291,15 +291,12 @@
   "gear": {
     "title": "Accessori gaming",
     "subtitle": "Periferiche e accessori gaming più apprezzati. Migliora la tua postazione.",
-    "disclosure": "Come affiliati Amazon e partner di Wraith Esports, potremmo ricevere una commissione da acquisti idonei. I prezzi possono variare.",
+    "disclosure": "Come partner di Wraith Esports, potremmo ricevere una commissione da acquisti idonei. I prezzi possono variare.",
     "categories": {
       "all": "Tutti",
       "headsets": "Cuffie",
       "mice": "Mouse",
       "keyboards": "Tastiere",
-      "monitors": "Monitor",
-      "chairs": "Sedie",
-      "controllers": "Controller",
       "mousepads": "Tappetini mouse",
       "keycaps": "Keycap",
       "switches": "Switch",

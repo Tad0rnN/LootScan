@@ -291,15 +291,12 @@
   "gear": {
     "title": "ゲーミングギア",
     "subtitle": "高評価のゲーミング周辺機器とアクセサリー。セットアップをアップグレード。",
-    "disclosure": "AmazonアソシエイトおよびWraith Esportsパートナーとして、対象の購入から収益を得る場合があります。価格は変動する場合があります。",
+    "disclosure": "Wraith Esportsパートナーとして、対象の購入から手数料を得る場合があります。価格は変動する場合があります。",
     "categories": {
       "all": "すべて",
       "headsets": "ヘッドセット",
       "mice": "マウス",
       "keyboards": "キーボード",
-      "monitors": "モニター",
-      "chairs": "チェア",
-      "controllers": "コントローラー",
       "mousepads": "マウスパッド",
       "keycaps": "キーキャップ",
       "switches": "スイッチ",
