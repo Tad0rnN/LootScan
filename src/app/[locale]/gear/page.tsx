@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Gamepad2, Monitor, Headphones, Mouse, Keyboard, Armchair } from "lucide-react";
+import { Gamepad2, Monitor, Headphones, Mouse, Keyboard, Armchair, Square, Grid3x3, ToggleLeft, Package } from "lucide-react";
 import { trackAffiliateClick } from "@/lib/analytics";
+import { WRAITH_GEAR_ITEMS, getWraithProductUrl, formatTRY } from "@/data/wraith-gear";
 
 interface GearItem {
   name: string;
@@ -13,6 +14,7 @@ interface GearItem {
   affiliateUrl: string;
   category: string;
   badge?: string;
+  source?: "amazon" | "wraith";
 }
 
 const GEAR_ITEMS: GearItem[] = [
@@ -149,6 +151,18 @@ const GEAR_ITEMS: GearItem[] = [
   },
 ];
 
+const WRAITH_ITEMS_AS_GEAR: GearItem[] = WRAITH_GEAR_ITEMS.map((item) => ({
+  name: item.name,
+  image: item.image,
+  price: formatTRY(item.price),
+  affiliateUrl: getWraithProductUrl(item.handle),
+  category: item.category,
+  badge: item.badge,
+  source: "wraith",
+}));
+
+const ALL_GEAR_ITEMS: GearItem[] = [...GEAR_ITEMS, ...WRAITH_ITEMS_AS_GEAR];
+
 const CATEGORIES = [
   { id: "all", icon: Gamepad2 },
   { id: "headsets", icon: Headphones },
@@ -157,6 +171,10 @@ const CATEGORIES = [
   { id: "monitors", icon: Monitor },
   { id: "chairs", icon: Armchair },
   { id: "controllers", icon: Gamepad2 },
+  { id: "mousepads", icon: Square },
+  { id: "keycaps", icon: Grid3x3 },
+  { id: "switches", icon: ToggleLeft },
+  { id: "accessories", icon: Package },
 ];
 
 const AMAZON_AFFILIATE_TAG = process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG?.trim();
@@ -182,8 +200,8 @@ export default function GearPage() {
   const [activeCategory, setActiveCategory] = useState("all");
 
   const filtered = activeCategory === "all"
-    ? GEAR_ITEMS
-    : GEAR_ITEMS.filter((item) => item.category === activeCategory);
+    ? ALL_GEAR_ITEMS
+    : ALL_GEAR_ITEMS.filter((item) => item.category === activeCategory);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -252,7 +270,7 @@ export default function GearPage() {
               <div className="flex items-center justify-between mt-3">
                 <span className="text-lg font-bold text-brand-400">{item.price}</span>
                 <span className="text-xs text-slate-500 group-hover:text-brand-400 transition-colors flex items-center gap-1">
-                  Amazon →
+                  {item.source === "wraith" ? "Wraith" : "Amazon"} →
                 </span>
               </div>
             </div>

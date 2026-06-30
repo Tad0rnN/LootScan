@@ -291,7 +291,7 @@
   "gear": {
     "title": "Gaming-Zubehör",
     "subtitle": "Top-bewertete Gaming-Peripherie und Zubehör. Upgrade dein Setup.",
-    "disclosure": "Als Amazon-Partner verdienen wir an qualifizierten Verkäufen. Preise können variieren.",
+    "disclosure": "Als Amazon-Partner und Wraith-Esports-Partner verdienen wir an qualifizierten Verkäufen. Preise können variieren.",
     "categories": {
       "all": "Alle",
       "headsets": "Headsets",
@@ -299,7 +299,11 @@
       "keyboards": "Tastaturen",
       "monitors": "Monitore",
       "chairs": "Stühle",
-      "controllers": "Controller"
+      "controllers": "Controller",
+      "mousepads": "Mauspads",
+      "keycaps": "Keycaps",
+      "switches": "Switches",
+      "accessories": "Zubehör"
     }
   },
   "newsletter": {

@@ -36,6 +36,8 @@ const nextConfig = {
       { protocol: "https", hostname: "m.media-amazon.com" },
       // CheapShark (fallback thumbnails)
       { protocol: "https", hostname: "www.cheapshark.com" },
+      // Wraith Esports (Shopify CDN)
+      { protocol: "https", hostname: "cdn.shopify.com" },
     ],
   },
   async headers() {

@@ -291,7 +291,7 @@
   "gear": {
     "title": "游戏装备",
     "subtitle": "评分最高的游戏外设和配件。升级你的装备。",
-    "disclosure": "作为亚马逊合作伙伴，我们可能从符合条件的购买中获得佣金。价格可能有所不同。",
+    "disclosure": "作为亚马逊合作伙伴及Wraith Esports合作伙伴，我们可能从符合条件的购买中获得佣金。价格可能有所不同。",
     "categories": {
       "all": "全部",
       "headsets": "耳机",
@@ -299,7 +299,11 @@
       "keyboards": "键盘",
       "monitors": "显示器",
       "chairs": "座椅",
-      "controllers": "手柄"
+      "controllers": "手柄",
+      "mousepads": "鼠标垫",
+      "keycaps": "键帽",
+      "switches": "轴体",
+      "accessories": "配件"
     }
   },
   "newsletter": {
