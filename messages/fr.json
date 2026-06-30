@@ -300,8 +300,19 @@
       "mousepads": "Tapis de souris",
       "keycaps": "Keycaps",
       "switches": "Switches",
-      "accessories": "Accessoires"
-    }
+      "accessories": "Accessoires",
+      "controllers": "Manettes",
+      "monitors": "Moniteurs",
+      "chairs": "Chaises",
+      "audio": "Audio",
+      "cases": "Boîtiers",
+      "microphones": "Microphones",
+      "webcams": "Webcams"
+    },
+    "soldOut": "Épuisé",
+    "searchPlaceholder": "Rechercher des produits...",
+    "loadMore": "Charger plus",
+    "showingCount": "Affichage de {shown} sur {total} produits"
   },
   "newsletter": {
     "eyebrow": "Newsletter hebdomadaire",

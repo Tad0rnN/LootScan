@@ -300,8 +300,19 @@
       "mousepads": "マウスパッド",
       "keycaps": "キーキャップ",
       "switches": "スイッチ",
-      "accessories": "アクセサリー"
-    }
+      "accessories": "アクセサリー",
+      "controllers": "コントローラー",
+      "monitors": "モニター",
+      "chairs": "チェア",
+      "audio": "オーディオ",
+      "cases": "ケース",
+      "microphones": "マイク",
+      "webcams": "ウェブカメラ"
+    },
+    "soldOut": "売り切れ",
+    "searchPlaceholder": "商品を検索...",
+    "loadMore": "もっと見る",
+    "showingCount": "{total}件中{shown}件を表示中"
   },
   "newsletter": {
     "eyebrow": "週間ニュースレター",

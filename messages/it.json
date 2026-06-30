@@ -300,8 +300,19 @@
       "mousepads": "Tappetini mouse",
       "keycaps": "Keycap",
       "switches": "Switch",
-      "accessories": "Accessori"
-    }
+      "accessories": "Accessori",
+      "controllers": "Controller",
+      "monitors": "Monitor",
+      "chairs": "Sedie",
+      "audio": "Audio",
+      "cases": "Case",
+      "microphones": "Microfoni",
+      "webcams": "Webcam"
+    },
+    "soldOut": "Esaurito",
+    "searchPlaceholder": "Cerca prodotti...",
+    "loadMore": "Carica altro",
+    "showingCount": "Visualizzazione di {shown} su {total} prodotti"
   },
   "newsletter": {
     "eyebrow": "Newsletter settimanale",

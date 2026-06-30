@@ -300,8 +300,19 @@
       "mousepads": "Muismatten",
       "keycaps": "Keycaps",
       "switches": "Switches",
-      "accessories": "Accessoires"
-    }
+      "accessories": "Accessoires",
+      "controllers": "Controllers",
+      "monitors": "Monitoren",
+      "chairs": "Stoelen",
+      "audio": "Audio",
+      "cases": "Behuizingen",
+      "microphones": "Microfoons",
+      "webcams": "Webcams"
+    },
+    "soldOut": "Uitverkocht",
+    "searchPlaceholder": "Producten zoeken...",
+    "loadMore": "Meer laden",
+    "showingCount": "{shown} van {total} producten weergegeven"
   },
   "newsletter": {
     "eyebrow": "Wekelijkse nieuwsbrief",

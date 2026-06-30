@@ -300,8 +300,19 @@
       "mousepads": "Mousepadler",
       "keycaps": "Tuş Takımları",
       "switches": "Switchler",
-      "accessories": "Aksesuarlar"
-    }
+      "accessories": "Aksesuarlar",
+      "controllers": "Oyun Kolları",
+      "monitors": "Monitörler",
+      "chairs": "Koltuklar",
+      "audio": "Ses Sistemleri",
+      "cases": "Kasalar",
+      "microphones": "Mikrofonlar",
+      "webcams": "Webcamlar"
+    },
+    "soldOut": "Tükendi",
+    "searchPlaceholder": "Ürün ara...",
+    "loadMore": "Daha Fazla Göster",
+    "showingCount": "{total} üründen {shown} tanesi gösteriliyor"
   },
   "newsletter": {
     "eyebrow": "Haftalık Bülten",

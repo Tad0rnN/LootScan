@@ -300,8 +300,19 @@
       "mousepads": "Mousepads",
       "keycaps": "Keycaps",
       "switches": "Switches",
-      "accessories": "Accessories"
-    }
+      "accessories": "Accessories",
+      "controllers": "Controllers",
+      "monitors": "Monitors",
+      "chairs": "Chairs",
+      "audio": "Audio",
+      "cases": "Cases",
+      "microphones": "Microphones",
+      "webcams": "Webcams"
+    },
+    "soldOut": "Sold Out",
+    "searchPlaceholder": "Search products...",
+    "loadMore": "Load More",
+    "showingCount": "Showing {shown} of {total} products"
   },
   "newsletter": {
     "eyebrow": "Weekly Newsletter",
