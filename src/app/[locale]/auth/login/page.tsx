@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Crosshair, Mail, Lock, Loader2, TrendingDown, Bell, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import { DitheringShader } from "@/components/ui/dithering-shader";
 
 type Mode = "login" | "signup";
 
@@ -58,6 +59,18 @@ export default function LoginPage() {
         className="hidden lg:flex lg:w-[55%] relative overflow-hidden flex-col justify-between p-12"
         aria-hidden="true"
       >
+        {/* Ambient dithered wave background */}
+        <div className="absolute inset-0 opacity-[0.11]">
+          <DitheringShader
+            shape="wave"
+            type="8x8"
+            colorBack="#05050d"
+            colorFront="#22c55e"
+            pxSize={4}
+            speed={0.4}
+          />
+        </div>
+
         {/* Ambient glow orbs */}
         <div
           className="glow-orb w-[500px] h-[500px] bg-brand-500/[0.13]"
