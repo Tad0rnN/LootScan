@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { Crosshair, Search, Heart, Zap, Menu, X, LogIn, LogOut, Gift, TrendingUp, Bot, Gamepad2 } from "lucide-react";
+import { Crosshair, Search, Heart, Zap, Menu, X, LogIn, LogOut, Gift, TrendingUp, Bot, Gamepad2, Target } from "lucide-react";
 import GameSearchModal from "./GameSearchModal";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
@@ -11,6 +11,7 @@ import clsx from "clsx";
 import { useTranslations, useLocale } from "next-intl";
 import LanguageSwitcher from "./LanguageSwitcher";
 import RegionSwitcher from "./RegionSwitcher";
+import { GlassButton } from "./ui/glass-button";
 
 function getUserInitial(user: User | null): string {
   const source = user?.user_metadata?.full_name
@@ -135,9 +136,10 @@ export default function Navbar() {
 
           {/* Right side */}
           <div className="hidden md:flex shrink-0 items-center gap-1.5 lg:gap-2">
-            <button
+            <GlassButton
               onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 h-9 px-3 rounded-xl text-slate-500 hover:text-white hover:bg-white/[0.06] transition-all duration-150"
+              size="default"
+              className="text-slate-300 hover:text-white"
               title={t("searchGames")}
             >
               <Search className="w-4 h-4" />
@@ -145,7 +147,18 @@ export default function Navbar() {
                 style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
                 /
               </kbd>
-            </button>
+            </GlassButton>
+            <GlassButton
+              asChild
+              variant="brand"
+              size="icon"
+              title="FPS Scan (yakında)"
+              aria-label="FPS Scan"
+            >
+              <Link href={`/${locale}/fpsscan`}>
+                <Target className="w-4 h-4 text-brand-400" />
+              </Link>
+            </GlassButton>
             <RegionSwitcher />
             <LanguageSwitcher />
             {user ? (
