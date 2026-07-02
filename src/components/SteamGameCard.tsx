@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Heart, Bell, Users, Clock, ExternalLink, Loader2 } from "lucide-react";
 import { formatSteamPrice, formatPlaytime } from "@/lib/steam";
@@ -14,6 +13,8 @@ import { trackAffiliateClick, trackDealClick } from "@/lib/analytics";
 import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
 import RegionalSteamPrice from "./RegionalSteamPrice";
+import SafeImage from "@/components/ui/SafeImage";
+import StoreLogo from "@/components/ui/StoreLogo";
 
 interface StoreDeal {
   storeID: string;
@@ -212,8 +213,9 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
                 idx === 0 && "bg-brand-500/5"
               )}
             >
-              <Image
-                src={getStoreLogoUrl(deal.storeID)}
+              <StoreLogo
+                storeID={deal.storeID}
+                getStoreLogoUrl={getStoreLogoUrl}
                 alt={deal.storeName}
                 width={14}
                 height={14}
@@ -285,7 +287,7 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
     return (
       <div onClick={handleCardClick} className="group card card-hover flex flex-col overflow-hidden h-full min-h-[300px] relative cursor-pointer">
         <div className="relative flex-1 overflow-hidden bg-slate-900/50 min-h-[220px]">
-          <Image
+          <SafeImage
             src={game.headerImage}
             alt={game.name}
             fill
@@ -390,7 +392,7 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
   return (
     <div onClick={handleCardClick} className="group card card-hover flex flex-col overflow-hidden cursor-pointer">
       <div className="relative overflow-hidden bg-slate-900/50 aspect-[16/7]">
-        <Image
+        <SafeImage
           src={game.headerImage}
           alt={game.name}
           fill

@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     }
 
     let notified = 0;
-    const priceCache = new Map<string, { salePrice: string; savings: string; dealID: string } | null>();
+    const priceCache = new Map<string, { salePrice: string; savings: string; dealID: string; storeID: string; steamAppID: string | null } | null>();
     const userEmailCache = new Map<string, string | null>();
 
     for (const item of items) {
@@ -34,13 +34,15 @@ export async function GET(req: NextRequest) {
         // Fiyatı cache'den al ya da çek
         if (!priceCache.has(item.game_id)) {
           const gameInfo = await getGameInfo(item.game_id).catch(() => null);
-          const deals: Array<{ price: string; savings: string; dealID: string }> = gameInfo?.deals ?? [];
+          const deals: Array<{ price: string; savings: string; dealID: string; storeID: string }> = gameInfo?.deals ?? [];
           if (deals.length === 0) { priceCache.set(item.game_id, null); continue; }
           const cheapest = deals.reduce((a, b) => parseFloat(a.price) < parseFloat(b.price) ? a : b);
           priceCache.set(item.game_id, {
             salePrice: cheapest.price,
             savings: cheapest.savings,
             dealID: cheapest.dealID,
+            storeID: cheapest.storeID,
+            steamAppID: gameInfo?.info.steamAppID ?? null,
           });
         }
 
@@ -78,6 +80,8 @@ export async function GET(req: NextRequest) {
           salePrice: cheapest.salePrice,
           savings,
           dealID: cheapest.dealID,
+          storeID: cheapest.storeID,
+          steamAppID: cheapest.steamAppID,
         });
 
         await supabase

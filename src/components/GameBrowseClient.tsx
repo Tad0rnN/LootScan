@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Search, Heart, Bell, Loader2, GamepadIcon, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -9,6 +8,7 @@ import { useLocale, useTranslations } from "next-intl";
 import clsx from "clsx";
 import type { SearchResult } from "@/types";
 import { fetchGameSearch } from "@/lib/fetch-deals";
+import SafeImage from "@/components/ui/SafeImage";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -65,7 +65,7 @@ function GameCard({ game, onWishlistChange }: {
     <div className="group card card-hover flex flex-col overflow-hidden">
       {/* Thumbnail */}
       <div className="relative overflow-hidden bg-slate-900/50 aspect-[16/7]">
-        <Image
+        <SafeImage
           src={game.thumb}
           alt={game.external}
           fill

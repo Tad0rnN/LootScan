@@ -1,11 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { Heart, ExternalLink } from "lucide-react";
 import { formatPrice } from "@/lib/cheapshark";
 import WishlistItemActions from "@/components/WishlistItemActions";
 import { getTranslations } from "next-intl/server";
+import SafeImage from "@/components/ui/SafeImage";
 
 export default async function WishlistPage({
   params,
@@ -52,7 +52,7 @@ export default async function WishlistPage({
             return (
               <div key={item.id} className="card p-4 flex items-center gap-4 hover:border-slate-600 transition-colors">
                 <Link href={`/${locale}/game/${item.game_id}`} className="relative w-24 h-14 rounded-lg overflow-hidden bg-slate-900 flex-shrink-0">
-                  <Image src={item.game_thumb} alt={item.game_title} fill className="object-cover" />
+                  <SafeImage src={item.game_thumb} alt={item.game_title} fill className="object-cover" />
                 </Link>
                 <div className="flex-1 min-w-0">
                   <Link href={`/${locale}/game/${item.game_id}`} className="font-semibold text-white hover:text-brand-400 transition-colors line-clamp-1">

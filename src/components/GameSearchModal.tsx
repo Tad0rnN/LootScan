@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Search, Heart, Bell, Loader2, X, ExternalLink } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -9,6 +8,7 @@ import { useLocale, useTranslations } from "next-intl";
 import clsx from "clsx";
 import type { SearchResult } from "@/types";
 import { fetchGameSearch } from "@/lib/fetch-deals";
+import SafeImage from "@/components/ui/SafeImage";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -68,7 +68,7 @@ function ResultRow({
     <div className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.04] transition-colors group rounded-xl">
       {/* Thumb */}
       <div className="relative w-14 h-8 rounded-lg overflow-hidden bg-slate-800 flex-shrink-0">
-        <Image src={game.thumb} alt={game.external} fill className="object-cover" sizes="56px" />
+        <SafeImage src={game.thumb} alt={game.external} fill className="object-cover" sizes="56px" />
       </div>
 
       {/* Title + price */}

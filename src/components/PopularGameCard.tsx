@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Heart, Star, Bell } from "lucide-react";
 import { formatPrice, getStoreLogoUrl } from "@/lib/cheapshark";
@@ -9,6 +8,8 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import clsx from "clsx";
 import { useLocale } from "next-intl";
+import SafeImage from "@/components/ui/SafeImage";
+import StoreLogo from "@/components/ui/StoreLogo";
 
 interface Props {
   deal: Deal;
@@ -57,7 +58,7 @@ export default function PopularGameCard({ deal, featured = false }: Props) {
         className="group card card-hover flex flex-col overflow-hidden h-full min-h-[280px]"
       >
         <div className="relative flex-1 overflow-hidden bg-slate-900/50 min-h-[200px]">
-          <Image
+          <SafeImage
             src={deal.thumb}
             alt={deal.title}
             fill
@@ -140,7 +141,7 @@ export default function PopularGameCard({ deal, featured = false }: Props) {
       className="group card card-hover flex flex-col overflow-hidden"
     >
       <div className="relative overflow-hidden bg-slate-900/50 aspect-[16/7]">
-        <Image
+        <SafeImage
           src={deal.thumb}
           alt={deal.title}
           fill
@@ -205,7 +206,7 @@ export default function PopularGameCard({ deal, featured = false }: Props) {
               </span>
             )}
             <div className="w-5 h-5 relative opacity-50 group-hover:opacity-80 transition-opacity">
-              <Image src={getStoreLogoUrl(deal.storeID)} alt="" fill className="object-contain" />
+              <StoreLogo storeID={deal.storeID} getStoreLogoUrl={getStoreLogoUrl} alt="" fill className="object-contain" />
             </div>
           </div>
         </div>

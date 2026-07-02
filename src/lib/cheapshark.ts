@@ -130,7 +130,11 @@ const STORE_URL_BUILDERS: Record<string, (title: string, steamAppID?: string | n
 };
 
 export function getStoreLogoUrl(storeID: string): string {
-  return `https://www.cheapshark.com/img/stores/icons/${parseInt(storeID) - 1}.png`;
+  const id = parseInt(storeID, 10);
+  if (!Number.isFinite(id) || id <= 0) {
+    return "https://www.cheapshark.com/img/stores/icons/0.png";
+  }
+  return `https://www.cheapshark.com/img/stores/icons/${id - 1}.png`;
 }
 
 /**

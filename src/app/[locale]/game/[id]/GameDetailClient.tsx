@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ExternalLink, Tag } from "lucide-react";
 import WishlistButton from "@/components/WishlistButton";
@@ -11,6 +10,8 @@ import { trackAffiliateClick } from "@/lib/analytics";
 import { formatPrice, getStoreLogoUrl, getDealUrl } from "@/lib/cheapshark";
 import { useTranslations, useLocale } from "next-intl";
 import type { GameInfo, Store } from "@/types";
+import SafeImage from "@/components/ui/SafeImage";
+import StoreLogo from "@/components/ui/StoreLogo";
 
 interface Props {
   id: string;
@@ -64,7 +65,7 @@ export default function GameDetailClient({ id, gameInfo, stores }: Props) {
       <div className="card p-6 mb-6">
         <div className="flex flex-col sm:flex-row gap-6">
           <div className="relative w-full sm:w-64 h-40 sm:h-36 rounded-lg overflow-hidden bg-slate-900 flex-shrink-0">
-            <Image
+            <SafeImage
               src={gameInfo.info.thumb}
               alt={gameInfo.info.title}
               fill
@@ -142,8 +143,9 @@ export default function GameDetailClient({ id, gameInfo, stores }: Props) {
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <Image
-                          src={getStoreLogoUrl(deal.storeID)}
+                        <StoreLogo
+                          storeID={deal.storeID}
+                          getStoreLogoUrl={getStoreLogoUrl}
                           alt={store?.storeName ?? "Store"}
                           width={20}
                           height={20}

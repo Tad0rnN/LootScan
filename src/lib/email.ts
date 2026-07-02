@@ -25,6 +25,8 @@ interface SaleAlertParams {
   salePrice: string;
   savings: number;
   dealID: string;
+  storeID: string;
+  steamAppID?: string | null;
 }
 
 interface NewsletterEmailParams {
@@ -115,9 +117,11 @@ export async function sendSaleAlert({
   salePrice,
   savings,
   dealID,
+  storeID,
+  steamAppID,
 }: SaleAlertParams) {
   const copy = getEmailCopy(locale);
-  const dealUrl = `https://www.cheapshark.com/redirect?dealID=${dealID}`;
+  const dealUrl = getDealUrl(dealID, storeID, gameTitle, steamAppID);
   const normalizedLocale = normalizeLocale(locale);
   const gameUrl = `${SITE_URL}/${normalizedLocale}/game/${gameID}`;
   const wishlistUrl = `${SITE_URL}/${normalizedLocale}/wishlist`;

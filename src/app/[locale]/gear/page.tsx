@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import {
   Gamepad2, Headphones, Mouse, Keyboard, Square, Grid3x3, ToggleLeft, Package,
@@ -9,6 +8,7 @@ import {
 } from "lucide-react";
 import { trackAffiliateClick } from "@/lib/analytics";
 import wraithProducts from "@/data/wraith-products.json";
+import SafeImage from "@/components/ui/SafeImage";
 
 interface WraithProduct {
   id: number;
@@ -154,13 +154,14 @@ export default function GearPage() {
               }
             >
               <div className="relative aspect-square bg-white/5 p-4 flex items-center justify-center">
-                <Image
+                <SafeImage
                   src={item.image}
                   alt={item.title}
                   width={250}
                   height={250}
                   className="object-contain max-h-[200px] group-hover:scale-105 transition-transform duration-300"
                   unoptimized
+                  fallbackLabel={item.title}
                 />
                 {!item.available && (
                   <span className="absolute top-3 left-3 px-2.5 py-1 bg-slate-700/90 text-white text-xs font-semibold rounded-lg shadow-lg">
