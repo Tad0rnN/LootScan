@@ -37,9 +37,6 @@ export default async function HomePage() {
               backgroundSize: '64px 64px',
             }}
           />
-          {/* Radial fade over grid */}
-          <div className="absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, transparent 40%, #05050d 100%)' }} />
         </div>
 
         {/* Badge */}
