@@ -36,6 +36,8 @@ const nextConfig = {
       { protocol: "https", hostname: "www.cheapshark.com" },
       // Wraith Esports (Shopify CDN)
       { protocol: "https", hostname: "cdn.shopify.com" },
+      // RAWG (FPS Scan game cover images)
+      { protocol: "https", hostname: "media.rawg.io" },
     ],
   },
   async headers() {

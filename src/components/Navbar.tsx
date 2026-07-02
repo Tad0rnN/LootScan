@@ -152,7 +152,7 @@ export default function Navbar() {
               asChild
               variant="brand"
               size="icon"
-              title="FPS Scan (yakında)"
+              title="FPS Scan"
               aria-label="FPS Scan"
             >
               <Link href={`/${locale}/fpsscan`}>
