@@ -6,6 +6,7 @@ import { Crosshair, Loader2 } from "lucide-react";
 import SpecsForm from "@/components/fpsscan/SpecsForm";
 import GameSearch from "@/components/fpsscan/GameSearch";
 import FPSResults from "@/components/fpsscan/FPSResults";
+import FPSBackground from "@/components/fpsscan/FPSBackground";
 import type { PCSpecs, FpsGameResult, FPSResult, ResolutionFPS } from "@/types/fpsscan";
 import { calculateFPS, getPerformanceTier } from "@/lib/fpsscan/fps-calculator";
 
@@ -82,8 +83,9 @@ export default function FpsScanPage() {
   const canScan = !!specs.gpu && !!game;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
+    <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <FPSBackground />
+      <div className="relative z-10 mb-8">
         <h1 className="text-3xl font-bold text-white flex items-center gap-2.5">
           <Crosshair className="w-7 h-7 text-brand-400" />
           {t("title")}
@@ -91,7 +93,7 @@ export default function FpsScanPage() {
         <p className="text-slate-400 mt-1">{t("subtitle")}</p>
       </div>
 
-      <div className="space-y-5">
+      <div className="relative z-10 space-y-5">
         {/* Step 1: PC Specs */}
         <section className="card p-6">
           <div className="flex items-center gap-3 mb-5">
