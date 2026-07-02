@@ -8,6 +8,7 @@ import { Space_Grotesk } from "next/font/google";
 import "../globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SiteBackground from "@/components/SiteBackground";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -84,20 +85,12 @@ export default async function LocaleLayout({
       </head>
       <body className="min-h-screen flex flex-col bg-[#05050d] text-slate-200 antialiased font-sans">
         <NextIntlClientProvider messages={messages}>
-          <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
-            {/* Primary glow — top center */}
-            <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full"
-              style={{ background: 'radial-gradient(ellipse, rgba(34,197,94,0.06) 0%, transparent 70%)', filter: 'blur(40px)' }} />
-            {/* Secondary — bottom right */}
-            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full"
-              style={{ background: 'radial-gradient(ellipse, rgba(139,92,246,0.04) 0%, transparent 70%)', filter: 'blur(60px)' }} />
-            {/* Tertiary — left mid */}
-            <div className="absolute top-1/2 -left-32 w-[400px] h-[400px] rounded-full"
-              style={{ background: 'radial-gradient(ellipse, rgba(34,197,94,0.03) 0%, transparent 70%)', filter: 'blur(50px)' }} />
+          <SiteBackground />
+          <div className="relative z-10 flex flex-col min-h-screen">
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
           </div>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
         </NextIntlClientProvider>
         <Analytics />
       </body>
