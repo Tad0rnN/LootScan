@@ -350,7 +350,13 @@
     "tierPoor": "ZAYIF",
     "disclaimer": "Tahminler gerçek dünya benchmark verilerine dayanmaktadır — ±%15 sapma olabilir",
     "noResults": "Sonuç bulunamadı",
-    "searching": "Aranıyor..."
+    "searching": "Aranıyor...",
+    "freeScanBadge": "Hesap açmadan 1 ücretsiz hakkın var",
+    "unlimitedBadge": "Sınırsız ✓",
+    "anonScanUsed": "Ücretsiz hakkın kullanıldı",
+    "loginPromptTitle": "Sınırsız taramak için giriş yap",
+    "loginPromptDesc": "Ücretsiz hakkını kullandın. Ücretsiz bir LootScan hesabıyla giriş yap, istediğin kadar oyunu taramaya devam et.",
+    "loginPromptButton": "Giriş yap"
   },
   "newsletter": {
     "eyebrow": "Haftalık Bülten",

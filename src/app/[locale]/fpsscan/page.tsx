@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Crosshair, Loader2 } from "lucide-react";
+import { Crosshair, Loader2, Sparkles, Zap } from "lucide-react";
 import SpecsForm from "@/components/fpsscan/SpecsForm";
 import GameSearch from "@/components/fpsscan/GameSearch";
 import FPSResults from "@/components/fpsscan/FPSResults";
+import LoginPromptCard from "@/components/fpsscan/LoginPromptCard";
+import { createClient } from "@/lib/supabase/client";
+import { hasUsedAnonScan, markAnonScanUsed } from "@/lib/fpsscan/scan-quota";
 import type { PCSpecs, FpsGameResult, FPSResult, ResolutionFPS } from "@/types/fpsscan";
 import { calculateFPS, getPerformanceTier } from "@/lib/fpsscan/fps-calculator";
 
@@ -24,12 +27,30 @@ export default function FpsScanPage() {
   const [result, setResult] = useState<FPSResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const [anonScanUsed, setAnonScanUsed] = useState(false);
+  const [blocked, setBlocked] = useState(false);
+
+  useEffect(() => {
+    setAnonScanUsed(hasUsedAnonScan());
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setIsLoggedIn(!!user);
+    });
+  }, []);
 
   async function handleScan() {
     if (!specs.gpu || !game) return;
+
+    if (!isLoggedIn && anonScanUsed) {
+      setBlocked(true);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setResult(null);
+    setBlocked(false);
 
     const local = calculateFPS(game.slug, game.name, specs);
 
@@ -46,6 +67,7 @@ export default function FpsScanPage() {
         notes: "",
       });
       setLoading(false);
+      if (!isLoggedIn) { markAnonScanUsed(); setAnonScanUsed(true); }
       return;
     }
 
@@ -72,6 +94,7 @@ export default function FpsScanPage() {
         bottleneck: data.bottleneck ?? "none",
         notes: data.notes ?? "",
       });
+      if (!isLoggedIn) { markAnonScanUsed(); setAnonScanUsed(true); }
     } catch {
       setError(t("errorMessage"));
     } finally {
@@ -89,6 +112,26 @@ export default function FpsScanPage() {
           {t("title")}
         </h1>
         <p className="text-slate-400 mt-1">{t("subtitle")}</p>
+
+        {isLoggedIn !== null && (
+          <div className="mt-3">
+            {isLoggedIn ? (
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg bg-brand-500/10 border border-brand-500/25 text-brand-400">
+                <Sparkles className="w-3.5 h-3.5" />
+                {t("unlimitedBadge")}
+              </span>
+            ) : !anonScanUsed ? (
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300">
+                <Zap className="w-3.5 h-3.5" />
+                {t("freeScanBadge")}
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-400">
+                {t("anonScanUsed")}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="space-y-5">
@@ -142,6 +185,8 @@ export default function FpsScanPage() {
             {error}
           </div>
         )}
+
+        {blocked && <LoginPromptCard />}
 
         {result && (
           <section className="card p-6">
