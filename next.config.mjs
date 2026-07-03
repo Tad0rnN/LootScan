@@ -38,6 +38,13 @@ const nextConfig = {
       { protocol: "https", hostname: "cdn.shopify.com" },
       // RAWG (FPS Scan game cover images)
       { protocol: "https", hostname: "media.rawg.io" },
+      // DreamGame
+      { protocol: "https", hostname: "cdn.dreamgame.com" },
+      // Ubisoft Store
+      { protocol: "https", hostname: "store.ubisoft.com" },
+      // IndieGala
+      { protocol: "https", hostname: "www.indiegalacdn.com" },
+      { protocol: "https", hostname: "**.indiegalacdn.com" },
     ],
   },
   async headers() {

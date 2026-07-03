@@ -1,14 +1,20 @@
-import Groq from "groq-sdk";
 import type { AISearchResponse } from "@/types";
+
+const NVIDIA_BASE_URL = "https://integrate.api.nvidia.com/v1";
+// deepseek-ai/deepseek-v4-flash and meta/llama-4-maverick's free endpoints hang indefinitely
+// (verified — 25-30s with zero response, even streaming). nemotron-3-nano-30b-a3b is fast and
+// reliable but its recommendations drift off-topic for nuanced multi-constraint queries
+// (e.g. mixed in Rust/Fortnite/Apex Legends for a "calm relaxing farming games" query).
+// nemotron-3-super-120b-a12b (4x the active params) is still fast (~2s) and reliable, and its
+// recommendations were consistently on-topic across test queries.
+const NVIDIA_MODEL = "nvidia/nemotron-3-super-120b-a12b";
 
 export async function parseNaturalLanguageSearch(
   userQuery: string
 ): Promise<AISearchResponse> {
-  if (!process.env.GROQ_API_KEY) {
-    throw new Error("GROQ_API_KEY is not configured");
+  if (!process.env.NVIDIA_API_KEY) {
+    throw new Error("NVIDIA_API_KEY is not configured");
   }
-
-  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
   const systemPrompt = `You are an expert game recommendation and deal search assistant for LootScan (lootscan.co), a PC game price comparison site powered by the CheapShark API.
 
@@ -27,6 +33,7 @@ Parse the user's natural language query into a structured JSON search request.
 - Era: "retro games", "eski oyunlar", "klasik"
 - Return 20-25 DIVERSE, well-known PC game titles — no DLCs, no soundtracks, no Season Pass, no bundles
 - Prioritize games that are commonly discounted and available on CheapShark
+- IMPORTANT: Always spell titles in the EXACT canonical form used on Steam/CheapShark (e.g. "Civilization VI" not "Civilization 6", "Baldur's Gate 3" not "Baldur's Gate III", "DOOM Eternal" not "Doom: Eternal") — the search that follows does exact/fuzzy string matching against store listings, so an off-canonical title silently drops the result.
 
 ### "deals" mode — for specific price/deal queries:
 - Specific game: "The Witcher 3 kaç para", "how much is GTA 5"
@@ -34,7 +41,7 @@ Parse the user's natural language query into a structured JSON search request.
 - Store-specific: "Steam deals", "GOG'da indirim"
 - Free: "bedava oyunlar", "free games", "ücretsiz"
 - "gameTitles" must be [] in this mode
-- Use "title" filter ONLY for specific named games
+- Use "title" filter ONLY for specific named games, spelled in canonical store form (see rule above)
 
 ## FILTER RULES
 - "onSale": true ONLY when user says sale/discount/indirim/ucuz/fırsat/deal/cheap explicitly
@@ -65,17 +72,43 @@ Respond with ONLY valid JSON:
   }
 }`;
 
-  const completion = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt },
-    ],
-    temperature: 0.3,
-    max_tokens: 1000,
-    response_format: { type: "json_object" },
-  });
+  // The free NVIDIA endpoint occasionally queues under shared load (observed up to 30s+).
+  // Bail out after 8s so the caller's heuristic fallback kicks in instead of hanging the request.
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-  const text = completion.choices[0]?.message?.content ?? "{}";
-  return JSON.parse(text);
+  let res: Response;
+  try {
+    res = await fetch(`${NVIDIA_BASE_URL}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.NVIDIA_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: NVIDIA_MODEL,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        temperature: 0.3,
+        max_tokens: 2000,
+        // Disable the model's default chain-of-thought preamble — it eats the token
+        // budget and this task only needs a direct JSON answer, not reasoning traces.
+        chat_template_kwargs: { thinking: false },
+      }),
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+
+  if (!res.ok) {
+    throw new Error(`NVIDIA API error: ${res.status} ${await res.text()}`);
+  }
+
+  const completion = await res.json();
+  const text: string = completion.choices?.[0]?.message?.content ?? "{}";
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  return JSON.parse(jsonMatch ? jsonMatch[0] : text);
 }

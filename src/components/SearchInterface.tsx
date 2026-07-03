@@ -63,13 +63,22 @@ const SEARCH_NOISE_TERMS = [
   "usd",
 ];
 
+const ROMAN_NUMERALS: Record<string, string> = {
+  ii: "2", iii: "3", iv: "4", v: "5", vi: "6", vii: "7", viii: "8", ix: "9", x: "10",
+};
+
+// Titles from the AI and from CheapShark often disagree on "VI" vs "6" (Civilization VI,
+// Baldur's Gate 3 vs III) — normalize both to arabic digits before comparing.
+function convertRomanNumerals(value: string): string {
+  return value.replace(/\b(viii|vii|vi|iv|ix|iii|ii|v|x)\b/gi, (match) => ROMAN_NUMERALS[match.toLowerCase()] ?? match);
+}
+
 function normalizeText(value: string): string {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "");
+  return convertRomanNumerals(value.toLowerCase()).replace(/[^a-z0-9]+/g, "");
 }
 
 function tokenizeMeaningful(value: string): string[] {
-  return value
-    .toLowerCase()
+  return convertRomanNumerals(value.toLowerCase())
     .split(/[^a-z0-9]+/)
     .filter((token) => token.length > 1 && !SEARCH_NOISE_TERMS.includes(token));
 }

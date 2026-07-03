@@ -1,5 +1,5 @@
 import type { AISearchResponse } from "@/types";
-import { parseNaturalLanguageSearch as parseWithGroq } from "@/lib/gemini";
+import { parseNaturalLanguageSearch as parseWithNvidia } from "@/lib/nvidia";
 
 type GenrePreset = {
   label: string;
@@ -630,11 +630,11 @@ export async function parseNaturalLanguageSearch(userQuery: string, locale?: str
   const heuristic = buildHeuristicSearch(userQuery, locale);
 
   try {
-    return mergeWithHeuristic(await parseWithGroq(userQuery), heuristic);
+    return mergeWithHeuristic(await parseWithNvidia(userQuery), heuristic);
   } catch (error) {
     console.warn(
       "AI search fallback is using heuristic parser:",
-      error instanceof Error ? `Groq: ${error.message}` : "Groq: unknown error"
+      error instanceof Error ? `NVIDIA: ${error.message}` : "NVIDIA: unknown error"
     );
   }
   return heuristic;
