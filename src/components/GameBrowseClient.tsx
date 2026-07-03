@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Search, Heart, Bell, Loader2, GamepadIcon, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useLocale, useTranslations } from "next-intl";
@@ -25,6 +26,7 @@ function GameCard({ game, onWishlistChange }: {
 }) {
   const [loading, setLoading] = useState(false);
   const locale = useLocale();
+  const router = useRouter();
   const t = useTranslations("browse");
 
   const toggle = async (e: React.MouseEvent) => {
@@ -56,6 +58,7 @@ function GameCard({ game, onWishlistChange }: {
       onWishlistChange(game.gameID, true);
     }
     setLoading(false);
+    router.refresh();
   };
 
   const cheapNum = parseFloat(game.cheapest ?? "0");

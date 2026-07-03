@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import clsx from "clsx";
@@ -19,6 +20,7 @@ export default function WishlistButton({ gameID, gameTitle, gameThumb, normalPri
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
   const locale = useLocale();
+  const router = useRouter();
   const t = useTranslations("wishlist");
 
   useEffect(() => {
@@ -61,6 +63,7 @@ export default function WishlistButton({ gameID, gameTitle, gameThumb, normalPri
       setInWishlist(true);
     }
     setLoading(false);
+    router.refresh();
   };
 
   return (

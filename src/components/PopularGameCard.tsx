@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Heart, Star, Bell } from "lucide-react";
 import { formatPrice, getStoreLogoUrl } from "@/lib/cheapshark";
 import type { Deal } from "@/types";
@@ -20,6 +21,7 @@ export default function PopularGameCard({ deal, featured = false }: Props) {
   const [inWishlist, setInWishlist] = useState(false);
   const [loading, setLoading] = useState(false);
   const locale = useLocale();
+  const router = useRouter();
   const savings = Math.round(parseFloat(deal.savings));
   const isOnSale = savings > 0;
   const isFree = parseFloat(deal.salePrice) === 0;
@@ -49,6 +51,7 @@ export default function PopularGameCard({ deal, featured = false }: Props) {
       setInWishlist(true);
     }
     setLoading(false);
+    router.refresh();
   };
 
   if (featured) {

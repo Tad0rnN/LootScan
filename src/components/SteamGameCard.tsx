@@ -178,6 +178,7 @@ export default function SteamGameCard({ game, rank, featured = false }: Props) {
       setInWishlist(true);
     }
     setWishlistLoading(false);
+    router.refresh();
   };
 
   // Mağaza listesi bölümü

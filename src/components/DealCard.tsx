@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Heart, Star, ExternalLink } from "lucide-react";
 import { formatPrice, getStoreLogoUrl } from "@/lib/cheapshark";
 import { getAffiliateLink } from "@/lib/affiliate";
@@ -28,6 +29,7 @@ export default function DealCard({ deal, wishlisted = false, onWishlistChange, e
   const savings = Math.round(parseFloat(deal.savings));
   const isFree = parseFloat(deal.salePrice) === 0;
   const locale = useLocale();
+  const router = useRouter();
   const hasStoreLogo = Number.isFinite(Number(deal.storeID)) && Number(deal.storeID) > 0;
 
   const toggleWishlist = async (e: React.MouseEvent) => {
@@ -59,6 +61,8 @@ export default function DealCard({ deal, wishlisted = false, onWishlistChange, e
     }
     setLoading(false);
     onWishlistChange?.();
+    // Bust the Router Cache so the /wishlist page shows this change without a manual reload.
+    router.refresh();
   };
 
   const cardInner = (
