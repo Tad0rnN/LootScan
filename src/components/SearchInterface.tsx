@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { Search, Sparkles, Loader2 } from "lucide-react";
 import DealCard from "./DealCard";
-import type { AISearchResponse, Deal, SearchResult } from "@/types";
+import type { AISearchResponse, Deal, GameInfo, SearchResult } from "@/types";
 import { useLocale, useTranslations } from "next-intl";
-import { fetchDeals as fetchDealsApi, fetchGameSearch } from "@/lib/fetch-deals";
+import { fetchDeals as fetchDealsApi, fetchGameSearch, fetchGameInfo } from "@/lib/fetch-deals";
 import { F2P_GAMES, f2pStoreUrl, f2pThumb } from "@/lib/f2p-games";
 
 interface SearchState {
@@ -18,7 +18,7 @@ interface SearchState {
   rateLimited?: boolean;
 }
 
-const MAX_SIMILAR_RESULTS = 8;
+const MAX_SIMILAR_RESULTS = 16;
 const EXCLUDED_TITLE_TERMS = [
   "soundtrack",
   "artbook",
@@ -103,8 +103,13 @@ function normalizeGameId(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 }
 
-function toDeal(game: SearchResult): Deal {
-  return {
+// CheapShark's game-search endpoint only returns a "cheapest" price, not which store
+// has it — so we look up the game's real deals and use the actual cheapest store's
+// storeID. Without this every AI-suggested card fell back to storeID "0" and showed
+// Steam's regional price as the only visible source, making it look like results came
+// from Steam instead of CheapShark's full multi-store comparison.
+async function toDeal(game: SearchResult): Promise<Deal> {
+  const fallback: Deal = {
     internalName: game.internalName,
     title: game.external,
     metacriticLink: null,
@@ -125,6 +130,27 @@ function toDeal(game: SearchResult): Deal {
     dealRating: "0",
     thumb: game.thumb,
   };
+
+  try {
+    const info = (await fetchGameInfo(game.gameID)) as GameInfo | null;
+    const deals = info?.deals ?? [];
+    if (deals.length === 0) return fallback;
+
+    const cheapestDeal = deals.reduce((a, b) => (parseFloat(a.price) < parseFloat(b.price) ? a : b));
+    const savings = Math.round(parseFloat(cheapestDeal.savings ?? "0"));
+
+    return {
+      ...fallback,
+      dealID: cheapestDeal.dealID,
+      storeID: cheapestDeal.storeID,
+      salePrice: cheapestDeal.price,
+      normalPrice: cheapestDeal.retailPrice ?? fallback.normalPrice,
+      isOnSale: savings > 0 ? "1" : "0",
+      savings: String(savings),
+    };
+  } catch {
+    return fallback;
+  }
 }
 
 function buildF2PSearchDeals(limit = 12): Deal[] {
@@ -191,29 +217,41 @@ function scoreSearchResultMatch(result: SearchResult, title: string): number {
   return overlap / queryTokens.length;
 }
 
+async function matchGamesForTitles(
+  gameTitles: string[],
+  filters: AISearchResponse["filters"] | undefined,
+  limit: number
+): Promise<SearchResult[]> {
+  const titles = gameTitles.slice(0, limit);
+
+  // Searched in parallel — each title is an independent CheapShark lookup.
+  const matches = await Promise.all(
+    titles.map(async (title) => {
+      let data: unknown;
+      try {
+        data = await fetchGameSearch(title);
+      } catch {
+        return null;
+      }
+      const results = Array.isArray(data) ? (data as SearchResult[]) : [];
+      return pickBestSearchResult(results, title, filters, new Set());
+    })
+  );
+
+  const uniqueGames = new Map<string, SearchResult>();
+  for (const game of matches) {
+    if (game && !uniqueGames.has(game.gameID)) uniqueGames.set(game.gameID, game);
+  }
+  return Array.from(uniqueGames.values());
+}
+
 async function fetchDealsForSuggestedTitles(
   gameTitles: string[],
   filters: AISearchResponse["filters"] | undefined,
   limit = MAX_SIMILAR_RESULTS
 ): Promise<Deal[]> {
-  const seen = new Set<string>();
-  const suggestions: Deal[] = [];
-
-  for (const title of gameTitles.slice(0, limit)) {
-    let data: unknown;
-    try {
-      data = await fetchGameSearch(title);
-    } catch {
-      continue;
-    }
-
-    const results = Array.isArray(data) ? data as SearchResult[] : [];
-    const game = pickBestSearchResult(results, title, filters, seen);
-    if (!game) continue;
-    seen.add(game.gameID);
-    suggestions.push(toDeal(game));
-  }
-
+  const games = await matchGamesForTitles(gameTitles, filters, limit);
+  const suggestions = await Promise.all(games.map(toDeal));
   return deduplicateDeals(suggestions);
 }
 
@@ -236,14 +274,14 @@ async function fetchDealsMode(
     .catch(() => [] as Deal[]);
 
   const suggestedGamesPromise = gameTitles.length > 0
-    ? fetchDealsForSuggestedTitles(gameTitles, filters, 12).catch(() => [] as Deal[])
+    ? fetchDealsForSuggestedTitles(gameTitles, filters, MAX_SIMILAR_RESULTS).catch(() => [] as Deal[])
     : Promise.resolve([] as Deal[]);
 
   // Başlık aramasıysa, indirimde olmayan oyunları da çek
   let gameResults: Deal[] = [];
   if (filters?.title && !looksLikeBroadDiscoveryQuery(filters.title)) {
     const gamesPromise = fetchGameSearch(filters.title, 20)
-      .then((d) => (Array.isArray(d) ? (d as SearchResult[]).filter(isBaseGameTitle2).map(toDeal) : []))
+      .then((d) => (Array.isArray(d) ? Promise.all((d as SearchResult[]).filter(isBaseGameTitle2).map(toDeal)) : []))
       .catch(() => [] as Deal[]);
     gameResults = await gamesPromise;
   }
@@ -288,24 +326,8 @@ function pickBestSearchResult(results: SearchResult[], title: string, filters: A
 }
 
 async function fetchSimilarMode(gameTitles: string[], filters: AISearchResponse["filters"] | undefined): Promise<Deal[]> {
-  const seen = new Set<string>();
-  const deals: Deal[] = [];
-
-  for (const title of gameTitles.slice(0, MAX_SIMILAR_RESULTS)) {
-    let data: unknown;
-    try {
-      data = await fetchGameSearch(title);
-    } catch {
-      continue;
-    }
-    const results = Array.isArray(data) ? data as SearchResult[] : [];
-    const game = pickBestSearchResult(results, title, filters, seen);
-    if (!game) continue;
-    seen.add(game.gameID);
-    deals.push(toDeal(game));
-  }
-
-  return deduplicateDeals(deals).slice(0, MAX_SIMILAR_RESULTS);
+  const deals = await fetchDealsForSuggestedTitles(gameTitles, filters, MAX_SIMILAR_RESULTS);
+  return deals.slice(0, MAX_SIMILAR_RESULTS);
 }
 
 export default function SearchInterface() {
