@@ -4,6 +4,7 @@ import { MapPin } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { REGION_OPTIONS } from "@/lib/regional-pricing";
 import { useRegionalPricing } from "@/lib/regional-pricing-client";
+import FlagIcon from "@/components/ui/FlagIcon";
 import clsx from "clsx";
 
 export default function RegionSwitcher() {
@@ -30,7 +31,7 @@ export default function RegionSwitcher() {
         className="flex items-center gap-2 h-9 px-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
         title="Regional pricing"
       >
-        <span className="text-sm leading-none">{regionOption.flag}</span>
+        <FlagIcon code={regionOption.flagCode} />
         <MapPin className="w-3.5 h-3.5" />
         <span className="hidden lg:inline text-xs font-medium">{regionOption.shortLabel}</span>
       </button>
@@ -52,7 +53,7 @@ export default function RegionSwitcher() {
                   : "text-slate-300 hover:bg-white/5 hover:text-white"
               )}
             >
-              <span className="text-base">{option.flag}</span>
+              <FlagIcon code={option.flagCode} className="w-6 h-[18px] rounded-[3px] object-cover flex-shrink-0" />
               <div className="flex-1">
                 <p className="font-medium">{option.label}</p>
                 <p className="text-[11px] text-slate-500">{option.currency}</p>

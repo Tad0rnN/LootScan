@@ -1,6 +1,15 @@
 import type { GPU } from "@/types/fpsscan";
 
 export const GPUS: GPU[] = [
+  // NVIDIA RTX 50 Series
+  { id: "rtx-5090", name: "RTX 5090", brand: "nvidia", score: 480, vram: 32, tier: 6 },
+  { id: "rtx-5080", name: "RTX 5080", brand: "nvidia", score: 335, vram: 16, tier: 6 },
+  { id: "rtx-5070-ti", name: "RTX 5070 Ti", brand: "nvidia", score: 295, vram: 16, tier: 5 },
+  { id: "rtx-5070", name: "RTX 5070", brand: "nvidia", score: 245, vram: 12, tier: 5 },
+  { id: "rtx-5060-ti-16gb", name: "RTX 5060 Ti 16GB", brand: "nvidia", score: 160, vram: 16, tier: 4 },
+  { id: "rtx-5060-ti-8gb", name: "RTX 5060 Ti 8GB", brand: "nvidia", score: 155, vram: 8, tier: 4 },
+  { id: "rtx-5060", name: "RTX 5060", brand: "nvidia", score: 125, vram: 8, tier: 3 },
+  { id: "rtx-5050", name: "RTX 5050", brand: "nvidia", score: 90, vram: 8, tier: 2 },
   // NVIDIA RTX 40 Series
   { id: "rtx-4090", name: "RTX 4090", brand: "nvidia", score: 360, vram: 24, tier: 6 },
   { id: "rtx-4080-super", name: "RTX 4080 Super", brand: "nvidia", score: 300, vram: 16, tier: 6 },

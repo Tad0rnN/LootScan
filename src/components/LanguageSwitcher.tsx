@@ -4,14 +4,15 @@ import { useLocale } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { Globe } from "lucide-react";
+import FlagIcon from "@/components/ui/FlagIcon";
 
 const languages = [
-  { code: "en", label: "English", flag: "🇬🇧" },
-  { code: "tr", label: "Türkçe", flag: "🇹🇷" },
-  { code: "de", label: "Deutsch", flag: "🇩🇪" },
-  { code: "nl", label: "Nederlands", flag: "🇳🇱" },
-  { code: "fr", label: "Français", flag: "🇫🇷" },
-  { code: "it", label: "Italiano", flag: "🇮🇹" },
+  { code: "en", label: "English", flagCode: "gb" },
+  { code: "tr", label: "Türkçe", flagCode: "tr" },
+  { code: "de", label: "Deutsch", flagCode: "de" },
+  { code: "nl", label: "Nederlands", flagCode: "nl" },
+  { code: "fr", label: "Français", flagCode: "fr" },
+  { code: "it", label: "Italiano", flagCode: "it" },
 ];
 
 export default function LanguageSwitcher() {
@@ -43,7 +44,7 @@ export default function LanguageSwitcher() {
         onClick={() => setOpen(!open)}
         className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all text-sm"
       >
-        <span className="text-base leading-none">{current.flag}</span>
+        <FlagIcon code={current.flagCode} />
         <Globe className="w-3.5 h-3.5" />
       </button>
 
@@ -60,7 +61,7 @@ export default function LanguageSwitcher() {
                   : "text-slate-300 hover:bg-white/5 hover:text-white"
               )}
             >
-              <span className="text-base">{lang.flag}</span>
+              <FlagIcon code={lang.flagCode} className="w-6 h-[18px] rounded-[3px] object-cover flex-shrink-0" />
               <span className="font-medium">{lang.label}</span>
               {lang.code === locale && <span className="ml-auto text-brand-500 text-xs">✓</span>}
             </button>

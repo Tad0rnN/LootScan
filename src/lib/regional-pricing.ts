@@ -8,6 +8,7 @@ export interface RegionOption {
   currency: string;
   locale: string;
   flag: string;
+  flagCode: string;
 }
 
 export interface RegionalSteamPrice {
@@ -32,6 +33,7 @@ export const REGION_OPTIONS: RegionOption[] = [
     currency: "EUR",
     locale: "de-DE",
     flag: "🇪🇺",
+    flagCode: "eu",
   },
   {
     code: "tr",
@@ -41,6 +43,7 @@ export const REGION_OPTIONS: RegionOption[] = [
     currency: "USD",
     locale: "en-US",
     flag: "🇹🇷",
+    flagCode: "tr",
   },
 ];
 
