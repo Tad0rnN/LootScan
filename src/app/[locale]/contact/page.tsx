@@ -23,8 +23,8 @@ export default async function ContactPage() {
           <div>
             <h3 className="font-semibold text-white mb-1">{t("emailTitle")}</h3>
             <p className="text-slate-400 text-sm mb-2">{t("emailDesc")}</p>
-            <a href="mailto:contact@lootscan.app" className="text-brand-400 hover:text-brand-300 transition-colors text-sm font-medium">
-              contact@lootscan.app
+            <a href="mailto:contact@lootscan.co" className="text-brand-400 hover:text-brand-300 transition-colors text-sm font-medium">
+              contact@lootscan.co
             </a>
           </div>
         </div>
