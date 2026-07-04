@@ -525,23 +525,57 @@ function buildHeuristicInterpretation(query: string, locale: string | undefined,
   }
 }
 
+function detectsFreeIntent(query: string): boolean {
+  const normalized = normalizeText(query);
+  return /\bfree\b|\bbedava\b|\bucretsiz\b/.test(normalized);
+}
+
+function buildFreeIntentInterpretation(locale: string | undefined): string {
+  switch (locale) {
+    case "tr": return "Su an ucretsiz olan oyunlar listeleniyor.";
+    case "de": return "Aktuell kostenlose Spiele werden angezeigt.";
+    case "nl": return "Momenteel gratis games worden getoond.";
+    case "fr": return "Affichage des jeux actuellement gratuits.";
+    case "it": return "Mostro i giochi attualmente gratuiti.";
+    default: return "Showing games that are currently free.";
+  }
+}
+
 function buildHeuristicSearch(userQuery: string, locale?: string): AISearchResponse {
   const maxPrice = parseMaxPrice(userQuery);
   const storeID = parseStoreId(userQuery);
   const genrePreset = findGenrePreset(userQuery);
   const referenceTitles = parseReferenceStyleTitles(userQuery);
-  const normalized = normalizeText(userQuery);
-  const isFree = /\bfree\b|\bbedava\b|\bucretsiz\b|\bücretsiz\b/.test(normalized);
+  const isFree = detectsFreeIntent(userQuery);
   const onSaleIntent = isFree || parseOnSaleIntent(userQuery);
   const storeDealsIntent = isStoreDealsQuery(userQuery);
 
+  // "Free" queries never match a curated title list — genre/reference presets and
+  // GENERIC_RECOMMENDATION_TITLES are all paid AAA games, so combining them with a
+  // maxPrice: 0 filter always filters every candidate out (they're never actually $0).
+  // Route straight to "deals" mode instead, which already surfaces real free games via
+  // CheapShark's upperPrice=0 deals plus the curated F2P fallback list.
+  if (isFree) {
+    return {
+      interpretation: buildFreeIntentInterpretation(locale),
+      searchMode: "deals",
+      gameTitles: [],
+      filters: {
+        maxPrice: 0,
+        storeID,
+        sortBy: "Deal Rating",
+        onSale: true,
+      },
+    };
+  }
+
   if (referenceTitles?.length) {
     return {
-      interpretation: buildHeuristicInterpretation(userQuery, locale, undefined, isFree ? 0 : maxPrice),
+      interpretation: buildHeuristicInterpretation(userQuery, locale, undefined, maxPrice),
       searchMode: "similar",
       gameTitles: referenceTitles,
       filters: {
-        maxPrice: isFree ? 0 : maxPrice,
+        maxPrice,
         storeID,
         sortBy: "Deal Rating",
         onSale: onSaleIntent,
@@ -551,11 +585,11 @@ function buildHeuristicSearch(userQuery: string, locale?: string): AISearchRespo
 
   if (genrePreset) {
     return {
-      interpretation: buildHeuristicInterpretation(userQuery, locale, genrePreset.label, isFree ? 0 : maxPrice),
+      interpretation: buildHeuristicInterpretation(userQuery, locale, genrePreset.label, maxPrice),
       searchMode: "similar",
       gameTitles: genrePreset.titles,
       filters: {
-        maxPrice: isFree ? 0 : maxPrice,
+        maxPrice,
         storeID,
         sortBy: "Deal Rating",
         onSale: onSaleIntent,
@@ -565,11 +599,11 @@ function buildHeuristicSearch(userQuery: string, locale?: string): AISearchRespo
 
   if (looksLikeBroadRecommendationQuery(userQuery)) {
     return {
-      interpretation: buildHeuristicInterpretation(userQuery, locale, undefined, isFree ? 0 : maxPrice),
+      interpretation: buildHeuristicInterpretation(userQuery, locale, undefined, maxPrice),
       searchMode: "similar",
       gameTitles: GENERIC_RECOMMENDATION_TITLES,
       filters: {
-        maxPrice: isFree ? 0 : maxPrice,
+        maxPrice,
         storeID,
         sortBy: "Deal Rating",
         onSale: onSaleIntent,
@@ -578,12 +612,12 @@ function buildHeuristicSearch(userQuery: string, locale?: string): AISearchRespo
   }
 
   return {
-    interpretation: buildHeuristicInterpretation(userQuery, locale, undefined, isFree ? 0 : maxPrice),
+    interpretation: buildHeuristicInterpretation(userQuery, locale, undefined, maxPrice),
     searchMode: "deals",
     gameTitles: [],
     filters: {
       title: storeDealsIntent ? undefined : userQuery.trim(),
-      maxPrice: isFree ? 0 : maxPrice,
+      maxPrice,
       storeID,
       sortBy: "Deal Rating",
       onSale: onSaleIntent,
@@ -597,7 +631,15 @@ function mergeWithHeuristic(response: AISearchResponse, heuristic: AISearchRespo
   const titleLooksLikeGenre = normalized.filters.title ? Boolean(findGenrePreset(normalized.filters.title)) : false;
   const hasTitleFilter = Boolean(normalized.filters.title) && !titleLooksLikeGenre;
 
-  if (!hasGameTitles && !hasTitleFilter && heuristic.searchMode === "similar") {
+  // A "similar"-mode response with zero recommended titles is a broken response — the
+  // model claimed it would return 20-25 titles (see nvidia.ts's system prompt) but gave
+  // none, usually because it didn't recognize an unfamiliar/made-up term in the query.
+  // Trust the heuristic's shape entirely rather than showing an empty results page.
+  const aiClaimsSimilarButEmpty = normalized.searchMode === "similar" && !hasGameTitles;
+  const shouldDeferToHeuristicShape =
+    aiClaimsSimilarButEmpty || (!hasGameTitles && !hasTitleFilter && heuristic.searchMode === "similar");
+
+  if (shouldDeferToHeuristicShape) {
     return {
       ...heuristic,
       filters: {
@@ -626,16 +668,37 @@ function normalizeResponse(response: AISearchResponse): AISearchResponse {
   };
 }
 
+// The model's default JSON-schema state is maxPrice: null, onSale: false — indistinguishable
+// from "the model didn't think about it" — so whenever the query itself deterministically says
+// "free", that intent must win regardless of what the model returned (see mergeWithHeuristic,
+// which otherwise lets the model's filters silently overwrite the heuristic's).
+function enforceFreeIntent(result: AISearchResponse, userQuery: string, locale?: string): AISearchResponse {
+  if (!detectsFreeIntent(userQuery)) return result;
+
+  return {
+    ...result,
+    searchMode: "deals",
+    gameTitles: [],
+    interpretation: buildFreeIntentInterpretation(locale),
+    filters: {
+      ...result.filters,
+      maxPrice: 0,
+      onSale: true,
+    },
+  };
+}
+
 export async function parseNaturalLanguageSearch(userQuery: string, locale?: string): Promise<AISearchResponse> {
   const heuristic = buildHeuristicSearch(userQuery, locale);
 
   try {
-    return mergeWithHeuristic(await parseWithNvidia(userQuery), heuristic);
+    const merged = mergeWithHeuristic(await parseWithNvidia(userQuery), heuristic);
+    return enforceFreeIntent(merged, userQuery, locale);
   } catch (error) {
     console.warn(
       "AI search fallback is using heuristic parser:",
       error instanceof Error ? `NVIDIA: ${error.message}` : "NVIDIA: unknown error"
     );
   }
-  return heuristic;
+  return enforceFreeIntent(heuristic, userQuery, locale);
 }
