@@ -373,5 +373,11 @@
     "alreadySubscribed": "You're already subscribed to the weekly deals list.",
     "errorGeneric": "Could not subscribe right now. Please try again.",
     "disclaimer": "No spam. Just one weekly email with standout deals, best discounts, and new reasons to come back."
+  },
+  "popularCard": {
+    "featuredPick": "Pick of the Month",
+    "saleAlertHint": "Get an email when it goes on sale",
+    "notifyBadge": "Notify",
+    "notifyShort": "Notify me on sale"
   }
 }

@@ -2,6 +2,7 @@ import type { Deal, Store, GameInfo, SearchResult } from "@/types";
 import { addAffiliateParam } from "@/lib/affiliate";
 import gpCache from "../../data/gamesplanet-url-cache.json";
 import ggCache from "../../data/gamersgate-url-cache.json";
+import gbCache from "../../data/gamebillet-url-cache.json";
 import {
   fetchCheapShark as fetchViaProxy,
   CHEAPSHARK_BASE,
@@ -98,6 +99,15 @@ const STORE_URL_BUILDERS: Record<string, (title: string, steamAppID?: string | n
   },
   "23": (title) => {
     if (!title) return "https://www.gamebillet.com/";
+    const cache = gbCache as { byName?: Record<string, string>; invalidNames?: string[] };
+    const key = title.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const cached = cache.byName?.[key];
+    if (cached) return cached;
+    // Titles confirmed missing on GameBillet get the search page instead of a 404 —
+    // the affiliate param still sets the tracking cookie from any landing page.
+    if (cache.invalidNames?.includes(key)) {
+      return `https://www.gamebillet.com/search?q=${encodeURIComponent(title)}`;
+    }
     const slug = title.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-").replace(/-+/g, "-");
     return `https://www.gamebillet.com/${slug}`;
   },

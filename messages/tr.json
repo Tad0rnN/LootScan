@@ -373,5 +373,11 @@
     "alreadySubscribed": "Zaten haftalık fırsat listesine abonesin.",
     "errorGeneric": "Şu anda abone olunamadı. Lütfen tekrar dene.",
     "disclaimer": "Spam yok. Sadece haftada bir kez öne çıkan fırsatlar, güçlü indirimler ve geri gelmeye değer oyunlar."
+  },
+  "popularCard": {
+    "featuredPick": "Ayın Seçimi",
+    "saleAlertHint": "İndirime girince mail alırsın",
+    "notifyBadge": "Bildir",
+    "notifyShort": "İndirime girince bildir"
   }
 }

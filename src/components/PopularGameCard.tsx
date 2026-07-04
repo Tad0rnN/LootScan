@@ -8,7 +8,7 @@ import type { Deal } from "@/types";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import clsx from "clsx";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import SafeImage from "@/components/ui/SafeImage";
 import StoreLogo from "@/components/ui/StoreLogo";
 
@@ -21,6 +21,7 @@ export default function PopularGameCard({ deal, featured = false }: Props) {
   const [inWishlist, setInWishlist] = useState(false);
   const [loading, setLoading] = useState(false);
   const locale = useLocale();
+  const t = useTranslations("popularCard");
   const router = useRouter();
   const savings = Math.round(parseFloat(deal.savings));
   const isOnSale = savings > 0;
@@ -72,7 +73,7 @@ export default function PopularGameCard({ deal, featured = false }: Props) {
           {/* Badges */}
           <div className="absolute top-3 left-3 flex gap-2">
             <span className="bg-amber-500/20 border border-amber-500/30 text-amber-400 text-xs font-bold px-2.5 py-1 rounded-lg backdrop-blur-sm">
-              ⭐ Ayın Seçimi
+              ⭐ {t("featuredPick")}
             </span>
             {isOnSale && (
               <span className="badge-savings text-xs font-bold px-2 py-1 rounded-lg backdrop-blur-sm">
@@ -130,7 +131,7 @@ export default function PopularGameCard({ deal, featured = false }: Props) {
         {!isOnSale && !isFree && (
           <div className="px-4 py-2.5 bg-amber-500/5 border-t border-amber-500/10 flex items-center gap-2">
             <Bell className="w-3.5 h-3.5 text-amber-400/70" />
-            <p className="text-xs text-amber-400/70">İndirime girince mail alırsın</p>
+            <p className="text-xs text-amber-400/70">{t("saleAlertHint")}</p>
           </div>
         )}
       </Link>
@@ -160,7 +161,7 @@ export default function PopularGameCard({ deal, featured = false }: Props) {
             <span className="badge-savings text-xs font-bold px-2 py-1 rounded-lg backdrop-blur-sm">-{savings}%</span>
           ) : (
             <span className="bg-slate-800/80 text-slate-400 border border-white/10 text-xs font-medium px-2 py-1 rounded-lg backdrop-blur-sm flex items-center gap-1">
-              <Bell className="w-3 h-3" /> Bildir
+              <Bell className="w-3 h-3" /> {t("notifyBadge")}
             </span>
           )}
         </div>
@@ -216,7 +217,7 @@ export default function PopularGameCard({ deal, featured = false }: Props) {
 
         {!isOnSale && !isFree && (
           <p className="text-xs text-amber-400/50 flex items-center gap-1">
-            <Bell className="w-3 h-3" /> İndirime girince bildir
+            <Bell className="w-3 h-3" /> {t("notifyShort")}
           </p>
         )}
       </div>

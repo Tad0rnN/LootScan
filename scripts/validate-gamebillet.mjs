@@ -151,6 +151,17 @@ async function main() {
     ...(cache.unmatched ?? []),
     ...unmatched.filter((t) => !cache.unmatched?.includes(t)),
   ];
+
+  // Runtime lookup format consumed by src/lib/cheapshark.ts store builder "23":
+  // byName maps normalized title -> plain product URL (affiliate param added at runtime),
+  // invalidNames lists titles confirmed 404 so they route to the search page instead.
+  const normalize = (t) => t.toLowerCase().replace(/[^a-z0-9]/g, "");
+  cache.byName = {};
+  cache.invalidNames = [];
+  for (const [title, r] of Object.entries(results)) {
+    if (r.status === "valid") cache.byName[normalize(title)] = `https://www.gamebillet.com/${r.slug}`;
+    else if (r.status === "invalid") cache.invalidNames.push(normalize(title));
+  }
   saveCache(cache);
 
   console.log("\n=== RESULTS ===");

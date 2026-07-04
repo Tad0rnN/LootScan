@@ -124,11 +124,11 @@ export default function GameDetailClient({ id, gameInfo, stores }: Props) {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-700/50 text-xs text-slate-400 uppercase tracking-wider">
-                <th className="text-left px-4 py-3">{t("store")}</th>
-                <th className="text-right px-4 py-3">{t("salePrice")}</th>
-                <th className="text-right px-4 py-3">{t("regularPrice")}</th>
-                <th className="text-right px-4 py-3">{t("savings")}</th>
-                <th className="px-4 py-3"></th>
+                <th className="text-left px-2 sm:px-4 py-3">{t("store")}</th>
+                <th className="text-right px-2 sm:px-4 py-3">{t("salePrice")}</th>
+                <th className="text-right px-2 sm:px-4 py-3 hidden sm:table-cell">{t("regularPrice")}</th>
+                <th className="text-right px-2 sm:px-4 py-3 hidden sm:table-cell">{t("savings")}</th>
+                <th className="px-2 sm:px-4 py-3"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700/30">
@@ -141,7 +141,7 @@ export default function GameDetailClient({ id, gameInfo, stores }: Props) {
                     key={deal.dealID}
                     className={`hover:bg-slate-700/20 transition-colors ${isCheapest ? "bg-brand-500/5" : ""}`}
                   >
-                    <td className="px-4 py-3">
+                    <td className="px-2 sm:px-4 py-3">
                       <div className="flex items-center gap-2">
                         <StoreLogo
                           storeID={deal.storeID}
@@ -160,22 +160,27 @@ export default function GameDetailClient({ id, gameInfo, stores }: Props) {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-right">
-                      <span className="font-bold text-brand-400">
-                        {formatPrice(deal.price)}
-                      </span>
+                    <td className="px-2 sm:px-4 py-3 text-right">
+                      <div className="flex flex-col items-end gap-0.5">
+                        <span className="font-bold text-brand-400">
+                          {formatPrice(deal.price)}
+                        </span>
+                        {dealSavings > 0 && (
+                          <span className="badge-savings sm:hidden">-{dealSavings}%</span>
+                        )}
+                      </div>
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-2 sm:px-4 py-3 text-right hidden sm:table-cell">
                       <span className="text-slate-400 text-sm">
                         {formatPrice(deal.retailPrice)}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-2 sm:px-4 py-3 text-right hidden sm:table-cell">
                       {dealSavings > 0 && (
                         <span className="badge-savings">-{dealSavings}%</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-2 sm:px-4 py-3 text-right">
                       <a
                         href={getDealUrl(deal.dealID, deal.storeID, gameInfo.info.title, gameInfo.info.steamAppID)}
                         target="_blank"

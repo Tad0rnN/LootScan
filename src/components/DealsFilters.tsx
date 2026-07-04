@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { Store } from "@/types";
-import { Filter, RotateCcw } from "lucide-react";
+import { Filter, RotateCcw, ChevronDown } from "lucide-react";
+import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
 
 interface Props {
@@ -32,6 +33,13 @@ export default function DealsFilters({ stores, currentParams }: Props) {
   const [upperPrice, setUpperPrice] = useState(currentParams.upperPrice ?? "");
   const [metacritic, setMetacritic] = useState(currentParams.metacritic ?? "");
   const [onSale, setOnSale] = useState(currentParams.onSale === "1");
+  // Filters start collapsed on mobile so deals are visible without scrolling past
+  // a full-screen filter panel; the toggle is hidden on lg+ where the sidebar fits.
+  const [isExpanded, setIsExpanded] = useState(false);
+  const hasActiveFilters = Boolean(
+    currentParams.title || currentParams.storeID || currentParams.upperPrice ||
+    currentParams.metacritic || currentParams.onSale
+  );
 
   const apply = () => {
     const params = new URLSearchParams();
@@ -51,18 +59,27 @@ export default function DealsFilters({ stores, currentParams }: Props) {
   };
 
   return (
-    <div className="card p-4 space-y-4 sticky top-20">
+    <div className="card p-4 lg:space-y-4 sticky top-20">
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-white flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setIsExpanded((v) => !v)}
+          className="font-semibold text-white flex items-center gap-2 lg:pointer-events-none"
+        >
           <Filter className="w-4 h-4 text-brand-400" />
           {t("title")}
-        </h2>
+          {hasActiveFilters && (
+            <span className="lg:hidden w-1.5 h-1.5 rounded-full bg-brand-400" />
+          )}
+          <ChevronDown className={clsx("w-4 h-4 text-slate-500 lg:hidden transition-transform", isExpanded && "rotate-180")} />
+        </button>
         <button onClick={reset} className="text-slate-400 hover:text-white text-xs flex items-center gap-1">
           <RotateCcw className="w-3 h-3" />
           {t("reset")}
         </button>
       </div>
 
+      <div className={clsx("space-y-4 mt-4 lg:mt-0", !isExpanded && "hidden lg:block")}>
       {/* Title search */}
       <div>
         <label className="text-xs text-slate-400 mb-1.5 block">{t("gameTitle")}</label>
@@ -147,6 +164,7 @@ export default function DealsFilters({ stores, currentParams }: Props) {
       <button onClick={apply} className="btn-primary w-full">
         {t("apply")}
       </button>
+      </div>
     </div>
   );
 }
