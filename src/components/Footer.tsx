@@ -28,13 +28,9 @@ export default async function Footer() {
             <Link href={`/${locale}/terms`} className="hover:text-slate-300 transition-colors">{t("terms")}</Link>
           </nav>
 
-          {/* Powered by */}
+          {/* Copyright */}
           <p className="text-slate-600 text-xs">
-            {t("poweredBy")}{" "}
-            <a href="https://www.cheapshark.com" className="hover:text-slate-400 transition-colors" target="_blank" rel="noreferrer">CheapShark</a>
-            {" & "}
-            <a href="https://ai.google.dev/" className="hover:text-slate-400 transition-colors" target="_blank" rel="noreferrer">Gemini AI</a>
-            {" · "}© {new Date().getFullYear()}
+            © {new Date().getFullYear()}
           </p>
         </div>
       </div>
