@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Crosshair } from "lucide-react";
 
 export default async function Footer() {
   const locale = await getLocale();
@@ -12,9 +11,8 @@ export default async function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Logo */}
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 bg-brand-500 rounded-lg flex items-center justify-center">
-              <Crosshair className="w-4 h-4 text-white" strokeWidth={2.5} />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icon.svg?v=4" alt="" width={28} height={28} className="w-7 h-7" />
             <span className="font-bold text-white tracking-tight">
               Loot<span className="text-brand-400">Scan</span>
             </span>

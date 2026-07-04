@@ -1,5 +1,11 @@
 <svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="256" height="256" rx="56" fill="#2CCB5C"/>
+  <defs>
+    <linearGradient id="lootscan-bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6FD873"/>
+      <stop offset="1" stop-color="#38AB6A"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="url(#lootscan-bg)"/>
   <circle cx="128" cy="128" r="64" stroke="white" stroke-width="20"/>
   <path d="M128 44V74" stroke="white" stroke-width="20" stroke-linecap="round"/>
   <path d="M128 182V212" stroke="white" stroke-width="20" stroke-linecap="round"/>

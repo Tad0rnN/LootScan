@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { Crosshair, Search, Heart, Zap, Menu, X, LogIn, LogOut, Gift, TrendingUp, Bot, Gamepad2, Target } from "lucide-react";
+import { Search, Heart, Zap, Menu, X, LogIn, LogOut, Gift, TrendingUp, Bot, Gamepad2, Target } from "lucide-react";
 import GameSearchModal from "./GameSearchModal";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
@@ -98,11 +98,11 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link href={`/${locale}`} className="flex shrink-0 items-center gap-2.5 group">
-            <div className="relative w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300"
-              style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)', boxShadow: '0 0 16px rgba(34,197,94,0.3)' }}>
+            <div className="relative w-8 h-8 transition-all duration-300" style={{ boxShadow: '0 0 16px rgba(34,197,94,0.3)', borderRadius: '7px' }}>
               <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 style={{ boxShadow: '0 0 24px rgba(34,197,94,0.5)' }} />
-              <Crosshair className="w-4 h-4 text-white relative z-10" strokeWidth={2.5} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/icon.svg?v=4" alt="LootScan" width={32} height={32} className="w-8 h-8" />
             </div>
             <span className="font-bold text-[1.1rem] tracking-tight">
               <span className="text-white">Loot</span><span className="text-brand-400">Scan</span>
