@@ -10,8 +10,13 @@ import {
 } from "@/lib/seo-landing";
 import { getDeals, deduplicateDeals } from "@/lib/cheapshark";
 import DealCard from "@/components/DealCard";
-
-const SITE = "https://lootscan.co";
+import JsonLd from "@/components/JsonLd";
+import {
+  SITE,
+  buildAlternates,
+  itemListSchema,
+  breadcrumbSchema,
+} from "@/lib/seo";
 
 // Regenerate at most once per 5 min
 export const revalidate = 300;
@@ -37,20 +42,18 @@ export async function generateMetadata({
   if (!landing) return {};
   const copy = getSeoCopy(landing, locale);
 
-  const canonical = `${SITE}/${locale}/deals/${slug}`;
-  const languages: Record<string, string> = {};
-  for (const l of routing.locales) {
-    languages[l] = `${SITE}/${l}/deals/${slug}`;
-  }
+  const alternates = buildAlternates(locale, `/deals/${slug}`);
 
   return {
-    title: copy.title,
+    // copy.title already ends with "| LootScan" — use absolute to
+    // avoid the layout template appending the suffix a second time.
+    title: { absolute: copy.title },
     description: copy.description,
-    alternates: { canonical, languages },
+    alternates,
     openGraph: {
       title: copy.title,
       description: copy.description,
-      url: canonical,
+      url: alternates.canonical,
       siteName: "LootScan",
       type: "website",
     },
@@ -80,8 +83,29 @@ export default async function SeoDealsPage({
     deals = [];
   }
 
+  const pageTitle = copy.title.split(" | ")[0];
+  const structuredData: Array<Record<string, unknown>> = [
+    breadcrumbSchema([
+      { name: "Home", url: `${SITE}/${locale}` },
+      { name: "Deals", url: `${SITE}/${locale}/deals` },
+      { name: pageTitle, url: `${SITE}/${locale}/deals/${slug}` },
+    ]),
+  ];
+  if (deals.length > 0) {
+    structuredData.push(
+      itemListSchema(
+        pageTitle,
+        deals.slice(0, 30).map((deal) => ({
+          name: deal.title,
+          url: `${SITE}/${locale}/game/${deal.gameID}`,
+        }))
+      )
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <JsonLd data={structuredData} />
       <Link
         href={`/${locale}/deals`}
         className="inline-flex items-center gap-2 text-slate-400 hover:text-white text-sm mb-6 transition-colors"

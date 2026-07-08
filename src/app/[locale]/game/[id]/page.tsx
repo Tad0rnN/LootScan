@@ -4,10 +4,14 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getGameInfo, getStores, formatPrice } from "@/lib/cheapshark";
 import { getFallbackGameInfo, fallbackStores } from "@/lib/fallback-data";
-import { routing } from "@/i18n/routing";
+import JsonLd from "@/components/JsonLd";
+import {
+  SITE,
+  buildAlternates,
+  productSchema,
+  breadcrumbSchema,
+} from "@/lib/seo";
 import GameDetailClient from "./GameDetailClient";
-
-const SITE = "https://lootscan.co";
 
 // Cache each game page on the edge for 5 minutes
 export const revalidate = 300;
@@ -43,20 +47,18 @@ export async function generateMetadata({
   const title = `${info.info.title}${priceFragment}${savingsFragment} — Best Deals | LootScan`;
   const description = `Compare prices for ${info.info.title} across Steam, Epic, GOG and more. Find the cheapest deal${priceFragment} and track price history.`;
 
-  const canonical = `${SITE}/${locale}/game/${id}`;
-  const languages: Record<string, string> = {};
-  for (const l of routing.locales) {
-    languages[l] = `${SITE}/${l}/game/${id}`;
-  }
+  const alternates = buildAlternates(locale, `/game/${id}`);
 
   return {
-    title,
+    // title already ends with "| LootScan" — absolute avoids the
+    // layout template doubling the suffix.
+    title: { absolute: title },
     description,
-    alternates: { canonical, languages },
+    alternates,
     openGraph: {
       title,
       description,
-      url: canonical,
+      url: alternates.canonical,
       siteName: "LootScan",
       type: "website",
       images: info.info.thumb ? [{ url: info.info.thumb }] : undefined,
@@ -101,11 +103,39 @@ export default async function GamePage({
     );
   }
 
+  const prices = (gameInfo.deals ?? [])
+    .map((d) => parseFloat(d.price))
+    .filter((p) => !Number.isNaN(p));
+  const structuredData: Array<Record<string, unknown>> = [];
+  if (prices.length > 0) {
+    structuredData.push(
+      productSchema({
+        name: gameInfo.info.title,
+        description: `Compare prices for ${gameInfo.info.title} across Steam, Epic, GOG and more.`,
+        image: gameInfo.info.thumb || undefined,
+        url: `${SITE}/${locale}/game/${id}`,
+        lowPrice: Math.min(...prices),
+        highPrice: Math.max(...prices),
+        offerCount: prices.length,
+      })
+    );
+  }
+  structuredData.push(
+    breadcrumbSchema([
+      { name: "Home", url: `${SITE}/${locale}` },
+      { name: "Deals", url: `${SITE}/${locale}/deals` },
+      { name: gameInfo.info.title, url: `${SITE}/${locale}/game/${id}` },
+    ])
+  );
+
   return (
-    <GameDetailClient
-      id={id}
-      gameInfo={gameInfo}
-      stores={stores.filter((s) => s.isActive === 1)}
-    />
+    <>
+      {structuredData.length > 0 && <JsonLd data={structuredData} />}
+      <GameDetailClient
+        id={id}
+        gameInfo={gameInfo}
+        stores={stores.filter((s) => s.isActive === 1)}
+      />
+    </>
   );
 }

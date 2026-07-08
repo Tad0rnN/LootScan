@@ -1,8 +1,20 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Zap, Search, Heart, Sparkles, ArrowRight } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import HomeDeals from "@/components/HomeDeals";
 import NewsletterSignup from "@/components/NewsletterSignup";
+import JsonLd from "@/components/JsonLd";
+import { buildAlternates, organizationSchema, websiteSchema } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return { alternates: buildAlternates(locale, "") };
+}
 
 export default async function HomePage() {
   const t = await getTranslations("home");
@@ -10,6 +22,7 @@ export default async function HomePage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <JsonLd data={[websiteSchema(locale), organizationSchema()]} />
 
       {/* ── Hero ── */}
       <section className="relative text-center pt-20 pb-16 overflow-hidden">

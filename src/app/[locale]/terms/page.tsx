@@ -1,5 +1,22 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { FileText } from "lucide-react";
+import { buildAlternates } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "terms" });
+  const title = t("title");
+  return {
+    title,
+    description: `${title} — LootScan`,
+    alternates: buildAlternates(locale, "/terms"),
+  };
+}
 
 export default async function TermsPage() {
   const t = await getTranslations("terms");

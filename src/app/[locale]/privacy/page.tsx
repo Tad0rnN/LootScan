@@ -1,5 +1,23 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Shield } from "lucide-react";
+import { buildAlternates } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "privacy" });
+  const title = t("title");
+  return {
+    title,
+    description: `${title} — LootScan`,
+    alternates: buildAlternates(locale, "/privacy"),
+    robots: { index: true, follow: true },
+  };
+}
 
 export default async function PrivacyPage() {
   const t = await getTranslations("privacy");

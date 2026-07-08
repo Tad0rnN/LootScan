@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Search, Sparkles, Loader2 } from "lucide-react";
 import DealCard from "./DealCard";
 import type { AISearchResponse, Deal, GameInfo, SearchResult } from "@/types";
@@ -391,6 +392,20 @@ export default function SearchInterface() {
       setLoading(false);
     }
   };
+
+  // Support shareable / deep-linked searches: /search?q=…
+  // Also makes the WebSite SearchAction (sitelinks searchbox) functional.
+  const searchParams = useSearchParams();
+  const didRunInitialQuery = useRef(false);
+  useEffect(() => {
+    if (didRunInitialQuery.current) return;
+    const initialQuery = searchParams.get("q")?.trim();
+    if (initialQuery) {
+      didRunInitialQuery.current = true;
+      search(initialQuery);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   return (
     <div>

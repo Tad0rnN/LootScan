@@ -1,6 +1,26 @@
+import type { Metadata } from "next";
+import { Suspense } from "react";
 import SearchInterface from "@/components/SearchInterface";
 import InteractiveShader from "@/components/ui/InteractiveShader";
 import { getTranslations } from "next-intl/server";
+import { buildAlternates } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "search" });
+  const title = t("title");
+  const description = t("subtitle");
+  return {
+    title,
+    description,
+    alternates: buildAlternates(locale, "/search"),
+    openGraph: { title: `${title} | LootScan`, description },
+  };
+}
 
 export default async function SearchPage() {
   const t = await getTranslations("search");
@@ -19,7 +39,9 @@ export default async function SearchPage() {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-        <SearchInterface />
+        <Suspense fallback={null}>
+          <SearchInterface />
+        </Suspense>
       </div>
     </div>
   );
