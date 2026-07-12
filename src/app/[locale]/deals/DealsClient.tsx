@@ -13,11 +13,13 @@ import {
   fetchStores as fetchStoresApi,
   fetchGamesplanetDeals as fetchGamesplanetDealsApi,
   fetchGamersgateDeals as fetchGamersgateDealsApi,
+  fetchIndiegalaDeals as fetchIndiegalaDealsApi,
 } from "@/lib/fetch-deals";
 
 // Mağazalar CheapShark yerine kendi affiliate feed'imizden besleniyorsa buraya eklenir.
 const OWN_SOURCE_FETCHERS: Record<string, (params: URLSearchParams) => Promise<unknown>> = {
   "27": fetchGamesplanetDealsApi, // Gamesplanet
+  "30": fetchIndiegalaDealsApi,   // IndieGala
   "2": fetchGamersgateDealsApi,   // GamersGate
 };
 

@@ -59,6 +59,15 @@ export async function fetchGamersgateDeals(
   return [];
 }
 
+export async function fetchIndiegalaDeals(
+  params?: URLSearchParams
+): Promise<unknown> {
+  const qs = params ? `?${params}` : "";
+  const res = await tryFetch(`/api/deals/indiegala${qs}`);
+  if (res) return res.json();
+  return [];
+}
+
 export async function fetchStores(): Promise<unknown> {
   const res = await tryFetch(`/api/stores`);
   if (res) return res.json();

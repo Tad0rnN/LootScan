@@ -152,3 +152,40 @@ alter table public.gamersgate_deals add column if not exists normalized_title
 create index if not exists gamersgate_deals_region_idx on public.gamersgate_deals (region);
 create index if not exists gamersgate_deals_savings_idx on public.gamersgate_deals (region, savings_percent desc);
 create index if not exists gamersgate_deals_normalized_title_idx on public.gamersgate_deals (region, normalized_title);
+
+-- IndieGala product feed (our own affiliate data, synced from the official
+-- RSS feed at https://www.indiegala.com/store_games_rss every few hours).
+-- Single feed covers USD/EUR/GBP in one response — no per-region fetches
+-- needed like Gamesplanet/GamersGate, so no region column here.
+create table if not exists public.indiegala_deals (
+  sku             text not null primary key,
+  title           text not null,
+  price           numeric not null,
+  price_base      numeric not null,
+  currency        text not null,
+  link            text not null,
+  publisher       text,
+  is_dlc          boolean not null default false,
+  thumb           text,
+  is_available    boolean not null default true,
+  is_on_sale      boolean generated always as (price < price_base) stored,
+  savings_percent numeric generated always as (
+                    case when price_base > 0
+                      then round(((price_base - price) / price_base) * 100, 2)
+                      else 0
+                    end
+                  ) stored,
+  normalized_title text generated always as (lower(regexp_replace(title, '[^a-zA-Z0-9]+', '', 'g'))) stored,
+  updated_at      timestamptz not null default now()
+);
+
+alter table public.indiegala_deals enable row level security;
+
+create policy "Anyone can view indiegala deals"
+  on public.indiegala_deals for select using (true);
+
+-- No insert/update/delete policies on purpose:
+-- rows are written only by the sync cron job using the service role.
+
+create index if not exists indiegala_deals_savings_idx on public.indiegala_deals (savings_percent desc);
+create index if not exists indiegala_deals_normalized_title_idx on public.indiegala_deals (normalized_title);

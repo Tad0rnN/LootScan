@@ -45,6 +45,7 @@ const nextConfig = {
       // IndieGala
       { protocol: "https", hostname: "www.indiegalacdn.com" },
       { protocol: "https", hostname: "**.indiegalacdn.com" },
+      { protocol: "https", hostname: "www.indiegala.com" },
       // Gamesplanet
       { protocol: "https", hostname: "**.gamesplanet.com" },
     ],

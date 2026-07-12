@@ -13,6 +13,10 @@ import {
   getGamersgateDealByTitle,
   getGamersgateGameBySku,
 } from "@/lib/gamersgate-deals";
+import {
+  getIndiegalaDealByTitle,
+  getIndiegalaGameBySku,
+} from "@/lib/indiegala-deals";
 import { getSteamStorePrice } from "@/lib/steam-price";
 import JsonLd from "@/components/JsonLd";
 import {
@@ -27,29 +31,30 @@ import type { GameInfo } from "@/types";
 // Cache each game page on the edge for 5 minutes
 export const revalidate = 300;
 
-/** Cross-references our own Gamesplanet + GamersGate catalogs (by Steam App
- *  ID first, normalized title second), plus the real US Steam Store price
- *  (official appdetails API) whenever a Steam App ID is known — so this page
- *  shows a real multi-store comparison even when CheapShark is unavailable
- *  and its data falls back to a single-store dataset. */
+/** Cross-references our own Gamesplanet, GamersGate and IndieGala catalogs
+ *  (by Steam App ID first, normalized title second), plus the real US Steam
+ *  Store price (official appdetails API) whenever a Steam App ID is known —
+ *  so this page shows a real multi-store comparison even when CheapShark is
+ *  unavailable and its data falls back to a single-store dataset. */
 async function enrichWithOwnSources(gameInfo: GameInfo): Promise<GameInfo> {
   const { steamAppID, title } = gameInfo.info;
+  const hasStore = (storeID: string) => gameInfo.deals.some((d) => d.storeID === storeID);
 
-  const [gamesplanetDeal, gamersgateDeal] = await Promise.all([
-    gameInfo.deals.some((d) => d.storeID === "27")
+  const [gamesplanetDeal, gamersgateDeal, indiegalaDeal] = await Promise.all([
+    hasStore("27")
       ? Promise.resolve(null)
       : (steamAppID ? getGamesplanetDealBySteamAppId(steamAppID) : getGamesplanetDealByTitle(title)).catch(() => null),
-    gameInfo.deals.some((d) => d.storeID === "2")
-      ? Promise.resolve(null)
-      : getGamersgateDealByTitle(title).catch(() => null),
+    hasStore("2") ? Promise.resolve(null) : getGamersgateDealByTitle(title).catch(() => null),
+    hasStore("30") ? Promise.resolve(null) : getIndiegalaDealByTitle(title).catch(() => null),
   ]);
 
-  const additions = [gamesplanetDeal, gamersgateDeal].filter((d): d is NonNullable<typeof d> => d !== null);
+  const additions = [gamesplanetDeal, gamersgateDeal, indiegalaDeal].filter(
+    (d): d is NonNullable<typeof d> => d !== null
+  );
   const resolvedSteamAppID = steamAppID ?? gamesplanetDeal?.steamAppID ?? null;
 
-  let steamDeal = null;
-  if (resolvedSteamAppID && !gameInfo.deals.some((d) => d.storeID === "1")) {
-    steamDeal = await getSteamStorePrice(resolvedSteamAppID).catch(() => null);
+  if (resolvedSteamAppID && !hasStore("1")) {
+    const steamDeal = await getSteamStorePrice(resolvedSteamAppID).catch(() => null);
     if (steamDeal) additions.push(steamDeal);
   }
 
@@ -58,26 +63,24 @@ async function enrichWithOwnSources(gameInfo: GameInfo): Promise<GameInfo> {
   return { ...gameInfo, deals: [...gameInfo.deals, ...additions] };
 }
 
-/** Resolves a gameID to a full GameInfo, regardless of which source it
- *  originated from: `gp-<uid>` (Gamesplanet), `gg-<sku>` (GamersGate), or a
- *  plain CheapShark ID (with a fallback dataset if CheapShark is down). In
- *  every case the result is cross-referenced against our other own sources
- *  so the price comparison table reflects every store we actually have
- *  data for, not just the one the page happened to originate from. */
-async function resolveGameInfo(id: string): Promise<GameInfo | null> {
-  if (id.startsWith("gp-")) {
-    const base = await getGamesplanetGameByUid(id.slice(3)).catch(() => null);
-    if (!base) return null;
-    const gameInfo: GameInfo = {
-      info: { title: base.title, steamAppID: base.steamAppID, thumb: base.thumb },
-      cheapestPriceEver: { price: base.deal.price, date: Math.floor(Date.now() / 1000) },
-      deals: [base.deal],
-    };
-    return enrichWithOwnSources(gameInfo);
-  }
+// Own-source gameID prefixes and how to load their base record.
+const OWN_SOURCE_LOOKUPS: Record<string, (localId: string) => Promise<Awaited<ReturnType<typeof getGamesplanetGameByUid>>>> = {
+  "gp-": getGamesplanetGameByUid,
+  "gg-": getGamersgateGameBySku,
+  "ig-": getIndiegalaGameBySku,
+};
 
-  if (id.startsWith("gg-")) {
-    const base = await getGamersgateGameBySku(id.slice(3)).catch(() => null);
+/** Resolves a gameID to a full GameInfo, regardless of which source it
+ *  originated from: `gp-<uid>` (Gamesplanet), `gg-<sku>` (GamersGate),
+ *  `ig-<sku>` (IndieGala), or a plain CheapShark ID (with a fallback dataset
+ *  if CheapShark is down). In every case the result is cross-referenced
+ *  against our other own sources so the price comparison table reflects
+ *  every store we actually have data for, not just the one the page
+ *  happened to originate from. */
+async function resolveGameInfo(id: string): Promise<GameInfo | null> {
+  const prefix = Object.keys(OWN_SOURCE_LOOKUPS).find((p) => id.startsWith(p));
+  if (prefix) {
+    const base = await OWN_SOURCE_LOOKUPS[prefix](id.slice(prefix.length)).catch(() => null);
     if (!base) return null;
     const gameInfo: GameInfo = {
       info: { title: base.title, steamAppID: base.steamAppID, thumb: base.thumb },
