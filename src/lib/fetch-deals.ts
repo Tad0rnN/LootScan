@@ -41,6 +41,15 @@ export async function fetchDeals(
   return getFallbackDeals(p);
 }
 
+export async function fetchGamesplanetDeals(
+  params?: URLSearchParams
+): Promise<unknown> {
+  const qs = params ? `?${params}` : "";
+  const res = await tryFetch(`/api/deals/gamesplanet${qs}`);
+  if (res) return res.json();
+  return [];
+}
+
 export async function fetchStores(): Promise<unknown> {
   const res = await tryFetch(`/api/stores`);
   if (res) return res.json();

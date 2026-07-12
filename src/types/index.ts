@@ -18,6 +18,10 @@ export interface Deal {
   lastChange: number;
   dealRating: string;
   thumb: string;
+  /** Set only for deals sourced directly from our own store feeds (e.g. Gamesplanet).
+   *  When present, points straight to our affiliate link instead of routing through
+   *  CheapShark's game-detail lookup, which doesn't know about these locally-sourced IDs. */
+  directUrl?: string;
 }
 
 export interface Store {

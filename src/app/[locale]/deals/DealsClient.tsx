@@ -8,7 +8,9 @@ import { useTranslations, useLocale } from "next-intl";
 import { Loader2, AlertCircle, RefreshCw } from "lucide-react";
 import type { Deal, Store } from "@/types";
 import Link from "next/link";
-import { fetchDeals as fetchDealsApi, fetchStores as fetchStoresApi } from "@/lib/fetch-deals";
+import { fetchDeals as fetchDealsApi, fetchStores as fetchStoresApi, fetchGamesplanetDeals as fetchGamesplanetDealsApi } from "@/lib/fetch-deals";
+
+const GAMESPLANET_STORE_ID = "27";
 
 function SkeletonCard() {
   return (
@@ -90,7 +92,19 @@ export default function DealsPage() {
     try {
       let result: Deal[] = [];
 
-      if (hasFilters || page > 0) {
+      if (currentParams.storeID === GAMESPLANET_STORE_ID) {
+        // Gamesplanet: CheapShark yerine kendi affiliate feed'imizden çekiyoruz
+        const params = new URLSearchParams();
+        if (currentParams.sortBy)     params.set("sortBy",     currentParams.sortBy);
+        if (currentParams.upperPrice) params.set("upperPrice", currentParams.upperPrice);
+        if (currentParams.lowerPrice) params.set("lowerPrice", currentParams.lowerPrice);
+        if (currentParams.title)      params.set("title",      currentParams.title);
+        if (currentParams.onSale)     params.set("onSale",     currentParams.onSale);
+        params.set("pageNumber", String(page));
+        params.set("pageSize", "24");
+        const data = await fetchGamesplanetDealsApi(params);
+        result = Array.isArray(data) ? data : [];
+      } else if (hasFilters || page > 0) {
         // Filtreli / sayfalı: parametreleri doğrudan CheapShark'a ilet
         const params = new URLSearchParams();
         if (currentParams.storeID)    params.set("storeID",    currentParams.storeID);
@@ -196,7 +210,7 @@ export default function DealsPage() {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                 {deals.map((deal) => (
-                  <DealCard key={deal.dealID} deal={deal} />
+                  <DealCard key={deal.dealID} deal={deal} externalHref={deal.directUrl} />
                 ))}
               </div>
 
