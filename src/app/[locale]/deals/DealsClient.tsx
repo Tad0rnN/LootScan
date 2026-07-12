@@ -8,9 +8,18 @@ import { useTranslations, useLocale } from "next-intl";
 import { Loader2, AlertCircle, RefreshCw } from "lucide-react";
 import type { Deal, Store } from "@/types";
 import Link from "next/link";
-import { fetchDeals as fetchDealsApi, fetchStores as fetchStoresApi, fetchGamesplanetDeals as fetchGamesplanetDealsApi } from "@/lib/fetch-deals";
+import {
+  fetchDeals as fetchDealsApi,
+  fetchStores as fetchStoresApi,
+  fetchGamesplanetDeals as fetchGamesplanetDealsApi,
+  fetchGamersgateDeals as fetchGamersgateDealsApi,
+} from "@/lib/fetch-deals";
 
-const GAMESPLANET_STORE_ID = "27";
+// Mağazalar CheapShark yerine kendi affiliate feed'imizden besleniyorsa buraya eklenir.
+const OWN_SOURCE_FETCHERS: Record<string, (params: URLSearchParams) => Promise<unknown>> = {
+  "27": fetchGamesplanetDealsApi, // Gamesplanet
+  "2": fetchGamersgateDealsApi,   // GamersGate
+};
 
 function SkeletonCard() {
   return (
@@ -91,9 +100,9 @@ export default function DealsPage() {
     setError(null);
     try {
       let result: Deal[] = [];
+      const ownSourceFetcher = currentParams.storeID ? OWN_SOURCE_FETCHERS[currentParams.storeID] : undefined;
 
-      if (currentParams.storeID === GAMESPLANET_STORE_ID) {
-        // Gamesplanet: CheapShark yerine kendi affiliate feed'imizden çekiyoruz
+      if (ownSourceFetcher) {
         const params = new URLSearchParams();
         if (currentParams.sortBy)     params.set("sortBy",     currentParams.sortBy);
         if (currentParams.upperPrice) params.set("upperPrice", currentParams.upperPrice);
@@ -102,7 +111,7 @@ export default function DealsPage() {
         if (currentParams.onSale)     params.set("onSale",     currentParams.onSale);
         params.set("pageNumber", String(page));
         params.set("pageSize", "24");
-        const data = await fetchGamesplanetDealsApi(params);
+        const data = await ownSourceFetcher(params);
         result = Array.isArray(data) ? data : [];
       } else if (hasFilters || page > 0) {
         // Filtreli / sayfalı: parametreleri doğrudan CheapShark'a ilet

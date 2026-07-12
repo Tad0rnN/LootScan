@@ -50,6 +50,15 @@ export async function fetchGamesplanetDeals(
   return [];
 }
 
+export async function fetchGamersgateDeals(
+  params?: URLSearchParams
+): Promise<unknown> {
+  const qs = params ? `?${params}` : "";
+  const res = await tryFetch(`/api/deals/gamersgate${qs}`);
+  if (res) return res.json();
+  return [];
+}
+
 export async function fetchStores(): Promise<unknown> {
   const res = await tryFetch(`/api/stores`);
   if (res) return res.json();

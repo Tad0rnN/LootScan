@@ -97,3 +97,36 @@ create policy "Anyone can view gamesplanet deals"
 create index if not exists gamesplanet_deals_region_idx on public.gamesplanet_deals (region);
 create index if not exists gamesplanet_deals_steam_app_id_idx on public.gamesplanet_deals (steam_app_id);
 create index if not exists gamesplanet_deals_savings_idx on public.gamesplanet_deals (region, savings_percent desc);
+
+-- GamersGate product feed (our own affiliate data, synced from
+-- https://www.gamersgate.com/api/offers/ every few hours)
+create table if not exists public.gamersgate_deals (
+  id              bigint not null primary key,
+  sku             text not null,
+  title           text not null,
+  price           numeric not null,
+  price_base      numeric not null,
+  currency        text not null,
+  link            text not null,
+  publisher       text,
+  thumb           text,
+  is_available    boolean not null default true,
+  is_on_sale      boolean generated always as (price < price_base) stored,
+  savings_percent numeric generated always as (
+                    case when price_base > 0
+                      then round(((price_base - price) / price_base) * 100, 2)
+                      else 0
+                    end
+                  ) stored,
+  updated_at      timestamptz not null default now()
+);
+
+alter table public.gamersgate_deals enable row level security;
+
+create policy "Anyone can view gamersgate deals"
+  on public.gamersgate_deals for select using (true);
+
+-- No insert/update/delete policies on purpose:
+-- rows are written only by the sync cron job using the service role.
+
+create index if not exists gamersgate_deals_savings_idx on public.gamersgate_deals (savings_percent desc);
