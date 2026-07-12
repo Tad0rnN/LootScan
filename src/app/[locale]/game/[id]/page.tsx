@@ -13,6 +13,7 @@ import {
   getGamersgateDealByTitle,
   getGamersgateGameBySku,
 } from "@/lib/gamersgate-deals";
+import { getSteamStorePrice } from "@/lib/steam-price";
 import JsonLd from "@/components/JsonLd";
 import {
   SITE,
@@ -27,9 +28,10 @@ import type { GameInfo } from "@/types";
 export const revalidate = 300;
 
 /** Cross-references our own Gamesplanet + GamersGate catalogs (by Steam App
- *  ID first, normalized title second) so this page shows a real multi-store
- *  comparison even when CheapShark is unavailable and its data falls back
- *  to a single-store dataset. */
+ *  ID first, normalized title second), plus the real US Steam Store price
+ *  (official appdetails API) whenever a Steam App ID is known — so this page
+ *  shows a real multi-store comparison even when CheapShark is unavailable
+ *  and its data falls back to a single-store dataset. */
 async function enrichWithOwnSources(gameInfo: GameInfo): Promise<GameInfo> {
   const { steamAppID, title } = gameInfo.info;
 
@@ -43,6 +45,14 @@ async function enrichWithOwnSources(gameInfo: GameInfo): Promise<GameInfo> {
   ]);
 
   const additions = [gamesplanetDeal, gamersgateDeal].filter((d): d is NonNullable<typeof d> => d !== null);
+  const resolvedSteamAppID = steamAppID ?? gamesplanetDeal?.steamAppID ?? null;
+
+  let steamDeal = null;
+  if (resolvedSteamAppID && !gameInfo.deals.some((d) => d.storeID === "1")) {
+    steamDeal = await getSteamStorePrice(resolvedSteamAppID).catch(() => null);
+    if (steamDeal) additions.push(steamDeal);
+  }
+
   if (additions.length === 0) return gameInfo;
 
   return { ...gameInfo, deals: [...gameInfo.deals, ...additions] };

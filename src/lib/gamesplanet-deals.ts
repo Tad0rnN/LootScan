@@ -64,6 +64,7 @@ export interface OwnSourceGameDeal {
   retailPrice: string;
   savings: string;
   directUrl: string;
+  steamAppID?: string | null;
 }
 
 export interface OwnSourceGameBase {
@@ -94,6 +95,7 @@ function toOwnSourceDeal(row: MatchRow): OwnSourceGameDeal {
     retailPrice: row.price_base.toFixed(2),
     savings: row.savings_percent.toFixed(2),
     directUrl: row.link,
+    steamAppID: row.steam_app_id,
   };
 }
 
