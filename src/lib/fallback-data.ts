@@ -680,8 +680,17 @@ export function getFallbackDeals(params: {
   });
 
   deals = sortDeals(deals, params.sortBy ?? undefined);
-  const start = Math.max(pageNumber, 0) * Math.max(pageSize, 1);
-  return deals.slice(start, start + Math.max(pageSize, 1));
+  if (deals.length === 0) return [];
+
+  // Wrap the requested page around the available fallback pool instead of
+  // slicing past the end. The pool is small and static, so an out-of-range
+  // pageNumber (e.g. a randomly picked page while CheapShark is unreachable)
+  // would otherwise always resolve to an empty page.
+  const size = Math.max(pageSize, 1);
+  const totalPages = Math.max(Math.ceil(deals.length / size), 1);
+  const wrappedPage = Math.max(pageNumber, 0) % totalPages;
+  const start = wrappedPage * size;
+  return deals.slice(start, start + size);
 }
 
 export const fallbackSearchResults: SearchResult[] = fallbackDeals.map((deal) => ({
