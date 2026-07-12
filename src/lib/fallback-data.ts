@@ -10,6 +10,7 @@ export const fallbackStores: Store[] = [
   { storeID: "23", storeName: "GameBillet", isActive: 1, images: { banner: "", logo: "", icon: "" } },
   { storeID: "25", storeName: "Epic Games Store", isActive: 1, images: { banner: "", logo: "", icon: "" } },
   { storeID: "27", storeName: "Gamesplanet", isActive: 1, images: { banner: "", logo: "", icon: "" } },
+  { storeID: "30", storeName: "IndieGala", isActive: 1, images: { banner: "", logo: "", icon: "" } },
   { storeID: "35", storeName: "DreamGame", isActive: 1, images: { banner: "", logo: "", icon: "" } },
 ];
 
