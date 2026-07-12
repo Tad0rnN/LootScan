@@ -8,6 +8,7 @@ import RegionalSteamPrice from "@/components/RegionalSteamPrice";
 import GameDealInsights from "@/components/GameDealInsights";
 import { trackAffiliateClick } from "@/lib/analytics";
 import { formatPrice, getStoreLogoUrl, getDealUrl } from "@/lib/cheapshark";
+import { getAffiliateLink } from "@/lib/affiliate";
 import { useTranslations, useLocale } from "next-intl";
 import type { GameInfo, Store } from "@/types";
 import SafeImage from "@/components/ui/SafeImage";
@@ -137,7 +138,8 @@ export default function GameDetailClient({ id, gameInfo, stores }: Props) {
                 const dealSavings = Math.round(parseFloat(deal.savings));
                 const isCheapest = deal.dealID === cheapestDeal.dealID;
                 const dealUrl = deal.directUrl
-                  ?? getDealUrl(deal.dealID, deal.storeID, gameInfo.info.title, gameInfo.info.steamAppID);
+                  ? getAffiliateLink(deal.directUrl)
+                  : getDealUrl(deal.dealID, deal.storeID, gameInfo.info.title, gameInfo.info.steamAppID);
                 return (
                   <tr
                     key={deal.dealID}
