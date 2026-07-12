@@ -94,19 +94,24 @@ create policy "Anyone can view gamesplanet deals"
 -- No insert/update/delete policies on purpose:
 -- rows are written only by the sync cron job using the service role.
 
+-- Migration: normalized_title lets us cross-reference the same game across
+-- stores (Gamesplanet <-> GamersGate) when Steam App IDs aren't available
+-- on both sides.
+alter table public.gamesplanet_deals add column if not exists normalized_title
+  text generated always as (lower(regexp_replace(title, '[^a-zA-Z0-9]+', '', 'g'))) stored;
+
 create index if not exists gamesplanet_deals_region_idx on public.gamesplanet_deals (region);
 create index if not exists gamesplanet_deals_steam_app_id_idx on public.gamesplanet_deals (steam_app_id);
 create index if not exists gamesplanet_deals_savings_idx on public.gamesplanet_deals (region, savings_percent desc);
+create index if not exists gamesplanet_deals_normalized_title_idx on public.gamesplanet_deals (region, normalized_title);
 
 -- GamersGate product feed (our own affiliate data, synced from the official
 -- affiliate product feed at https://feeds.gamersgate.com/feeds/products
--- every few hours). Replaces an earlier version of this table that was
--- populated by scraping the public /api/offers/ catalog page-by-page —
--- the real feed covers the full catalog (not just on-sale items) with a
--- proper suggested retail price, so the table is recreated from scratch.
-drop table if exists public.gamersgate_deals;
-
-create table public.gamersgate_deals (
+-- every few hours). An earlier version of this table was populated by
+-- scraping the public /api/offers/ catalog page-by-page and was dropped +
+-- recreated once (2026-07-12) to switch to the real feed's schema — that
+-- migration already ran, so table creation below is idempotent going forward.
+create table if not exists public.gamersgate_deals (
   sku             text not null,
   region          text not null check (region in ('USA', 'GBR', 'DEU', 'FRA', 'CAN', 'AUS')),
   title           text not null,
@@ -126,6 +131,7 @@ create table public.gamersgate_deals (
                       else 0
                     end
                   ) stored,
+  normalized_title text generated always as (lower(regexp_replace(title, '[^a-zA-Z0-9]+', '', 'g'))) stored,
   updated_at      timestamptz not null default now(),
   primary key (sku, region)
 );
@@ -138,5 +144,11 @@ create policy "Anyone can view gamersgate deals"
 -- No insert/update/delete policies on purpose:
 -- rows are written only by the sync cron job using the service role.
 
+-- Migration: normalized_title lets us cross-reference the same game across
+-- stores (GamersGate <-> Gamesplanet) when Steam App IDs aren't available.
+alter table public.gamersgate_deals add column if not exists normalized_title
+  text generated always as (lower(regexp_replace(title, '[^a-zA-Z0-9]+', '', 'g'))) stored;
+
 create index if not exists gamersgate_deals_region_idx on public.gamersgate_deals (region);
 create index if not exists gamersgate_deals_savings_idx on public.gamersgate_deals (region, savings_percent desc);
+create index if not exists gamersgate_deals_normalized_title_idx on public.gamersgate_deals (region, normalized_title);

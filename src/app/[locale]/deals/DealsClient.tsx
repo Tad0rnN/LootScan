@@ -219,7 +219,7 @@ export default function DealsPage() {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                 {deals.map((deal) => (
-                  <DealCard key={deal.dealID} deal={deal} externalHref={deal.directUrl} />
+                  <DealCard key={deal.dealID} deal={deal} />
                 ))}
               </div>
 

@@ -136,6 +136,8 @@ export default function GameDetailClient({ id, gameInfo, stores }: Props) {
                 const store = storeMap[deal.storeID];
                 const dealSavings = Math.round(parseFloat(deal.savings));
                 const isCheapest = deal.dealID === cheapestDeal.dealID;
+                const dealUrl = deal.directUrl
+                  ?? getDealUrl(deal.dealID, deal.storeID, gameInfo.info.title, gameInfo.info.steamAppID);
                 return (
                   <tr
                     key={deal.dealID}
@@ -182,7 +184,7 @@ export default function GameDetailClient({ id, gameInfo, stores }: Props) {
                     </td>
                     <td className="px-2 sm:px-4 py-3 text-right">
                       <a
-                        href={getDealUrl(deal.dealID, deal.storeID, gameInfo.info.title, gameInfo.info.steamAppID)}
+                        href={dealUrl}
                         target="_blank"
                         rel="noreferrer"
                         onClick={() =>
@@ -191,7 +193,7 @@ export default function GameDetailClient({ id, gameInfo, stores }: Props) {
                             game_id: id,
                             title: gameInfo.info.title,
                             store_id: deal.storeID,
-                            destination_url: getDealUrl(deal.dealID, deal.storeID, gameInfo.info.title, gameInfo.info.steamAppID),
+                            destination_url: dealUrl,
                             sale_price: deal.price,
                             placement: "game_detail",
                           })

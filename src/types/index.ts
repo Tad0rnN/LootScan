@@ -51,6 +51,10 @@ export interface GameInfo {
     price: string;
     retailPrice: string;
     savings: string;
+    /** Set only for deals sourced directly from our own store feeds (e.g.
+     *  Gamesplanet, GamersGate) — points straight to the real affiliate
+     *  link instead of a heuristically-guessed one. */
+    directUrl?: string;
   }>;
 }
 

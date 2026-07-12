@@ -4,7 +4,15 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getGameInfo, getStores, formatPrice } from "@/lib/cheapshark";
 import { getFallbackGameInfo, fallbackStores } from "@/lib/fallback-data";
-import { getGamesplanetDealBySteamAppId } from "@/lib/gamesplanet-deals";
+import {
+  getGamesplanetDealBySteamAppId,
+  getGamesplanetDealByTitle,
+  getGamesplanetGameByUid,
+} from "@/lib/gamesplanet-deals";
+import {
+  getGamersgateDealByTitle,
+  getGamersgateGameBySku,
+} from "@/lib/gamersgate-deals";
 import JsonLd from "@/components/JsonLd";
 import {
   SITE,
@@ -18,20 +26,59 @@ import type { GameInfo } from "@/types";
 // Cache each game page on the edge for 5 minutes
 export const revalidate = 300;
 
-/** Cross-references our own Gamesplanet catalog by Steam App ID so this page
- *  shows a real multi-store comparison even when CheapShark is unavailable
- *  and its data falls back to a single-store dataset. */
+/** Cross-references our own Gamesplanet + GamersGate catalogs (by Steam App
+ *  ID first, normalized title second) so this page shows a real multi-store
+ *  comparison even when CheapShark is unavailable and its data falls back
+ *  to a single-store dataset. */
 async function enrichWithOwnSources(gameInfo: GameInfo): Promise<GameInfo> {
-  const steamAppID = gameInfo.info.steamAppID;
-  if (!steamAppID) return gameInfo;
+  const { steamAppID, title } = gameInfo.info;
 
-  const gamesplanetDeal = await getGamesplanetDealBySteamAppId(steamAppID).catch(() => null);
-  if (!gamesplanetDeal) return gameInfo;
+  const [gamesplanetDeal, gamersgateDeal] = await Promise.all([
+    gameInfo.deals.some((d) => d.storeID === "27")
+      ? Promise.resolve(null)
+      : (steamAppID ? getGamesplanetDealBySteamAppId(steamAppID) : getGamesplanetDealByTitle(title)).catch(() => null),
+    gameInfo.deals.some((d) => d.storeID === "2")
+      ? Promise.resolve(null)
+      : getGamersgateDealByTitle(title).catch(() => null),
+  ]);
 
-  return {
-    ...gameInfo,
-    deals: [...gameInfo.deals.filter((d) => d.storeID !== "27"), gamesplanetDeal],
-  };
+  const additions = [gamesplanetDeal, gamersgateDeal].filter((d): d is NonNullable<typeof d> => d !== null);
+  if (additions.length === 0) return gameInfo;
+
+  return { ...gameInfo, deals: [...gameInfo.deals, ...additions] };
+}
+
+/** Resolves a gameID to a full GameInfo, regardless of which source it
+ *  originated from: `gp-<uid>` (Gamesplanet), `gg-<sku>` (GamersGate), or a
+ *  plain CheapShark ID (with a fallback dataset if CheapShark is down). In
+ *  every case the result is cross-referenced against our other own sources
+ *  so the price comparison table reflects every store we actually have
+ *  data for, not just the one the page happened to originate from. */
+async function resolveGameInfo(id: string): Promise<GameInfo | null> {
+  if (id.startsWith("gp-")) {
+    const base = await getGamesplanetGameByUid(id.slice(3)).catch(() => null);
+    if (!base) return null;
+    const gameInfo: GameInfo = {
+      info: { title: base.title, steamAppID: base.steamAppID, thumb: base.thumb },
+      cheapestPriceEver: { price: base.deal.price, date: Math.floor(Date.now() / 1000) },
+      deals: [base.deal],
+    };
+    return enrichWithOwnSources(gameInfo);
+  }
+
+  if (id.startsWith("gg-")) {
+    const base = await getGamersgateGameBySku(id.slice(3)).catch(() => null);
+    if (!base) return null;
+    const gameInfo: GameInfo = {
+      info: { title: base.title, steamAppID: base.steamAppID, thumb: base.thumb },
+      cheapestPriceEver: { price: base.deal.price, date: Math.floor(Date.now() / 1000) },
+      deals: [base.deal],
+    };
+    return enrichWithOwnSources(gameInfo);
+  }
+
+  const gameInfo = await getGameInfo(id).catch(() => getFallbackGameInfo(id) ?? null);
+  return gameInfo ? enrichWithOwnSources(gameInfo) : null;
 }
 
 export async function generateMetadata({
@@ -41,16 +88,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, id } = await params;
 
-  let info;
-  try {
-    info = await getGameInfo(id);
-  } catch {
-    info = getFallbackGameInfo(id) ?? undefined;
-  }
+  const info = await resolveGameInfo(id);
   if (!info) {
     return { title: "Game not found | LootScan" };
   }
-  info = await enrichWithOwnSources(info);
 
   const cheapest = info.deals?.length
     ? [...info.deals].sort((a, b) => parseFloat(a.price) - parseFloat(b.price))[0]
@@ -100,12 +141,10 @@ export default async function GamePage({
   if (!id?.trim()) notFound();
 
   // Fetch game + stores in parallel, fall back on any error
-  const [gameInfoRaw, stores] = await Promise.all([
-    getGameInfo(id).catch(() => getFallbackGameInfo(id) ?? null),
+  const [gameInfo, stores] = await Promise.all([
+    resolveGameInfo(id),
     getStores().catch(() => fallbackStores),
   ]);
-
-  const gameInfo = gameInfoRaw ? await enrichWithOwnSources(gameInfoRaw) : null;
 
   if (!gameInfo) {
     return (

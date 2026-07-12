@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Deal } from "@/types";
 import type { GamesplanetRegion } from "@/lib/sources/gamesplanet-feed";
+import { normalizeGameTitle } from "@/lib/game-title";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -62,13 +63,38 @@ export interface OwnSourceGameDeal {
   price: string;
   retailPrice: string;
   savings: string;
+  directUrl: string;
 }
 
-interface SteamMatchRow {
+export interface OwnSourceGameBase {
+  title: string;
+  thumb: string;
+  steamAppID: string | null;
+  deal: OwnSourceGameDeal;
+}
+
+interface MatchRow {
   uid: string;
+  title: string;
+  thumb: string | null;
+  steam_app_id: string | null;
   price: number;
   price_base: number;
   savings_percent: number;
+  link: string;
+}
+
+const MATCH_COLUMNS = "uid, title, thumb, steam_app_id, price, price_base, savings_percent, link";
+
+function toOwnSourceDeal(row: MatchRow): OwnSourceGameDeal {
+  return {
+    storeID: "27",
+    dealID: `gp-${row.uid}`,
+    price: row.price.toFixed(2),
+    retailPrice: row.price_base.toFixed(2),
+    savings: row.savings_percent.toFixed(2),
+    directUrl: row.link,
+  };
 }
 
 /** Cross-references our own Gamesplanet catalog by Steam App ID so game
@@ -80,20 +106,55 @@ export async function getGamesplanetDealBySteamAppId(
 ): Promise<OwnSourceGameDeal | null> {
   const { data, error } = await supabase
     .from("gamesplanet_deals")
-    .select("uid, price, price_base, savings_percent")
+    .select(MATCH_COLUMNS)
     .eq("region", region)
     .eq("steam_app_id", steamAppID)
     .limit(1)
-    .maybeSingle<SteamMatchRow>();
+    .maybeSingle<MatchRow>();
+
+  if (error || !data) return null;
+  return toOwnSourceDeal(data);
+}
+
+/** Cross-references our own Gamesplanet catalog by normalized title —
+ *  used when the other source (e.g. GamersGate) has no Steam App ID to
+ *  match on. */
+export async function getGamesplanetDealByTitle(
+  title: string,
+  region: GamesplanetRegion = "us"
+): Promise<OwnSourceGameDeal | null> {
+  const { data, error } = await supabase
+    .from("gamesplanet_deals")
+    .select(MATCH_COLUMNS)
+    .eq("region", region)
+    .eq("normalized_title", normalizeGameTitle(title))
+    .limit(1)
+    .maybeSingle<MatchRow>();
+
+  if (error || !data) return null;
+  return toOwnSourceDeal(data);
+}
+
+/** Loads a single Gamesplanet product by its own uid — used to seed the game
+ *  detail page when the visitor arrives via a `gp-<uid>` gameID. */
+export async function getGamesplanetGameByUid(
+  uid: string,
+  region: GamesplanetRegion = "us"
+): Promise<OwnSourceGameBase | null> {
+  const { data, error } = await supabase
+    .from("gamesplanet_deals")
+    .select(MATCH_COLUMNS)
+    .eq("region", region)
+    .eq("uid", uid)
+    .maybeSingle<MatchRow>();
 
   if (error || !data) return null;
 
   return {
-    storeID: "27",
-    dealID: `gp-${data.uid}`,
-    price: data.price.toFixed(2),
-    retailPrice: data.price_base.toFixed(2),
-    savings: data.savings_percent.toFixed(2),
+    title: data.title,
+    thumb: data.thumb ?? "",
+    steamAppID: data.steam_app_id,
+    deal: toOwnSourceDeal(data),
   };
 }
 

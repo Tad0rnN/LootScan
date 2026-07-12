@@ -1,6 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Deal } from "@/types";
 import type { GamersgateRegion } from "@/lib/sources/gamersgate-feed";
+import { normalizeGameTitle } from "@/lib/game-title";
+import type { OwnSourceGameDeal, OwnSourceGameBase } from "@/lib/gamesplanet-deals";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,6 +20,18 @@ interface GamersgateDealRow {
 }
 
 const SELECT_COLUMNS = "sku, title, price, price_base, link, thumb, savings_percent";
+const MATCH_COLUMNS = "sku, title, thumb, price, price_base, savings_percent, link";
+
+function toOwnSourceDeal(row: GamersgateDealRow): OwnSourceGameDeal {
+  return {
+    storeID: "2",
+    dealID: `gg-${row.sku}`,
+    price: row.price.toFixed(2),
+    retailPrice: row.price_base.toFixed(2),
+    savings: row.savings_percent.toFixed(2),
+    directUrl: row.link,
+  };
+}
 
 export interface GetGamersgateDealsParams {
   region?: GamersgateRegion;
@@ -52,6 +66,48 @@ function toDeal(row: GamersgateDealRow): Deal {
     dealRating: Math.min(10, row.savings_percent / 10).toFixed(1),
     thumb: row.thumb ?? "",
     directUrl: row.link,
+  };
+}
+
+/** Cross-references our own GamersGate catalog by normalized title — this
+ *  source has no Steam App ID data, so title matching is the only option. */
+export async function getGamersgateDealByTitle(
+  title: string,
+  region: GamersgateRegion = "USA"
+): Promise<OwnSourceGameDeal | null> {
+  const { data, error } = await supabase
+    .from("gamersgate_deals")
+    .select(MATCH_COLUMNS)
+    .eq("region", region)
+    .eq("is_available", true)
+    .eq("normalized_title", normalizeGameTitle(title))
+    .limit(1)
+    .maybeSingle<GamersgateDealRow>();
+
+  if (error || !data) return null;
+  return toOwnSourceDeal(data);
+}
+
+/** Loads a single GamersGate product by its own sku — used to seed the game
+ *  detail page when the visitor arrives via a `gg-<sku>` gameID. */
+export async function getGamersgateGameBySku(
+  sku: string,
+  region: GamersgateRegion = "USA"
+): Promise<OwnSourceGameBase | null> {
+  const { data, error } = await supabase
+    .from("gamersgate_deals")
+    .select(MATCH_COLUMNS)
+    .eq("region", region)
+    .eq("sku", sku)
+    .maybeSingle<GamersgateDealRow>();
+
+  if (error || !data) return null;
+
+  return {
+    title: data.title,
+    thumb: data.thumb ?? "",
+    steamAppID: null,
+    deal: toOwnSourceDeal(data),
   };
 }
 
