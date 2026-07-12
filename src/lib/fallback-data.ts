@@ -7,10 +7,10 @@ export const fallbackStores: Store[] = [
   { storeID: "7", storeName: "GOG", isActive: 1, images: { banner: "", logo: "", icon: "" } },
   { storeID: "11", storeName: "Humble Store", isActive: 1, images: { banner: "", logo: "", icon: "" } },
   { storeID: "21", storeName: "WinGameStore", isActive: 1, images: { banner: "", logo: "", icon: "" } },
-  { storeID: "23", storeName: "Gamesplanet", isActive: 1, images: { banner: "", logo: "", icon: "" } },
-  { storeID: "25", storeName: "Fanatical", isActive: 1, images: { banner: "", logo: "", icon: "" } },
-  { storeID: "27", storeName: "Epic Games Store", isActive: 1, images: { banner: "", logo: "", icon: "" } },
-  { storeID: "35", storeName: "Nuuvem", isActive: 1, images: { banner: "", logo: "", icon: "" } },
+  { storeID: "23", storeName: "GameBillet", isActive: 1, images: { banner: "", logo: "", icon: "" } },
+  { storeID: "25", storeName: "Epic Games Store", isActive: 1, images: { banner: "", logo: "", icon: "" } },
+  { storeID: "27", storeName: "Gamesplanet", isActive: 1, images: { banner: "", logo: "", icon: "" } },
+  { storeID: "35", storeName: "DreamGame", isActive: 1, images: { banner: "", logo: "", icon: "" } },
 ];
 
 export const fallbackDeals: Deal[] = [
