@@ -10,11 +10,11 @@
     },
     {
       "path": "/api/cron/sync-gamesplanet",
-      "schedule": "0 */6 * * *"
+      "schedule": "0 4 * * *"
     },
     {
       "path": "/api/cron/sync-gamersgate",
-      "schedule": "0 */6 * * *"
+      "schedule": "0 5 * * *"
     }
   ]
 }
