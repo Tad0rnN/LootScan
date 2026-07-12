@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getGameInfo, getStores, formatPrice } from "@/lib/cheapshark";
 import { getFallbackGameInfo, fallbackStores } from "@/lib/fallback-data";
+import { getGamesplanetDealBySteamAppId } from "@/lib/gamesplanet-deals";
 import JsonLd from "@/components/JsonLd";
 import {
   SITE,
@@ -12,9 +13,26 @@ import {
   breadcrumbSchema,
 } from "@/lib/seo";
 import GameDetailClient from "./GameDetailClient";
+import type { GameInfo } from "@/types";
 
 // Cache each game page on the edge for 5 minutes
 export const revalidate = 300;
+
+/** Cross-references our own Gamesplanet catalog by Steam App ID so this page
+ *  shows a real multi-store comparison even when CheapShark is unavailable
+ *  and its data falls back to a single-store dataset. */
+async function enrichWithOwnSources(gameInfo: GameInfo): Promise<GameInfo> {
+  const steamAppID = gameInfo.info.steamAppID;
+  if (!steamAppID) return gameInfo;
+
+  const gamesplanetDeal = await getGamesplanetDealBySteamAppId(steamAppID).catch(() => null);
+  if (!gamesplanetDeal) return gameInfo;
+
+  return {
+    ...gameInfo,
+    deals: [...gameInfo.deals.filter((d) => d.storeID !== "27"), gamesplanetDeal],
+  };
+}
 
 export async function generateMetadata({
   params,
@@ -32,6 +50,7 @@ export async function generateMetadata({
   if (!info) {
     return { title: "Game not found | LootScan" };
   }
+  info = await enrichWithOwnSources(info);
 
   const cheapest = info.deals?.length
     ? [...info.deals].sort((a, b) => parseFloat(a.price) - parseFloat(b.price))[0]
@@ -81,10 +100,12 @@ export default async function GamePage({
   if (!id?.trim()) notFound();
 
   // Fetch game + stores in parallel, fall back on any error
-  const [gameInfo, stores] = await Promise.all([
+  const [gameInfoRaw, stores] = await Promise.all([
     getGameInfo(id).catch(() => getFallbackGameInfo(id) ?? null),
     getStores().catch(() => fallbackStores),
   ]);
+
+  const gameInfo = gameInfoRaw ? await enrichWithOwnSources(gameInfoRaw) : null;
 
   if (!gameInfo) {
     return (

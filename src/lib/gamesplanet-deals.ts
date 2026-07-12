@@ -56,6 +56,47 @@ function toDeal(row: GamesplanetDealRow): Deal {
   };
 }
 
+export interface OwnSourceGameDeal {
+  storeID: string;
+  dealID: string;
+  price: string;
+  retailPrice: string;
+  savings: string;
+}
+
+interface SteamMatchRow {
+  uid: string;
+  price: number;
+  price_base: number;
+  savings_percent: number;
+}
+
+/** Cross-references our own Gamesplanet catalog by Steam App ID so game
+ *  detail pages can show a real multi-store comparison even when CheapShark
+ *  is unavailable and its data falls back to a single-store dataset. */
+export async function getGamesplanetDealBySteamAppId(
+  steamAppID: string,
+  region: GamesplanetRegion = "us"
+): Promise<OwnSourceGameDeal | null> {
+  const { data, error } = await supabase
+    .from("gamesplanet_deals")
+    .select("uid, price, price_base, savings_percent")
+    .eq("region", region)
+    .eq("steam_app_id", steamAppID)
+    .limit(1)
+    .maybeSingle<SteamMatchRow>();
+
+  if (error || !data) return null;
+
+  return {
+    storeID: "27",
+    dealID: `gp-${data.uid}`,
+    price: data.price.toFixed(2),
+    retailPrice: data.price_base.toFixed(2),
+    savings: data.savings_percent.toFixed(2),
+  };
+}
+
 export async function getGamesplanetDeals(params: GetGamesplanetDealsParams = {}): Promise<Deal[]> {
   const region = params.region ?? "us";
   const limit = params.limit ?? 24;
