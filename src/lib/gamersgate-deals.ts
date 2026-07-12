@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Deal } from "@/types";
+import type { GamersgateRegion } from "@/lib/sources/gamersgate-feed";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -7,7 +8,6 @@ const supabase = createClient(
 );
 
 interface GamersgateDealRow {
-  id: number;
   sku: string;
   title: string;
   price: number;
@@ -17,9 +17,10 @@ interface GamersgateDealRow {
   savings_percent: number;
 }
 
-const SELECT_COLUMNS = "id, sku, title, price, price_base, link, thumb, savings_percent";
+const SELECT_COLUMNS = "sku, title, price, price_base, link, thumb, savings_percent";
 
 export interface GetGamersgateDealsParams {
+  region?: GamersgateRegion;
   title?: string;
   onSale?: boolean;
   upperPrice?: number;
@@ -34,9 +35,9 @@ function toDeal(row: GamersgateDealRow): Deal {
     internalName: row.title.toUpperCase().replace(/[^A-Z0-9]+/g, ""),
     title: row.title,
     metacriticLink: null,
-    dealID: `gg-${row.id}`,
+    dealID: `gg-${row.sku}`,
     storeID: "2",
-    gameID: `gg-${row.id}`,
+    gameID: `gg-${row.sku}`,
     salePrice: row.price.toFixed(2),
     normalPrice: row.price_base.toFixed(2),
     isOnSale: row.price < row.price_base ? "1" : "0",
@@ -55,12 +56,14 @@ function toDeal(row: GamersgateDealRow): Deal {
 }
 
 export async function getGamersgateDeals(params: GetGamersgateDealsParams = {}): Promise<Deal[]> {
+  const region = params.region ?? "USA";
   const limit = params.limit ?? 24;
   const offset = params.offset ?? 0;
 
   let query = supabase
     .from("gamersgate_deals")
     .select(SELECT_COLUMNS)
+    .eq("region", region)
     .eq("is_available", true);
 
   if (params.title) query = query.ilike("title", `%${params.title}%`);

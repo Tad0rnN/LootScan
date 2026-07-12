@@ -98,17 +98,25 @@ create index if not exists gamesplanet_deals_region_idx on public.gamesplanet_de
 create index if not exists gamesplanet_deals_steam_app_id_idx on public.gamesplanet_deals (steam_app_id);
 create index if not exists gamesplanet_deals_savings_idx on public.gamesplanet_deals (region, savings_percent desc);
 
--- GamersGate product feed (our own affiliate data, synced from
--- https://www.gamersgate.com/api/offers/ every few hours)
-create table if not exists public.gamersgate_deals (
-  id              bigint not null primary key,
+-- GamersGate product feed (our own affiliate data, synced from the official
+-- affiliate product feed at https://feeds.gamersgate.com/feeds/products
+-- every few hours). Replaces an earlier version of this table that was
+-- populated by scraping the public /api/offers/ catalog page-by-page —
+-- the real feed covers the full catalog (not just on-sale items) with a
+-- proper suggested retail price, so the table is recreated from scratch.
+drop table if exists public.gamersgate_deals;
+
+create table public.gamersgate_deals (
   sku             text not null,
+  region          text not null check (region in ('USA', 'GBR', 'DEU', 'FRA', 'CAN', 'AUS')),
   title           text not null,
   price           numeric not null,
   price_base      numeric not null,
   currency        text not null,
   link            text not null,
   publisher       text,
+  category        text,
+  product_type    text,
   thumb           text,
   is_available    boolean not null default true,
   is_on_sale      boolean generated always as (price < price_base) stored,
@@ -118,7 +126,8 @@ create table if not exists public.gamersgate_deals (
                       else 0
                     end
                   ) stored,
-  updated_at      timestamptz not null default now()
+  updated_at      timestamptz not null default now(),
+  primary key (sku, region)
 );
 
 alter table public.gamersgate_deals enable row level security;
@@ -129,4 +138,5 @@ create policy "Anyone can view gamersgate deals"
 -- No insert/update/delete policies on purpose:
 -- rows are written only by the sync cron job using the service role.
 
-create index if not exists gamersgate_deals_savings_idx on public.gamersgate_deals (savings_percent desc);
+create index if not exists gamersgate_deals_region_idx on public.gamersgate_deals (region);
+create index if not exists gamersgate_deals_savings_idx on public.gamersgate_deals (region, savings_percent desc);

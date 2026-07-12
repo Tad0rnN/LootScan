@@ -1,13 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getGamersgateDeals } from "@/lib/gamersgate-deals";
+import type { GamersgateRegion } from "@/lib/sources/gamersgate-feed";
+
+const VALID_REGIONS = new Set(["USA", "GBR", "DEU", "FRA", "CAN", "AUS"]);
+
+function isGamersgateRegion(value: string | null): value is GamersgateRegion {
+  return value !== null && VALID_REGIONS.has(value);
+}
 
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
+  const region = sp.get("region");
   const pageSize = sp.get("pageSize") ? Number(sp.get("pageSize")) : 24;
   const pageNumber = sp.get("pageNumber") ? Number(sp.get("pageNumber")) : 0;
 
   try {
     const deals = await getGamersgateDeals({
+      region: isGamersgateRegion(region) ? region : undefined,
       title: sp.get("title") ?? undefined,
       onSale: sp.get("onSale") === "1",
       upperPrice: sp.get("upperPrice") ? Number(sp.get("upperPrice")) : undefined,
